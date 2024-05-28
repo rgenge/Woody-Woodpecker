@@ -2,7 +2,7 @@ ifndef OUTPUT
 .SILENT:
 endif
 
-NAME	= woody
+NAME	= woody_woodpacker
 
 CFLAGS	= -Wall -Werror -Wextra -g -Wfatal-errors
 
