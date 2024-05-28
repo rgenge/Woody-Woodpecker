@@ -3,7 +3,7 @@ ifndef OUTPUT
 endif
 
 NAME	= woody_woodpacker
-ARGS	=	res/sample
+ARGS	=	sample
 
 CFLAGS	= -Wall -Werror -Wextra -g -Wfatal-errors
 
@@ -30,6 +30,7 @@ $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) $(SRC) -o $(NAME)
 
 $(OBJS): %o : %.c $(HEAD)
+	$(CC) $(CFLAGS) -o $@ -c $<
 
 clean:
 	@rm -rf $(OBJ)
@@ -46,10 +47,7 @@ vf:			all
 g:			all
 	gdb ./$(NAME)
 t:			all
-	@echo 'execution (silent):'
-	./$(NAME) $(ARGS)
-	@echo 'run woody:'
-	-./woody
+	-unit/pass.sh
 
 rv:			re v
 rvf:		re vf
