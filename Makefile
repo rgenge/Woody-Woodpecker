@@ -1,17 +1,34 @@
+ifndef OUTPUT
+.SILENT:
+endif
+
 NAME	= woody
 
-CFLAGS	= -Wall -Werror -Wextra
+CFLAGS	= -Wall -Werror -Wextra -g -Wfatal-errors
 
 SRC		= src/error.c src/main.c src/utils.c 
+HEAD	=	Makefile src/woody.h
 
 CC		= gcc
 
 OBJ		= $(SRC:.c=.o)
 
-all: $(NAME)
+SHELL	= /bin/sh
+
+VAL		=	valgrind
+
+VALFLAG	=	--tool=memcheck \
+			--leak-check=full \
+			--show-leak-kinds=all \
+			--track-origins=yes \
+			--show-reachable=yes
+
+all:	$(NAME)
 
 $(NAME): $(OBJ) 
 	$(CC) $(CFLAGS) $(SRC) -o $(NAME)
+
+$(OBJS): %o : %.c $(HEAD)
 
 clean:
 	@rm -rf $(OBJ)
@@ -19,6 +36,17 @@ clean:
 fclean:	clean
 	@rm -rf $(NAME)
 
-re: clean fclean all
+re: fclean all
 
-.PHONY: clean fclean re
+v:			all
+	$(VAL) ./$(NAME) $(ARGS)
+vf:			all
+	$(VAL) $(VALFLAG) ./$(NAME) $(ARGS)
+g:			all
+	gdb ./$(NAME)
+t:			all
+	./$(NAME) $(ARGS)
+rv:			re v
+rvf:		re vf
+rg:			re g
+rt:			re t
