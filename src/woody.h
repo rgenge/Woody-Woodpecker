@@ -32,7 +32,7 @@ void	ft_bzero(void *s, size_t n);
 # define ___die(_bool, _msg) if (_bool) die(_msg)
 # define bool char
 # define true 1
-# define false 0
+# define false !1
 # define ___deb if (debug) 
 
 #endif
