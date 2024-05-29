@@ -19,9 +19,8 @@ make || error_exit "[ KO ] Failed to make. Execute this script from the project 
 	./woody sample
 	echo "<- [ OK? ] \`woody\` is run, must have the same behavior of \`sample\`, but with \'....WOODY.....\' on top."
 
-	./woody > x.tmp
-	tail -n +2 x.tmp > a.tmp
+	./woody | tail -n +2 > a.tmp
 	./sample > b.tmp
 	check=$(diff a.tmp b.tmp)
-	rm a.tmp b.tmp x.tmp
+	rm a.tmp b.tmp
 	check && echo "[ OK ] Auto-check, the outputs are identical but for the 1st line." || error_exit "[ OK ] Incorrect output (not identical)."
