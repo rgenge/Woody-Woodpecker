@@ -1,5 +1,7 @@
 #include "woody.h"
 
+char debug = 1;
+
 void  read_file(t_elf *elf, char *filename)
 {
 	int			fd;
@@ -16,9 +18,9 @@ void  read_file(t_elf *elf, char *filename)
 	___die (!bytes_read, "Is file empty?");
 	___die (bytes_read == -1, "Error reading file");
 	elf->data[bytes_read] = 0; // Null-terminate.
-	printf("Bytes read: %ld\n", bytes_read);
-	hex_dump(elf->data, bytes_read);
-	lin_dump(elf->data, bytes_read);
+	___deb printf("Bytes read: %ld\n", bytes_read);
+	___deb hex_dump(elf->data, bytes_read);
+	___deb lin_dump(elf->data, bytes_read);
 
 	//    FILE* input_elf = fopen(filename, "rb");
 	//	___die (!input_elf, "Error opening file.\n");

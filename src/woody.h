@@ -30,5 +30,6 @@ void	say(char* msg, void* data, char type);
 # define bool char
 # define true 1
 # define false 0
+# define ___deb if (debug) 
 
 #endif
