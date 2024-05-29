@@ -35,6 +35,8 @@ void	hex_dump(void* address, size_t offset)
 		{
 			if (isprint(*(h + o)))
 				printf("%c", *(h + o));
+			else if (!*(h + o))
+				printf(" ");
 			else
 				printf(".");
 		}
@@ -54,7 +56,7 @@ void	lin_dump(void* address, size_t offset)
 		for (size_t o = 0; o < 8; o += 1) // offset
 		{
 			c = *(h + o);
-			if (!isprint(c))
+			if (!isprint(c) || c == ' ')
 			{
 				if (!n)
 				{
