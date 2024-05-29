@@ -24,6 +24,9 @@ void	hex_dump(void* address, size_t offset)
 {
 	char*	h; // head
 
+	if (!address)
+		return (void)printf("Dumping address nil, no dump.");
+
 	printf("%p\n", address);
 	for (size_t i = 0; i < offset; i += 8)
 	{
@@ -49,6 +52,9 @@ void	lin_dump(void* address, size_t offset)
 	char*	h; // head
 	bool	n; // non-printable printed
 	char	c;
+
+	if (!address)
+		return (void)printf("Dumping address nil, no dump.");
 
 	for (size_t i = 0; i < offset; i += 8)
 	{

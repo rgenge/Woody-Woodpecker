@@ -34,6 +34,8 @@ void  read_file(char *filename)
 //	___deb say("elf.ehdr->e_shentsize", &elf.ehdr->e_shentsize, 's');
 
 	elf.phdr = (typeof(elf.phdr))elf.data + elf.ehdr->e_phentsize;
+	if ((void*)elf.phdr == (void*)elf.ehdr)
+		elf.phdr = 0;
 	___deb hex_dump(elf.phdr, sizeof(elf.phdr));
 }
 
