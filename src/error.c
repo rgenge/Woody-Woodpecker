@@ -12,9 +12,3 @@ void die(char* message)
     perror(message);
     exit(1);
 }
-
-void say(char* msg, void* data, char type)
-{
-  if (type == 'i') // int
-	printf("%s %d\n", msg, *(int*)data);
-}

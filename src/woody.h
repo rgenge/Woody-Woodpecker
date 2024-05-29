@@ -26,6 +26,8 @@ void	*ft_memset(void *s, unsigned char c, size_t size);
 void	hex_dump(void* address, size_t offset);
 void	lin_dump(void* address, size_t offset);
 void	say(char* msg, void* data, char type);
+void	*ft_calloc(size_t count, size_t size);
+void	ft_bzero(void *s, size_t n);
 
 # define ___die(_bool, _msg) if (_bool) die(_msg)
 # define bool char

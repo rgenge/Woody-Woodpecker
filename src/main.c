@@ -11,53 +11,54 @@ void  read_file(char *filename)
 	long int	bytes_read;
 
 	fd = open(filename, O_RDONLY);
-	___die (fd == -1, "Failed to open file.");
+	___die (fd == -1, "Failed to open file");
 	filesize = get_filesize(fd);
-	___die (filesize == -1, "Failed to get file size.");
+	___die (filesize == -1, "Failed to get file size");
 	elf.data = malloc(filesize + 1);
 	___die (!elf.data, "Could not allocate.");
 	bytes_read = read(fd, elf.data, filesize);
 	___die (!bytes_read, "Is file empty?");
 	___die (bytes_read == -1, "Error reading file");
 	elf.data[bytes_read] = 0; // Null-terminate.
-
-	// Esses dois apontam pro mesmo endereço zero?
-	elf.phdr = (typeof(elf.phdr))elf.data;
-	elf.ehdr = (typeof(elf.ehdr))elf.data;
-
-//	___deb hex_dump(elf.data, bytes_read);
 //	___deb lin_dump(elf.data, bytes_read);
-//	___deb hex_dump(elf.ehdr, sizeof(elf.phdr));
-
+	elf.ehdr = (typeof(elf.ehdr))elf.data;
+//	___deb hex_dump(elf.ehdr, sizeof(elf.ehdr));
 	___die (elf.ehdr->e_ident[EI_MAG0] != ELFMAG0 ||
 		elf.ehdr->e_ident[EI_MAG1] != ELFMAG1 ||
 		elf.ehdr->e_ident[EI_MAG2] != ELFMAG2 ||
 		elf.ehdr->e_ident[EI_MAG3] != ELFMAG3,
 		"Invalid ELF file."); // Verify ELF header 
+	___die (elf.ehdr->e_machine == EM_X86_64, 
+		"File is not a x86_64 binary");
+
+//	___deb say("elf.ehdr->e_shentsize", &elf.ehdr->e_shentsize, 's');
+
+	elf.phdr = (typeof(elf.phdr))elf.data + elf.ehdr->e_phentsize;
+	___deb hex_dump(elf.phdr, sizeof(elf.phdr));
 }
 
-//void  decrypt_file(t_elf *elf)
-//{
-//	Elf64_Ehdr  *ehdr;
-//	Elf64_Phdr  *phdr;
-//	//  t_dv        *dv;
-//	//  void        *ptr; 
-//	int i = -1;
+void  decrypt()
+{
+	//  t_dv        *dv;
+	//  void        *ptr; 
+
+//	char *h;
 //
-//	ehdr = (Elf64_Ehdr*)elf.data;
-//	phdr = (Elf64_Phdr*)elf.data + ehdr->e_phoff;
-//	while (++i < ehdr->e_phnum)
+//	h = elf.phdr;
+//	while (h - elf.phdr < elf.e_shentsize)
 //	{
-//		if(phdr[i].p_vaddr == phdr[i].p_paddr && phdr[i].p_memsz == phdr[i].p_filesz)
+//		h++;
+//	}
+
+//	while (++i < elf.ehdr->e_phnum)
+//	{
+//		if(elf.phdr[i].p_vaddr == elf.phdr[i].p_paddr && elf.phdr[i].p_memsz == elf.phdr[i].p_filesz)
 //		{
-//			elf.phdr = &phdr[i];
+//			elf.phdr = &elf.phdr[i];
 //		} 
 //	}
 //	printf("\n%ld", elf.phdr->p_memsz);
-//	return;
-//
-//	printf("decypt: %s", (char *)elf.data);
-//}
+}
 
 int	main(int ac, char **av)
 {
@@ -65,7 +66,7 @@ int	main(int ac, char **av)
 	if (ac != 2)
 		die("Usage: `woody_woodpacker binary_file`");
 	read_file(av[1]);
-//	decrypt_file(&elf);
+	decrypt();
 	free(elf.data);
 	return (0);
 }
