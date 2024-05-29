@@ -7,7 +7,7 @@ error_exit() {
 make || error_exit "[ KO ] Failed to make. Execute this script from the project root."
 
 ./woody_woodpacker sample && \
-	echo "<- [ OK? ] Output must be empty or some successful message." || error_exit "[ KO ] \`woody_woodpacker\` failed."
+	echo "<- [ OK? ] Output must be empty or some successful message." || error_exit "[ KO ] \`woody_woodpacker\` crashed or returned non-zero status."
 
 	[[ -f woody ]] && echo "[ OK ] File \`woody\` exists." || error_exit "[ KO ] File \`woody\` was not generated."
 
