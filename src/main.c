@@ -1,7 +1,5 @@
 #include "woody.h"
 
-char debug = 1;
-
 t_elf	elf; // Yes, global.
 
 void  read_file(char *filename)
@@ -33,10 +31,13 @@ void  read_file(char *filename)
 
 //	___deb say("elf.ehdr->e_shentsize", &elf.ehdr->e_shentsize, 's');
 
-	elf.phdr = (typeof(elf.phdr))elf.data + elf.ehdr->e_phentsize;
+	elf.phdr = (typeof(elf.phdr))elf.data \
+		+ sizeof(elf.ehdr);
 	if ((void*)elf.phdr == (void*)elf.ehdr)
 		elf.phdr = 0;
-	___deb hex_dump(elf.phdr, sizeof(elf.phdr));
+//	___deb hex_dump(elf.phdr, sizeof(elf.phdr));
+
+	pretty_print(&elf);
 }
 
 void  decrypt()

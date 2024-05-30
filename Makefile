@@ -7,7 +7,7 @@ ARGS	=	sample
 
 CFLAGS	= -Wall -Werror -Wextra -g -Wfatal-errors
 
-SRC		= src/error.c src/main.c src/utils.c 
+SRC		= src/error.c src/main.c src/utils.c src/pretty_print.c
 HEAD	=	Makefile src/woody.h
 
 CC		= gcc

@@ -20,21 +20,20 @@ void	*ft_memset(void *s, unsigned char c, size_t size)
 	return (s);
 }
 
-void	hex_dump(void* address, size_t offset)
+void	hex_dump(void* address, size_t amount)
 {
 	char*	h; // head
 
 	if (!address)
 		return (void)printf("Dumping address nil, no dump.");
-
 	printf("%p\n", address);
-	for (size_t i = 0; i < offset; i += 8)
+	for (size_t i = 0; i < amount; i += 8)
 	{
 		h = (char*)(address + i);
 		printf("%05ld ", (void *)h - address);
-		for (size_t o = 0; o < 8; o++) // offset
+		for (size_t o = 0; o < 8 && o < amount; o++) // offset
 			printf("%02x ", *(h + o) & 0xFF);
-		for (size_t o = 0; o < 8; o += 1)
+		for (size_t o = 0; o < 8 && o < amount; o += 1)
 		{
 			if (isprint(*(h + o)))
 				printf("%c", *(h + o));
@@ -47,7 +46,30 @@ void	hex_dump(void* address, size_t offset)
 	}
 }
 
-void	lin_dump(void* address, size_t offset)
+void	hex_byte(void* address, size_t amount)
+{
+	char*	h; // head
+
+	if (!address)
+		return (void)printf("Dumping address nil, no dump.");
+	for (size_t i = 0; i < amount; i += 8)
+	{
+		h = (char*)(address + i);
+		for (size_t o = 0; o < 8 && o < amount; o++) // offset
+			printf("%02x ", *(h + o) & 0xFF);
+		for (size_t o = 0; o < 8 && o < amount; o += 1)
+		{
+			if (isprint(*(h + o)))
+				printf("%c", *(h + o));
+			else if (!*(h + o))
+				printf(" ");
+			else
+				printf(".");
+		}
+	}
+}
+
+void	lin_dump(void* address, size_t amount)
 {
 	char*	h; // head
 	bool	n; // non-printable printed
@@ -56,7 +78,7 @@ void	lin_dump(void* address, size_t offset)
 	if (!address)
 		return (void)printf("Dumping address nil, no dump.");
 
-	for (size_t i = 0; i < offset; i += 8)
+	for (size_t i = 0; i < amount; i += 8)
 	{
 		h = (char*)(address + i);
 		for (size_t o = 0; o < 8; o += 1) // offset
