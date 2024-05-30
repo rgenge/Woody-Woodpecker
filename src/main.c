@@ -2,6 +2,17 @@
 
 t_elf	elf; // Yes, global.
 
+void	validate_file()
+{
+	___die (elf.ehdr->e_ident[EI_MAG0] != ELFMAG0 ||
+		elf.ehdr->e_ident[EI_MAG1] != ELFMAG1 ||
+		elf.ehdr->e_ident[EI_MAG2] != ELFMAG2 ||
+		elf.ehdr->e_ident[EI_MAG3] != ELFMAG3,
+		"Invalid ELF file."); // Verify ELF header 
+	___die (elf.ehdr->e_machine == EM_X86_64, 
+		"File is not a x86_64 binary");
+{
+
 void  read_file(char *filename)
 {
 	int			fd;
@@ -21,20 +32,14 @@ void  read_file(char *filename)
 //	___deb lin_dump(elf.data, bytes_read);
 	elf.ehdr = (typeof(elf.ehdr))elf.data;
 //	___deb hex_dump(elf.ehdr, sizeof(elf.ehdr));
-	___die (elf.ehdr->e_ident[EI_MAG0] != ELFMAG0 ||
-		elf.ehdr->e_ident[EI_MAG1] != ELFMAG1 ||
-		elf.ehdr->e_ident[EI_MAG2] != ELFMAG2 ||
-		elf.ehdr->e_ident[EI_MAG3] != ELFMAG3,
-		"Invalid ELF file."); // Verify ELF header 
-	___die (elf.ehdr->e_machine == EM_X86_64, 
-		"File is not a x86_64 binary");
+
 
 //	___deb say("elf.ehdr->e_shentsize", &elf.ehdr->e_shentsize, 's');
 
-	elf.phdr = (typeof(elf.phdr))elf.data \
+//	elf.phdr = (typeof(elf.phdr))elf.data \
 		+ sizeof(elf.ehdr);
-	if ((void*)elf.phdr == (void*)elf.ehdr)
-		elf.phdr = 0;
+//	if ((void*)elf.phdr == (void*)elf.ehdr)
+//		elf.phdr = 0;
 //	___deb hex_dump(elf.phdr, sizeof(elf.phdr));
 
 	pretty_print(&elf);
@@ -69,6 +74,7 @@ int	main(int ac, char **av)
 	if (ac != 2)
 		die("Usage: `woody_woodpacker binary_file`");
 	read_file(av[1]);
+	validate_file();
 	decrypt();
 	free(elf.data);
 	return (0);
