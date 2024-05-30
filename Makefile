@@ -26,10 +26,10 @@ VALFLAG	=	--tool=memcheck \
 
 all:	$(NAME)
 
-$(NAME): $(OBJ) 
+$(NAME): $(OBJ) $(HEAD)
 	$(CC) $(CFLAGS) $(SRC) -o $(NAME)
 
-$(OBJS): %o : %.c $(HEAD)
+$(OBJS): %o : %.c
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 clean:
