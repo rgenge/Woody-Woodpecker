@@ -1,15 +1,27 @@
 #include "woody.h"
 
 void	byte_is(unsigned char* h, char test, const char* msg)
-{	if (*h == test) printf(" %s", msg); }
+{	if (*h == test) printf("%s", msg); }
 
 void	true_is(long long a, long long b, const char* msg)
-{	if (a == b) printf(" %s", msg); }
+{	if (a == b) printf("%s", msg); }
 
-void	byte_hex(unsigned char* h, size_t amount, const char* msg)
+void	hex_pure(void* h, size_t amount)
 {
-	hex_byte(h, amount);
-	printf(" %s", msg);
+	if (!h)
+		return (void)printf("Dumping address nil, no dump.");
+	for (size_t i = 0; i < amount; i += 8)
+	{
+		h = (char*)(h + i);
+		for (size_t o = 0; o < 8 && o < amount; o++) // offset
+			printf("%02x ", *((char*)h + o) & 0xFF);
+	}
+}
+
+void	hex_msg(void* h, size_t amount, const char* msg)
+{
+	hex_pure(h, amount);
+	printf("%s", msg);
 }
 
 void	pretty_print(t_elf* ex)
@@ -27,18 +39,18 @@ void	pretty_print(t_elf* ex)
 	printf("|| magic    ");
 	hex_byte(h, 4);
 	___br;
-	___deb printf("||      \\__ 7f 45 4c 46 .ELF <- check above to validate.\n");
+	___deb printf("||      \\__ 7f 45 4c 46 .ELF <- eq. above to validate.\n");
 
 	printf("|| class    ");
 	h += 4;
-	hex_byte(h, 1);
+	hex_pure(h, 1);
 	byte_is(h, ELFCLASSNONE, "None architecture/Invalid.");
 	byte_is(h, ELFCLASS32, "32-bit architecture.");
 	byte_is(h, ELFCLASS64, "64-bit architecture.");
 	___br;
 
 	printf("|| data enc ");
-	hex_byte(++h, 1);
+	hex_pure(++h, 1);
 	byte_is(h, ELFDATANONE, "Unknown data format.");
 	byte_is(h, ELFDATA2LSB, "2-complement, litte-endian.");
 	byte_is(h, ELFDATA2MSB, "2-complement, big-endian.");
@@ -46,13 +58,13 @@ void	pretty_print(t_elf* ex)
 
 	printf("|| elf ver  ");
 	if (++h == EV_NONE)
-		byte_hex(h, EV_CURRENT, "Ivalid version.");
+		hex_msg(h, EV_CURRENT, "Ivalid version.");
 	else
-		byte_hex(h, EV_CURRENT, "<- Represents current version (hex).");
+		hex_msg(h, EV_CURRENT, "<- Represents current version (hex).");
 	___br;
 
 	printf("|| OS ABI   ");
-	hex_byte(++h, 1);
+	hex_pure(++h, 1);
 	byte_is(h, ELFOSABI_NONE | ELFOSABI_SYSV, "UNIX System VABI.");
 	byte_is(h, ELFOSABI_HPUX, "HP-UX.");
 	byte_is(h, ELFOSABI_NETBSD, "NetBSD.");
@@ -66,15 +78,19 @@ void	pretty_print(t_elf* ex)
 	___br;
 
 	printf("|| abi ver  ");
-	byte_hex(++h, 1, "<- Represents target object version.");
+	hex_msg(++h, 1, "<- Represents target object version.");
 	___br;
 
 	h++;
-	printf("|\\_________ (+%ld) padding from here.\n", h - e.ehdr->e_ident);
+	printf("|\\_________ (+%02ld) padding from here.\n", h - e.ehdr->e_ident);
+	
+	printf("|                 ");
+	hex_byte(h, ((unsigned char *)&e.ehdr->e_type - e.ehdr->e_ident) - (h - e.ehdr->e_ident));
+	___br;
 
 	printf("\\ e_type    (+%ld) ", (unsigned char *)&e.ehdr->e_type - e.ehdr->e_ident);
 	u16 = e.ehdr->e_type;
-	hex_byte(&u16, sizeof(e.ehdr->e_type));
+	hex_pure(&u16, sizeof(e.ehdr->e_type));
 	true_is(u16, ET_NONE, "Unkown type.");
 	true_is(u16, ET_REL, "A relocatable file.");
 	true_is(u16, ET_EXEC, "An executable file.");
@@ -84,7 +100,7 @@ void	pretty_print(t_elf* ex)
 
 	printf("\\ e_machine (+%ld) ", (void *)&e.ehdr->e_machine - (void*)e.ehdr);
 	u16 = e.ehdr->e_machine;
-	hex_byte(&u16, sizeof(e.ehdr->e_type));
+	hex_pure(&u16, sizeof(e.ehdr->e_type));
 	true_is(u16, EM_NONE, "Unkown machine.");
 	true_is(u16, EM_M32, "AT&T WE 32100.");
 	true_is(u16, EM_SPARC, "Sun Microsystems SPARC.");
@@ -106,15 +122,19 @@ void	pretty_print(t_elf* ex)
 	true_is(u16, EM_VAX, "DEC Vax.");
 	___br;
 
-	printf("\\ file ver  (+%ld) ", (void*)&e.ehdr->e_version - (void*)e.ehdr);
+	printf("\\ e_version (+%ld) ", (void*)&e.ehdr->e_version - (void*)e.ehdr);
 	u32 = e.ehdr->e_version;
 	if (u32 == EV_NONE) 
-		byte_hex((void*)&u32, 4, " Invalid version.");
+		hex_msg((void*)&u32, 4, " Invalid version.");
 	else
 	{
-		hex_byte((void*)&u32, 4);
-		printf(" = %d <- Identify version.", u32);
+		hex_pure((void*)&u32, 4);
+		printf("= %d <- File version.", u32);
 	}
+	___br;
+
+	printf("\\ e_entry   (+%ld) ", (void*)&e.ehdr->e_entry - (void*)e.ehdr);
+	hex_msg((void*)&e.ehdr->e_entry, sizeof(e.ehdr->e_entry), "\n|        \\_______ ^ Entry point virtual address.");
 	___br;
 
 	___br;
