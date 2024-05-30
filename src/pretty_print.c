@@ -134,8 +134,21 @@ void	pretty_print(t_elf* ex)
 	___br;
 
 	printf("\\ e_entry   (+%ld) ", (void*)&e.ehdr->e_entry - (void*)e.ehdr);
-	hex_msg((void*)&e.ehdr->e_entry, sizeof(e.ehdr->e_entry), "\n|        \\_______ ^ Entry point virtual address.");
+	if (e.ehdr->e_entry)
+		hex_msg((void*)&e.ehdr->e_entry, sizeof(e.ehdr->e_entry), "\n|        \\_______ ^ Entry point virtual address.");
+	else
+		hex_msg((void*)&e.ehdr->e_entry, sizeof(e.ehdr->e_entry), "\n|        \\_______ ^ No associated entry point.");
 	___br;
+
+
+	printf("\\ e_phoff   (+%ld) ", (void*)&e.ehdr->e_phoff - (void*)e.ehdr);
+	hex_msg((void*)&e.ehdr->e_phoff, sizeof(e.ehdr->e_phoff), "\n|        \\_______ ");
+	if (e.ehdr->e_phoff)
+		printf("^ %ld bytes Program Header table offset.", e.ehdr->e_phoff);
+	else
+		printf("^ No Program Header table.");
+	___br;
+
 
 	___br;
 	return ;
