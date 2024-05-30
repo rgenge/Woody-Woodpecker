@@ -16,11 +16,13 @@ void	pretty_print(t_elf* ex)
 {
 	unsigned char* h;
 	t_elf e = *ex;
+	uint16_t u16;
+	uint32_t u32;
 
 	printf("Elf64_Ehdr: %p\n", ex);
 
-	printf("\\ e_ident (+%d)\n", 0);
-	h = (unsigned char *)e.ehdr->e_ident;
+	printf("\\ e_ident   (+%d)\n", 0);
+	h = (unsigned char *)e.ehdr;
 
 	printf("|| magic    ");
 	hex_byte(h, 4);
@@ -67,16 +69,53 @@ void	pretty_print(t_elf* ex)
 	byte_hex(++h, 1, "<- Represents target object version.");
 	___br;
 
-	printf("|\\_________ padding start: %p (total: %ld)\n", h, h - e.ehdr->e_ident);
+	h++;
+	printf("|\\_________ (+%ld) padding from here.\n", h - e.ehdr->e_ident);
 
-	printf("\\ e_type (+%ld) ", (unsigned char *)&e.ehdr->e_type - e.ehdr->e_ident);
-	uint16_t u = e.ehdr->e_type;
-	hex_byte(&u, sizeof(e.ehdr->e_type));
-	true_is(u, ET_NONE, "Unkown type.");
-	true_is(u, ET_REL, "A relocatable file.");
-	true_is(u, ET_EXEC, "An executable file.");
-	true_is(u, ET_DYN, "A shared object.");
-	true_is(u, ET_CORE, "A core file.");
+	printf("\\ e_type    (+%ld) ", (unsigned char *)&e.ehdr->e_type - e.ehdr->e_ident);
+	u16 = e.ehdr->e_type;
+	hex_byte(&u16, sizeof(e.ehdr->e_type));
+	true_is(u16, ET_NONE, "Unkown type.");
+	true_is(u16, ET_REL, "A relocatable file.");
+	true_is(u16, ET_EXEC, "An executable file.");
+	true_is(u16, ET_DYN, "A shared object.");
+	true_is(u16, ET_CORE, "A core file.");
+	___br;
+
+	printf("\\ e_machine (+%ld) ", (void *)&e.ehdr->e_machine - (void*)e.ehdr);
+	u16 = e.ehdr->e_machine;
+	hex_byte(&u16, sizeof(e.ehdr->e_type));
+	true_is(u16, EM_NONE, "Unkown machine.");
+	true_is(u16, EM_M32, "AT&T WE 32100.");
+	true_is(u16, EM_SPARC, "Sun Microsystems SPARC.");
+	true_is(u16, EM_386, "Intel 80386.");
+	true_is(u16, EM_68K, "Motorola 68000.");
+	true_is(u16, EM_88K, "Motorola 88000.");
+	true_is(u16, EM_860, "Intel 80860.");
+	true_is(u16, EM_MIPS, "MIPS RS3000 big-endian.");
+	true_is(u16, EM_PARISC, "HP/PA.");
+	true_is(u16, EM_SPARC32PLUS, "SPARC enhanced.");
+	true_is(u16, EM_PPC, "PowerPC 32-bit.");
+	true_is(u16, EM_PPC64, "PowerPC 64-bit.");
+	true_is(u16, EM_S390, "IBM S/390.");
+	true_is(u16, EM_ARM, "Advanced RISC Machines.");
+	true_is(u16, EM_SH, "Renesas SuperH.");
+	true_is(u16, EM_SPARCV9, "SPARC v9 64-bit.");
+	true_is(u16, EM_IA_64, "Intel Itanium.");
+	true_is(u16, EM_X86_64, "AMD x86-64.");
+	true_is(u16, EM_VAX, "DEC Vax.");
+	___br;
+
+	printf("\\ file ver  (+%ld) ", (void*)&e.ehdr->e_version - (void*)e.ehdr);
+	u32 = e.ehdr->e_version;
+	if (u32 == EV_NONE) 
+		byte_hex((void*)&u32, 4, " Invalid version.");
+	else
+	{
+		hex_byte((void*)&u32, 4);
+		printf(" = %d <- Identify version.", u32);
+	}
+	___br;
 
 	___br;
 	return ;
