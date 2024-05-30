@@ -38,8 +38,9 @@ void	pretty_print(t_elf* ex)
 
 	printf("|| magic    ");
 	hex_byte(h, 4);
+	printf(" <- This must be the same as");
 	___br;
-	___deb printf("||      \\__ 7f 45 4c 46 .ELF <- eq. above to validate.\n");
+	___deb printf("||      \\__ 7f 45 4c 46 .ELF <- this to validate.\n");
 
 	printf("|| class    ");
 	h += 4;
@@ -134,19 +135,28 @@ void	pretty_print(t_elf* ex)
 	___br;
 
 	printf("\\ e_entry   (+%ld) ", (void*)&e.ehdr->e_entry - (void*)e.ehdr);
+		hex_pure((void*)&e.ehdr->e_entry, sizeof(e.ehdr->e_entry));
+	printf("= %d", (int)e.ehdr->e_entry);
 	if (e.ehdr->e_entry)
-		hex_msg((void*)&e.ehdr->e_entry, sizeof(e.ehdr->e_entry), "\n|        \\_______ ^ Entry point virtual address.");
+		printf("\n|         virtual \\ entry point address /");
 	else
-		hex_msg((void*)&e.ehdr->e_entry, sizeof(e.ehdr->e_entry), "\n|        \\_______ ^ No associated entry point.");
+		hex_msg((void*)&e.ehdr->e_entry, sizeof(e.ehdr->e_entry), "\n|                 ^ No associated entry point.");
 	___br;
 
-
 	printf("\\ e_phoff   (+%ld) ", (void*)&e.ehdr->e_phoff - (void*)e.ehdr);
-	hex_msg((void*)&e.ehdr->e_phoff, sizeof(e.ehdr->e_phoff), "\n|        \\_______ ");
+	hex_msg((void*)&e.ehdr->e_phoff, sizeof(e.ehdr->e_phoff), "\n|  program header:");
 	if (e.ehdr->e_phoff)
-		printf("^ %ld bytes Program Header table offset.", e.ehdr->e_phoff);
+		printf("\\    %ld B offset    /", e.ehdr->e_phoff);
 	else
-		printf("^ No Program Header table.");
+		printf("\\ (zero:) no header table.");
+	___br;
+
+	printf("\\ e_shoff   (+%ld) ", (void*)&e.ehdr->e_shoff - (void*)e.ehdr);
+	hex_msg((void*)&e.ehdr->e_shoff, sizeof(e.ehdr->e_shoff), "\n|  section header:");
+	if (e.ehdr->e_shoff)
+		printf("\\    %ld kB offset   /", e.ehdr->e_shoff / 1024);
+	else
+		printf("\\ (zero:) no section header.");
 	___br;
 
 
