@@ -10,16 +10,15 @@
 
 # define __debug true
 
-typedef struct	s_elf
+typedef struct		s_elf
 {
-	uint64_t	*key;
-	char		*data; // raw bin content
-	Elf64_Ehdr	*ehdr;
-	Elf64_Phdr	*phdr;
-	Elf64_Shdr	*shrd;
-	ssize_t		filesize;
-	int			decrypt;
-}               t_elf;	  
+	char			*data; // raw bin content
+	Elf64_Ehdr*		ehdr;
+	uint64_t		*key;
+	ssize_t			filesize;
+	int				decrypt;
+	unsigned char	bit_class;
+}					t_elf;	  
 
 off_t	get_filesize(int fd);
 void	read_file(char *filename);

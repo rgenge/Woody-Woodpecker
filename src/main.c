@@ -11,7 +11,10 @@ void	validate_file()
 		"Invalid ELF file."); // Verify ELF header 
 	___die (elf.ehdr->e_machine == EM_X86_64, 
 		"File is not a x86_64 binary");
-{
+//	___die (elf.ehdr[EI_CLASS] != ELFCLASS32 &&
+//		elf.ehdr[EI_CLASS != ELFCLASS64,
+//		"Unknown data format.");
+}
 
 void  read_file(char *filename)
 {
@@ -30,22 +33,17 @@ void  read_file(char *filename)
 	___die (bytes_read == -1, "Error reading file");
 	elf.data[bytes_read] = 0; // Null-terminate.
 //	___deb lin_dump(elf.data, bytes_read);
-	elf.ehdr = (typeof(elf.ehdr))elf.data;
 //	___deb hex_dump(elf.ehdr, sizeof(elf.ehdr));
+	elf.ehdr = (typeof(elf.ehdr))elf.data;
+}
 
-
-//	___deb say("elf.ehdr->e_shentsize", &elf.ehdr->e_shentsize, 's');
-
-//	elf.phdr = (typeof(elf.phdr))elf.data \
-		+ sizeof(elf.ehdr);
-//	if ((void*)elf.phdr == (void*)elf.ehdr)
-//		elf.phdr = 0;
-//	___deb hex_dump(elf.phdr, sizeof(elf.phdr));
-
+void	cast_data_32_or_64()
+{
+//	elf.bit_class = elf.ehdr[EI_CLASS];
 	pretty_print(&elf);
 }
 
-void  decrypt()
+void	decrypt()
 {
 	//  t_dv        *dv;
 	//  void        *ptr; 
@@ -68,13 +66,14 @@ void  decrypt()
 //	printf("\n%ld", elf.phdr->p_memsz);
 }
 
-int	main(int ac, char **av)
+int		main(int ac, char **av)
 {
 	ft_memset(&elf, 0, sizeof(elf));
 	if (ac != 2)
 		die("Usage: `woody_woodpacker binary_file`");
 	read_file(av[1]);
 	validate_file();
+	cast_data_32_or_64();
 	decrypt();
 	free(elf.data);
 	return (0);

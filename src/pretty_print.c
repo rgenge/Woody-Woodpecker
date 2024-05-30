@@ -163,15 +163,15 @@ void	pretty_print(t_elf* ex)
 	___br;
 	return ;
 
-	printf("p_type %d: ", e.phdr->p_type);
-	printf(" PT_NULL %b ", e.phdr->p_type & PT_NULL & true);
-	printf(" PT_LOAD %b ", e.phdr->p_type & PT_LOAD & true);
-	printf(" PT_INTERP %b ", e.phdr->p_type & PT_INTERP & true);
-	printf(" PT_NOTE %b ", e.phdr->p_type & PT_NOTE & true);
-	printf(" PT_SHLIB %b ", e.phdr->p_type & PT_SHLIB & true);
-	printf(" PT_PHDR %b ", e.phdr->p_type & PT_PHDR & true);
-	printf(" PT_LOPROC %b ", e.phdr->p_type & PT_LOPROC & true);
-	printf(" PT_HIPROC %b ", e.phdr->p_type & PT_HIPROC & true);
-	printf(" PT_GNU_STACK %b ", e.phdr->p_type & PT_GNU_STACK & true);
-	printf ("0 %b ", e.phdr->p_type & 0 & true);
+//	printf("p_type %d: ", e.phdr->p_type);
+//	printf(" PT_NULL %b ", e.phdr->p_type & PT_NULL & true);
+//	printf(" PT_LOAD %b ", e.phdr->p_type & PT_LOAD & true);
+//	printf(" PT_INTERP %b ", e.phdr->p_type & PT_INTERP & true);
+//	printf(" PT_NOTE %b ", e.phdr->p_type & PT_NOTE & true);
+//	printf(" PT_SHLIB %b ", e.phdr->p_type & PT_SHLIB & true);
+//	printf(" PT_PHDR %b ", e.phdr->p_type & PT_PHDR & true);
+//	printf(" PT_LOPROC %b ", e.phdr->p_type & PT_LOPROC & true);
+//	printf(" PT_HIPROC %b ", e.phdr->p_type & PT_HIPROC & true);
+//	printf(" PT_GNU_STACK %b ", e.phdr->p_type & PT_GNU_STACK & true);
+//	printf ("0 %b ", e.phdr->p_type & 0 & true);
 }
