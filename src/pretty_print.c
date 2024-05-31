@@ -24,17 +24,32 @@ void	hex_msg(void* h, size_t amount, const char* msg)
 	printf("%s", msg);
 }
 
-void	pretty_print(t_elf* ex)
+void	pretty_print(t_elf *e)
 {
-	unsigned char* h;
-	t_elf e = *ex;
-	uint16_t u16;
-	uint32_t u32;
+	if (e->bit_class == 32)
+		pretty_print32(e);
+	else if (e->bit_class == 64)
+		pretty_print64(e);
+}
 
-	printf("Elf64_Ehdr: %p\n", ex);
+void	pretty_print64(t_elf* ex)
+{
+	___deb printf("pretty_print64() not implemented.");
+	(void) ex;
+}
 
-	printf("\\ e_ident   (+%d)\n", 0);
-	h = (unsigned char *)e.ehdr;
+void	pretty_print32(t_elf* ex)
+{
+	Elf32_Ehdr		*e;
+	unsigned char	*h;
+	uint16_t		u16;
+	uint32_t		u32;
+
+	e = (Elf32_Ehdr*)ex->data;
+	printf("Elf32_Ehdr: %p\n", e);
+
+	printf("\\ e_ident   (+%02d)\n", 0);
+	h = (unsigned char *)e;
 
 	printf("|| magic    ");
 	hex_byte(h, 4);
@@ -45,7 +60,7 @@ void	pretty_print(t_elf* ex)
 	printf("|| class    ");
 	h += 4;
 	hex_pure(h, 1);
-	byte_is(h, ELFCLASSNONE, "None architecture/Invalid.");
+	byte_is(h, ELFCLASSNONE, "None/invalid architecture.");
 	byte_is(h, ELFCLASS32, "32-bit architecture.");
 	byte_is(h, ELFCLASS64, "64-bit architecture.");
 	___br;
@@ -83,15 +98,19 @@ void	pretty_print(t_elf* ex)
 	___br;
 
 	h++;
-	printf("|\\_________ (+%02ld) padding from here.\n", h - e.ehdr->e_ident);
-	
+	printf("|\\_________ (+%02ld) padding from here.\n",
+		h - e->e_ident);
+
 	printf("|                 ");
-	hex_byte(h, ((unsigned char *)&e.ehdr->e_type - e.ehdr->e_ident) - (h - e.ehdr->e_ident));
+	hex_byte(h,
+		((unsigned char *)&e->e_type - e->e_ident)
+		- (h - e->e_ident));
 	___br;
 
-	printf("\\ e_type    (+%ld) ", (unsigned char *)&e.ehdr->e_type - e.ehdr->e_ident);
-	u16 = e.ehdr->e_type;
-	hex_pure(&u16, sizeof(e.ehdr->e_type));
+	printf("\\ e_type    (+%ld) ",
+		(unsigned char *)&e->e_type - e->e_ident);
+	u16 = e->e_type;
+	hex_pure(&u16, sizeof(e->e_type));
 	true_is(u16, ET_NONE, "Unkown type.");
 	true_is(u16, ET_REL, "A relocatable file.");
 	true_is(u16, ET_EXEC, "An executable file.");
@@ -99,9 +118,9 @@ void	pretty_print(t_elf* ex)
 	true_is(u16, ET_CORE, "A core file.");
 	___br;
 
-	printf("\\ e_machine (+%ld) ", (void *)&e.ehdr->e_machine - (void*)e.ehdr);
-	u16 = e.ehdr->e_machine;
-	hex_pure(&u16, sizeof(e.ehdr->e_type));
+	printf("\\ e_machine (+%ld) ", (void *)&e->e_machine - (void*)e);
+	u16 = e->e_machine;
+	hex_pure(&u16, sizeof(e->e_type));
 	true_is(u16, EM_NONE, "Unkown machine.");
 	true_is(u16, EM_M32, "AT&T WE 32100.");
 	true_is(u16, EM_SPARC, "Sun Microsystems SPARC.");
@@ -123,8 +142,8 @@ void	pretty_print(t_elf* ex)
 	true_is(u16, EM_VAX, "DEC Vax.");
 	___br;
 
-	printf("\\ e_version (+%ld) ", (void*)&e.ehdr->e_version - (void*)e.ehdr);
-	u32 = e.ehdr->e_version;
+	printf("\\ e_version (+%ld) ", (void*)&e->e_version - (void*)e);
+	u32 = e->e_version;
 	if (u32 == EV_NONE) 
 		hex_msg((void*)&u32, 4, " Invalid version.");
 	else
@@ -134,44 +153,51 @@ void	pretty_print(t_elf* ex)
 	}
 	___br;
 
-	printf("\\ e_entry   (+%ld) ", (void*)&e.ehdr->e_entry - (void*)e.ehdr);
-		hex_pure((void*)&e.ehdr->e_entry, sizeof(e.ehdr->e_entry));
-	printf("= %d", (int)e.ehdr->e_entry);
-	if (e.ehdr->e_entry)
-		printf("\n|         virtual \\ entry point address /");
+	printf("\\ e_entry   (+%ld) ", (void*)&e->e_entry - (void*)e);
+	if (e->e_entry)
+		hex_msg((void*)&e->e_entry, sizeof(e->e_entry),
+			"Virtual entry point address.");
 	else
-		hex_msg((void*)&e.ehdr->e_entry, sizeof(e.ehdr->e_entry), "\n|                 ^ No associated entry point.");
+		hex_msg((void*)&e->e_entry, sizeof(e->e_entry),
+			"No associated entry point.");
 	___br;
 
-	printf("\\ e_phoff   (+%ld) ", (void*)&e.ehdr->e_phoff - (void*)e.ehdr);
-	hex_msg((void*)&e.ehdr->e_phoff, sizeof(e.ehdr->e_phoff), "\n|  program header:");
-	if (e.ehdr->e_phoff)
-		printf("\\    %ld B offset    /", e.ehdr->e_phoff);
+	printf("\\ e_phoff   (+%ld) ", (void*)&e->e_phoff - (void*)e);
+	if (e->e_phoff)
+	{
+		hex_msg((void*)&e->e_phoff, sizeof(e->e_phoff),
+			"Program Header offset: ");
+		printf("%d B", e->e_phoff);
+	}
 	else
-		printf("\\ (zero:) no header table.");
+	{
+		hex_msg((void*)&e->e_phoff, sizeof(e->e_phoff),
+			"Program Header zero, no header table");
+	}
 	___br;
 
-	printf("\\ e_shoff   (+%ld) ", (void*)&e.ehdr->e_shoff - (void*)e.ehdr);
-	hex_msg((void*)&e.ehdr->e_shoff, sizeof(e.ehdr->e_shoff), "\n|  section header:");
-	if (e.ehdr->e_shoff)
-		printf("\\    %ld kB offset   /", e.ehdr->e_shoff / 1024);
+	printf("\\ e_shoff   (+%ld) ", (void*)&e->e_shoff - (void*)e);
+	hex_msg((void*)&e->e_shoff, sizeof(e->e_shoff),
+		"Section Header offset: ");
+	if (e->e_shoff)
+		printf("%d B", e->e_shoff);
 	else
-		printf("\\ (zero:) no section header.");
+		printf("(zero:) no section header.");
 	___br;
 
 
 	___br;
 	return ;
 
-//	printf("p_type %d: ", e.phdr->p_type);
-//	printf(" PT_NULL %b ", e.phdr->p_type & PT_NULL & true);
-//	printf(" PT_LOAD %b ", e.phdr->p_type & PT_LOAD & true);
-//	printf(" PT_INTERP %b ", e.phdr->p_type & PT_INTERP & true);
-//	printf(" PT_NOTE %b ", e.phdr->p_type & PT_NOTE & true);
-//	printf(" PT_SHLIB %b ", e.phdr->p_type & PT_SHLIB & true);
-//	printf(" PT_PHDR %b ", e.phdr->p_type & PT_PHDR & true);
-//	printf(" PT_LOPROC %b ", e.phdr->p_type & PT_LOPROC & true);
-//	printf(" PT_HIPROC %b ", e.phdr->p_type & PT_HIPROC & true);
-//	printf(" PT_GNU_STACK %b ", e.phdr->p_type & PT_GNU_STACK & true);
-//	printf ("0 %b ", e.phdr->p_type & 0 & true);
+//	printf("p_type %d: ", e->phdr->p_type);
+//	printf(" PT_NULL %b ", e->phdr->p_type & PT_NULL & true);
+//	printf(" PT_LOAD %b ", e->phdr->p_type & PT_LOAD & true);
+//	printf(" PT_INTERP %b ", e->phdr->p_type & PT_INTERP & true);
+//	printf(" PT_NOTE %b ", e->phdr->p_type & PT_NOTE & true);
+//	printf(" PT_SHLIB %b ", e->phdr->p_type & PT_SHLIB & true);
+//	printf(" PT_PHDR %b ", e->phdr->p_type & PT_PHDR & true);
+//	printf(" PT_LOPROC %b ", e->phdr->p_type & PT_LOPROC & true);
+//	printf(" PT_HIPROC %b ", e->phdr->p_type & PT_HIPROC & true);
+//	printf(" PT_GNU_STACK %b ", e->phdr->p_type & PT_GNU_STACK & true);
+//	printf ("0 %b ", e->phdr->p_type & 0 & true);
 }

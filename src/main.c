@@ -4,16 +4,14 @@ t_elf	elf; // Yes, global.
 
 void	validate_file()
 {
-	___die (elf.ehdr->e_ident[EI_MAG0] != ELFMAG0 ||
-		elf.ehdr->e_ident[EI_MAG1] != ELFMAG1 ||
-		elf.ehdr->e_ident[EI_MAG2] != ELFMAG2 ||
-		elf.ehdr->e_ident[EI_MAG3] != ELFMAG3,
+	___die (elf.data[EI_MAG0] != ELFMAG0 ||
+		elf.data[EI_MAG1] != ELFMAG1 ||
+		elf.data[EI_MAG2] != ELFMAG2 ||
+		elf.data[EI_MAG3] != ELFMAG3,
 		"Invalid ELF file."); // Verify ELF header 
-	___die (elf.ehdr->e_machine == EM_X86_64, 
-		"File is not a x86_64 binary");
-//	___die (elf.ehdr[EI_CLASS] != ELFCLASS32 &&
-//		elf.ehdr[EI_CLASS != ELFCLASS64,
-//		"Unknown data format.");
+	___die (elf.data[EI_CLASS] != ELFCLASS32 &&
+		elf.data[EI_CLASS] != ELFCLASS64,
+		"File is not suitable bit class.");
 }
 
 void  read_file(char *filename)
@@ -34,13 +32,12 @@ void  read_file(char *filename)
 	elf.data[bytes_read] = 0; // Null-terminate.
 //	___deb lin_dump(elf.data, bytes_read);
 //	___deb hex_dump(elf.ehdr, sizeof(elf.ehdr));
-	elf.ehdr = (typeof(elf.ehdr))elf.data;
 }
 
-void	cast_data_32_or_64()
+void	set_data_32_64()
 {
-//	elf.bit_class = elf.ehdr[EI_CLASS];
-	pretty_print(&elf);
+	elf.bit_class = elf.data[EI_CLASS] == 64 ? 64 : 32;
+	___deb printf("%c-Bit architecture.", elf.bit_class);
 }
 
 void	decrypt()
@@ -73,7 +70,8 @@ int		main(int ac, char **av)
 		die("Usage: `woody_woodpacker binary_file`");
 	read_file(av[1]);
 	validate_file();
-	cast_data_32_or_64();
+	set_data_32_64();
+	pretty_print(&elf);
 	decrypt();
 	free(elf.data);
 	return (0);

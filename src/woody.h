@@ -7,17 +7,17 @@
 # include <stdio.h>
 # include <fcntl.h>
 # include <ctype.h>
+# include <sys/mman.h>
 
 # define __debug true
 
 typedef struct		s_elf
 {
 	char			*data; // raw bin content
-	Elf64_Ehdr*		ehdr;
 	uint64_t		*key;
 	ssize_t			filesize;
 	int				decrypt;
-	unsigned char	bit_class;
+	unsigned char	bit_class; // 32 || 64
 }					t_elf;	  
 
 off_t	get_filesize(int fd);
@@ -31,6 +31,8 @@ void	say(char* msg, void* data, char type);
 void	*ft_calloc(size_t count, size_t size);
 void	ft_bzero(void *s, size_t n);
 void	pretty_print(t_elf*);
+void	pretty_print32(t_elf*);
+void	pretty_print64(t_elf*);
 
 # define ___die(_bool, _msg) if (_bool) die(_msg)
 # define bool char
