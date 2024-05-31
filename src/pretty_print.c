@@ -1,10 +1,13 @@
 #include "woody.h"
 
-void	byte_is(unsigned char* h, char test, const char* msg)
-{	if (*h == test) printf("%s", msg); }
+void	byte_is(void* h, long long test, const char* msg)
+{	if (*(unsigned char*)h == test) printf("%s", msg); }
 
 void	true_is(long long a, long long b, const char* msg)
 {	if (a == b) printf("%s", msg); }
+
+void	flag_is(long long a, long long b, const char* msg)
+{	if (a & b) printf("%s", msg); }
 
 void	hex_pure(void* h, size_t amount)
 {
@@ -49,7 +52,7 @@ void	pretty_print32(t_elf* ex)
 	// ELF Header
 	e = (Elf32_Ehdr*)ex->ehdr;
 
-	printf("[ Elf32_Ehdr %p\n|\\ e_ident    (+%02d)\n", e, 0);
+	printf("[ Elf32_Ehdr   %p\n|\\ e_ident    [+%02d]\n", e, 0);
 	h = (unsigned char *)e;
 
 	printf("|| magic    ");
@@ -99,10 +102,9 @@ void	pretty_print32(t_elf* ex)
 	___br;
 
 	h++;
-	printf("|\\_________   (+%02ld) padding from here.\n",
+	printf("|\\___________ (+%02ld) padding from here.\n",
 		h - e->e_ident);
-
-	printf("|                 ");
+	printf("|                   ");
 	hex_byte(h,
 		((unsigned char *)&e->e_type - e->e_ident)
 		- (h - e->e_ident));
@@ -236,27 +238,71 @@ void	pretty_print32(t_elf* ex)
 		printf("see sh_link.");
 	___br;
 
-	printf("]\n");
+	printf("] -------------------------------------------------/\n");
 
 	// Program Header	
-	p = (Elf32_Phdr*)ex-phdr;
+	p = (Elf32_Phdr*)ex->phdr;
 
+	printf("[ Elf32_Phdr  [+%02ld] %p\n", (void*)p - (void*)e, p);
+
+	printf("\\ p_type      (+%02ld) ", (void*)p - (void*)p);
+	hex_pure(&p->p_type, sizeof(p->p_type));
+	byte_is(&p->p_type, PT_NULL, "Null: ignore.");
+	byte_is(&p->p_type, PT_LOAD, "Load.");
+	byte_is(&p->p_type, PT_DYNAMIC, "Dynamic link info.");
+	byte_is(&p->p_type, PT_INTERP, "Loc+size of interpreter.");
+	byte_is(&p->p_type, PT_NOTE, "Nhdr location.");
+	byte_is(&p->p_type, PT_SHLIB, "Reserved/unused/non-ABI.");
+	byte_is(&p->p_type, PT_PHDR, "Phdr loc+size.");
+	byte_is(&p->p_type, PT_LOPROC | PT_HIPROC, "Reserved CPU-specific.");
+	byte_is(&p->p_type, PT_GNU_STACK, "Kernel-controled, state of stack.");
+	___br;
+
+	printf("\\ p_offset    (+%02ld) ", (void*)&p->p_offset - (void*)p);
+	hex_msg(&p->p_offset, sizeof(p->p_offset),
+		"Section off: ");
+	printf("%d B", p->p_offset);
+	___br;
+
+	printf("\\ p_vaddr     (+%02ld) ", (void*)&p->p_vaddr - (void*)p);
+	hex_msg(&p->p_vaddr, sizeof(p->p_vaddr),
+		"Segment v. address. ");
+	___br;
+
+	printf("\\ p_paddr     (+%02ld) ", (void*)&p->p_paddr - (void*)p);
+	hex_msg(&p->p_paddr, sizeof(p->p_paddr),
+		"Seg physical addr.");
+	___br;
+
+	printf("\\ p_filesz    (+%02ld) ", (void*)&p->p_filesz - (void*)p);
+	hex_msg(&p->p_filesz, sizeof(p->p_filesz),
+		"Seg file img: ");
+	printf("%d B", p->p_filesz);
+	___br;
+
+	printf("\\ p_memsz     (+%02ld) ", (void*)&p->p_memsz - (void*)p);
+	hex_msg(&p->p_memsz, sizeof(p->p_memsz),
+		"Seg mem sz: ");
+	printf("%d B", p->p_memsz);
+	___br;
+
+	printf("\\ p_flags     (+%02ld) ", (void*)&p->p_flags - (void*)p);
+	hex_pure(&p->p_flags, sizeof(p->p_flags));
+	printf("\n|        \\_________");
+	flag_is(p->p_flags, PF_R, " Readable.");
+	flag_is(p->p_flags, PF_W, " Writable.");
+	flag_is(p->p_flags, PF_X, " Executable.");
+	___br;
+
+	printf("\\ p_align     (+%02ld) ", (void*)&p->p_align - (void*)p);
+	hex_msg(&p->p_align, sizeof(p->p_align),
+		"Seg mem align: ");
+	printf("%d", p->p_align);
+	___br;
 
 
 
 
 	___br;
 	return ;
-
-//	printf("p_type %d: ", e->phdr->p_type);
-//	printf(" PT_NULL %b ", e->phdr->p_type & PT_NULL & true);
-//	printf(" PT_LOAD %b ", e->phdr->p_type & PT_LOAD & true);
-//	printf(" PT_INTERP %b ", e->phdr->p_type & PT_INTERP & true);
-//	printf(" PT_NOTE %b ", e->phdr->p_type & PT_NOTE & true);
-//	printf(" PT_SHLIB %b ", e->phdr->p_type & PT_SHLIB & true);
-//	printf(" PT_PHDR %b ", e->phdr->p_type & PT_PHDR & true);
-//	printf(" PT_LOPROC %b ", e->phdr->p_type & PT_LOPROC & true);
-//	printf(" PT_HIPROC %b ", e->phdr->p_type & PT_HIPROC & true);
-//	printf(" PT_GNU_STACK %b ", e->phdr->p_type & PT_GNU_STACK & true);
-//	printf ("0 %b ", e->phdr->p_type & 0 & true);
 }
