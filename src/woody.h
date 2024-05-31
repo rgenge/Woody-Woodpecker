@@ -28,8 +28,6 @@ void	hex_dump(void* address, size_t amount);
 void	hex_byte(void* address, size_t amount);
 void	lin_dump(void* address, size_t offset);
 void	say(char* msg, void* data, char type);
-void	*ft_calloc(size_t count, size_t size);
-void	ft_bzero(void *s, size_t n);
 void	pretty_print(t_elf*);
 void	pretty_print32(t_elf*);
 void	pretty_print64(t_elf*);
@@ -40,6 +38,5 @@ void	pretty_print64(t_elf*);
 # define true !false
 # define ___deb if (__debug) 
 # define ___br printf("\n")
-# define STRF(x) #x
 
 #endif

@@ -110,27 +110,3 @@ void say(char* msg, void* data, char type)
 	if (type == 's') // short unsigned int
 		printf("%s %d\n", msg, *(short unsigned int*)data);	
 }
-
-void	*ft_calloc(size_t count, size_t size)
-{
-	void	*c;
-
-	c = malloc(count * size);
-	if (!c)
-		return (NULL);
-	ft_bzero(c, count * size);
-	return (c);
-}
-
-void	ft_bzero(void *s, size_t n)
-{
-	char	*p;
-
-	p = s;
-	while (n--)
-	{
-		*p = 0;
-		p++;
-	}
-	return ;
-}
