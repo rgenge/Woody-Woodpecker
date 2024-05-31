@@ -40,5 +40,6 @@ void	pretty_print64(t_elf*);
 # define true !false
 # define ___deb if (__debug) 
 # define ___br printf("\n")
+# define STRF(x) #x
 
 #endif

@@ -48,7 +48,7 @@ void	pretty_print32(t_elf* ex)
 	e = (Elf32_Ehdr*)ex->data;
 	printf("Elf32_Ehdr: %p\n", e);
 
-	printf("\\ e_ident   (+%02d)\n", 0);
+	printf("\\ e_ident     (+%02d)\n", 0);
 	h = (unsigned char *)e;
 
 	printf("|| magic    ");
@@ -98,7 +98,7 @@ void	pretty_print32(t_elf* ex)
 	___br;
 
 	h++;
-	printf("|\\_________ (+%02ld) padding from here.\n",
+	printf("|\\_________   (+%02ld) padding from here.\n",
 		h - e->e_ident);
 
 	printf("|                 ");
@@ -107,7 +107,7 @@ void	pretty_print32(t_elf* ex)
 		- (h - e->e_ident));
 	___br;
 
-	printf("\\ e_type    (+%ld) ",
+	printf("\\ e_type      (+%ld) ",
 		(unsigned char *)&e->e_type - e->e_ident);
 	u16 = e->e_type;
 	hex_pure(&u16, sizeof(e->e_type));
@@ -118,7 +118,7 @@ void	pretty_print32(t_elf* ex)
 	true_is(u16, ET_CORE, "A core file.");
 	___br;
 
-	printf("\\ e_machine (+%ld) ", (void *)&e->e_machine - (void*)e);
+	printf("\\ e_machine   (+%ld) ", (void *)&e->e_machine - (void*)e);
 	u16 = e->e_machine;
 	hex_pure(&u16, sizeof(e->e_type));
 	true_is(u16, EM_NONE, "Unkown machine.");
@@ -142,7 +142,7 @@ void	pretty_print32(t_elf* ex)
 	true_is(u16, EM_VAX, "DEC Vax.");
 	___br;
 
-	printf("\\ e_version (+%ld) ", (void*)&e->e_version - (void*)e);
+	printf("\\ e_version   (+%ld) ", (void*)&e->e_version - (void*)e);
 	u32 = e->e_version;
 	if (u32 == EV_NONE) 
 		hex_msg((void*)&u32, 4, " Invalid version.");
@@ -153,7 +153,7 @@ void	pretty_print32(t_elf* ex)
 	}
 	___br;
 
-	printf("\\ e_entry   (+%ld) ", (void*)&e->e_entry - (void*)e);
+	printf("\\ e_entry     (+%ld) ", (void*)&e->e_entry - (void*)e);
 	if (e->e_entry)
 		hex_msg((void*)&e->e_entry, sizeof(e->e_entry),
 			"Virtual entry point address.");
@@ -162,7 +162,7 @@ void	pretty_print32(t_elf* ex)
 			"No associated entry point.");
 	___br;
 
-	printf("\\ e_phoff   (+%ld) ", (void*)&e->e_phoff - (void*)e);
+	printf("\\ e_phoff     (+%ld) ", (void*)&e->e_phoff - (void*)e);
 	if (e->e_phoff)
 	{
 		hex_msg((void*)&e->e_phoff, sizeof(e->e_phoff),
@@ -172,11 +172,11 @@ void	pretty_print32(t_elf* ex)
 	else
 	{
 		hex_msg((void*)&e->e_phoff, sizeof(e->e_phoff),
-			"Program Header zero, no header table");
+			"PH zero, no header table");
 	}
 	___br;
 
-	printf("\\ e_shoff   (+%ld) ", (void*)&e->e_shoff - (void*)e);
+	printf("\\ e_shoff     (+%ld) ", (void*)&e->e_shoff - (void*)e);
 	hex_msg((void*)&e->e_shoff, sizeof(e->e_shoff),
 		"Section Header offset: ");
 	if (e->e_shoff)
@@ -185,6 +185,54 @@ void	pretty_print32(t_elf* ex)
 		printf("(zero:) no section header.");
 	___br;
 
+	printf("\\ e_flags     (+%ld) ", (void*)&e->e_flags - (void*)e);
+	hex_msg((void*)&e->e_flags, sizeof(e->e_flags),
+		"Processor-specific flags.");
+	___br;
+
+	printf("\\ e_ehsize    (+%ld) ", (void*)&e->e_ehsize - (void*)e);
+	hex_msg((void*)&e->e_ehsize, sizeof(e->e_ehsize),
+		"ELF Header size: ");
+	printf("%d B", e->e_ehsize);
+	___br;
+
+	printf("\\ e_phentsize (+%ld) ", (void*)&e->e_phentsize - (void*)e);
+	hex_msg((void*)&e->e_phentsize, sizeof(e->e_phentsize),
+		"PH entry size: ");
+	printf("%d B", e->e_phentsize);
+	___br;
+
+	printf("\\ e_phnum     (+%ld) ", (void*)&e->e_phnum - (void*)e);
+	hex_msg((void*)&e->e_phnum, sizeof(e->e_phnum),
+		"PH entries: ");
+	if (e->e_phnum != PN_XNUM) // 0xffff
+		printf("%d", e->e_phnum);
+	else
+		printf("see sh_info.");
+	___br;
+
+	printf("\\ e_shentsize (+%ld) ", (void*)&e->e_shentsize - (void*)e);
+	hex_msg((void*)&e->e_shentsize, sizeof(e->e_shentsize),
+		"SH entry size: ");
+	printf("%d B", e->e_shentsize);
+	___br;
+
+	printf("\\ e_shnum     (+%ld) ", (void*)&e->e_shnum - (void*)e);
+	hex_msg((void*)&e->e_shnum, sizeof(e->e_shnum),
+		"SH entries: ");
+	if (e->e_shnum < SHN_LORESERVE) // 0xff00
+		printf("%d", e->e_shnum);
+	else
+		printf("see SH[0]->sh_size.");
+	___br;
+
+	printf("\\ e_shstrndx  (+%ld) ", (void*)&e->e_shstrndx - (void*)e);
+	hex_msg((void*)&e->e_shstrndx, sizeof(e->e_shstrndx),
+		"SH string table index: ");
+	if (e->e_shnum < SHN_LORESERVE) // 0xff00
+		printf("%d", e->e_shstrndx);
+	else
+		printf("see sh_link.");
 
 	___br;
 	return ;
