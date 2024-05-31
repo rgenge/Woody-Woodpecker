@@ -36,8 +36,8 @@ void  read_file(char *filename)
 
 void	set_data_32_64()
 {
+	elf.bit_class = 01;
 	elf.bit_class = elf.data[EI_CLASS] == 64 ? 64 : 32;
-	___deb printf("%c-Bit architecture.", elf.bit_class);
 }
 
 void	decrypt()

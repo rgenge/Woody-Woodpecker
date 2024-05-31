@@ -46,14 +46,13 @@ void	pretty_print32(t_elf* ex)
 	uint32_t		u32;
 
 	e = (Elf32_Ehdr*)ex->data;
-	printf("Elf32_Ehdr: %p\n", e);
 
-	printf("\\ e_ident     (+%02d)\n", 0);
+	printf("[ Elf32_Ehdr %p\n|\\ e_ident    (+%02d)\n", e, 0);
 	h = (unsigned char *)e;
 
 	printf("|| magic    ");
 	hex_byte(h, 4);
-	printf(" <- This must be the same as");
+	printf(" <- Must be the same as");
 	___br;
 	___deb printf("||      \\__ 7f 45 4c 46 .ELF <- this to validate.\n");
 
@@ -156,7 +155,7 @@ void	pretty_print32(t_elf* ex)
 	printf("\\ e_entry     (+%ld) ", (void*)&e->e_entry - (void*)e);
 	if (e->e_entry)
 		hex_msg((void*)&e->e_entry, sizeof(e->e_entry),
-			"Virtual entry point address.");
+			"Entry point address.");
 	else
 		hex_msg((void*)&e->e_entry, sizeof(e->e_entry),
 			"No associated entry point.");
@@ -166,7 +165,7 @@ void	pretty_print32(t_elf* ex)
 	if (e->e_phoff)
 	{
 		hex_msg((void*)&e->e_phoff, sizeof(e->e_phoff),
-			"Program Header offset: ");
+			"PH offset: ");
 		printf("%d B", e->e_phoff);
 	}
 	else
@@ -178,7 +177,7 @@ void	pretty_print32(t_elf* ex)
 
 	printf("\\ e_shoff     (+%ld) ", (void*)&e->e_shoff - (void*)e);
 	hex_msg((void*)&e->e_shoff, sizeof(e->e_shoff),
-		"Section Header offset: ");
+		"SH offset: ");
 	if (e->e_shoff)
 		printf("%d B", e->e_shoff);
 	else
@@ -187,7 +186,7 @@ void	pretty_print32(t_elf* ex)
 
 	printf("\\ e_flags     (+%ld) ", (void*)&e->e_flags - (void*)e);
 	hex_msg((void*)&e->e_flags, sizeof(e->e_flags),
-		"Processor-specific flags.");
+		"CPU-specific flags.");
 	___br;
 
 	printf("\\ e_ehsize    (+%ld) ", (void*)&e->e_ehsize - (void*)e);
@@ -233,6 +232,14 @@ void	pretty_print32(t_elf* ex)
 		printf("%d", e->e_shstrndx);
 	else
 		printf("see sh_link.");
+	___br;
+
+	printf("]\n");
+
+
+
+
+
 
 	___br;
 	return ;
