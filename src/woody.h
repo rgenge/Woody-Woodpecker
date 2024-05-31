@@ -18,6 +18,8 @@ typedef struct		s_elf
 	ssize_t			filesize;
 	int				decrypt;
 	unsigned char	bit_class; // 32 || 64
+	void			*ehdr;
+	void			*phdr;
 }					t_elf;	  
 
 off_t	get_filesize(int fd);

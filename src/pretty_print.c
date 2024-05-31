@@ -41,11 +41,13 @@ void	pretty_print64(t_elf* ex)
 void	pretty_print32(t_elf* ex)
 {
 	Elf32_Ehdr		*e;
+	Elf32_Phdr		*p;
 	unsigned char	*h;
 	uint16_t		u16;
 	uint32_t		u32;
 
-	e = (Elf32_Ehdr*)ex->data;
+	// ELF Header
+	e = (Elf32_Ehdr*)ex->ehdr;
 
 	printf("[ Elf32_Ehdr %p\n|\\ e_ident    (+%02d)\n", e, 0);
 	h = (unsigned char *)e;
@@ -236,6 +238,8 @@ void	pretty_print32(t_elf* ex)
 
 	printf("]\n");
 
+	// Program Header	
+	p = (Elf32_Phdr*)ex-phdr;
 
 
 

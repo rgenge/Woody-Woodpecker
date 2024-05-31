@@ -36,8 +36,17 @@ void  read_file(char *filename)
 
 void	set_data_32_64()
 {
-	elf.bit_class = 01;
 	elf.bit_class = elf.data[EI_CLASS] == 64 ? 64 : 32;
+	if (elf.bit_class == 32)
+	{
+		elf.ehdr = (Elf32_Ehdr*)elf.data;
+		elf.phdr = (Elf32_Phdr*)(elf.ehdr + ((Elf32_Ehdr*)elf.ehdr)->e_phoff);
+	}
+	else if (elf.bit_class == 64)
+	{
+		elf.ehdr = (Elf64_Ehdr*)elf.data;
+		elf.phdr = (Elf64_Phdr*)(elf.ehdr + ((Elf64_Ehdr*)elf.ehdr)->e_phoff);
+	}
 }
 
 void	decrypt()
