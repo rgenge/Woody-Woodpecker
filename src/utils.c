@@ -64,6 +64,7 @@ void	hex_byte(void* address, size_t amount)
 			else
 				printf(".");
 		}
+		printf("\n");
 	}
 }
 

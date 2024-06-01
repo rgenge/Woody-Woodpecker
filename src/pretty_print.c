@@ -357,7 +357,7 @@ void	pretty_print32(t_elf* ex)
 			&& pi != SHN_HIRESERVE)
 		{
 			printf("|\\ ");
-			hex_byte(&s[pi].sh_name, sizeof(s[pi].sh_name));
+			hex_byte(&s[pi].sh_name, e->e_shentsize);
 			___br;
 		}
 	}
