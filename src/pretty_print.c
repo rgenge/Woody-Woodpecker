@@ -242,64 +242,67 @@ void	pretty_print32(t_elf* ex)
 
 	// Program Header	
 	p = (Elf32_Phdr*)ex->phdr;
+	size_t pi = 0;
 
-	printf("[ Elf32_Phdr  [+%02ld] %p\n", (void*)p - (void*)e, p);
+	printf("[ Elf32_Phdr           %p\n", p);
 
-	printf("\\ p_type      (+%02ld) ", (void*)p - (void*)p);
-	hex_pure(&p->p_type, sizeof(p->p_type));
-	byte_is(&p->p_type, PT_NULL, "Null: ignore.");
-	byte_is(&p->p_type, PT_LOAD, "Load.");
-	byte_is(&p->p_type, PT_DYNAMIC, "Dynamic link info.");
-	byte_is(&p->p_type, PT_INTERP, "Loc+size of interpreter.");
-	byte_is(&p->p_type, PT_NOTE, "Nhdr location.");
-	byte_is(&p->p_type, PT_SHLIB, "Reserved/unused/non-ABI.");
-	byte_is(&p->p_type, PT_PHDR, "Phdr loc+size.");
-	byte_is(&p->p_type, PT_LOPROC | PT_HIPROC, "Reserved CPU-specific.");
-	byte_is(&p->p_type, PT_GNU_STACK, "Kernel-controled, state of stack.");
-	___br;
+	while (pi++ < e->e_phnum)
+	{
+		printf("| phdr sec -- [+%02ld] %02ld/%02d\n", (void*)p - (void*)e, pi, e->e_phnum) ;
+		printf("\\ p_type      (+%02ld) ", (void*)p[pi] - (void*)p);
+		hex_pure(&p->p_type, sizeof(p->p_type));
+		byte_is(&p->p_type, PT_NULL, "Null: ignore.");
+		byte_is(&p->p_type, PT_LOAD, "Load.");
+		byte_is(&p->p_type, PT_DYNAMIC, "Dynamic link info.");
+		byte_is(&p->p_type, PT_INTERP, "Loc+size of interpreter.");
+		byte_is(&p->p_type, PT_NOTE, "Nhdr location.");
+		byte_is(&p->p_type, PT_SHLIB, "Reserved/unused/non-ABI.");
+		byte_is(&p->p_type, PT_PHDR, "Phdr loc+size.");
+		byte_is(&p->p_type, PT_LOPROC | PT_HIPROC, "Reserved CPU-specific.");
+		byte_is(&p->p_type, PT_GNU_STACK, "Kernel-controled, state of stack.");
+		___br;
 
-	printf("\\ p_offset    (+%02ld) ", (void*)&p->p_offset - (void*)p);
-	hex_msg(&p->p_offset, sizeof(p->p_offset),
-		"Section off: ");
-	printf("%d B", p->p_offset);
-	___br;
+		printf("\\ p_offset    (+%02ld) ", (void*)&p->p_offset - (void*)p);
+		hex_msg(&p->p_offset, sizeof(p->p_offset),
+			"Section off: ");
+		printf("%d B", p->p_offset);
+		___br;
 
-	printf("\\ p_vaddr     (+%02ld) ", (void*)&p->p_vaddr - (void*)p);
-	hex_msg(&p->p_vaddr, sizeof(p->p_vaddr),
-		"Segment v. address. ");
-	___br;
+		printf("\\ p_vaddr     (+%02ld) ", (void*)&p->p_vaddr - (void*)p);
+		hex_msg(&p->p_vaddr, sizeof(p->p_vaddr),
+			"Segment v. address. ");
+		___br;
 
-	printf("\\ p_paddr     (+%02ld) ", (void*)&p->p_paddr - (void*)p);
-	hex_msg(&p->p_paddr, sizeof(p->p_paddr),
-		"Seg physical addr.");
-	___br;
+		printf("\\ p_paddr     (+%02ld) ", (void*)&p->p_paddr - (void*)p);
+		hex_msg(&p->p_paddr, sizeof(p->p_paddr),
+			"Seg physical addr.");
+		___br;
 
-	printf("\\ p_filesz    (+%02ld) ", (void*)&p->p_filesz - (void*)p);
-	hex_msg(&p->p_filesz, sizeof(p->p_filesz),
-		"Seg file img: ");
-	printf("%d B", p->p_filesz);
-	___br;
+		printf("\\ p_filesz    (+%02ld) ", (void*)&p->p_filesz - (void*)p);
+		hex_msg(&p->p_filesz, sizeof(p->p_filesz),
+			"Seg file img: ");
+		printf("%d B", p->p_filesz);
+		___br;
 
-	printf("\\ p_memsz     (+%02ld) ", (void*)&p->p_memsz - (void*)p);
-	hex_msg(&p->p_memsz, sizeof(p->p_memsz),
-		"Seg mem sz: ");
-	printf("%d B", p->p_memsz);
-	___br;
+		printf("\\ p_memsz     (+%02ld) ", (void*)&p->p_memsz - (void*)p);
+		hex_msg(&p->p_memsz, sizeof(p->p_memsz),
+			"Seg mem sz: ");
+		printf("%d B", p->p_memsz);
+		___br;
 
-	printf("\\ p_flags     (+%02ld) ", (void*)&p->p_flags - (void*)p);
-	hex_pure(&p->p_flags, sizeof(p->p_flags));
-	printf("\n|        \\_________");
-	flag_is(p->p_flags, PF_R, " Readable.");
-	flag_is(p->p_flags, PF_W, " Writable.");
-	flag_is(p->p_flags, PF_X, " Executable.");
-	___br;
+		printf("\\ p_flags     (+%02ld) ", (void*)&p->p_flags - (void*)p);
+		hex_pure(&p->p_flags, sizeof(p->p_flags));
+		flag_is(p->p_flags, PF_R, "+r");
+		flag_is(p->p_flags, PF_W, "+w");
+		flag_is(p->p_flags, PF_X, "+x");
+		___br;
 
-	printf("\\ p_align     (+%02ld) ", (void*)&p->p_align - (void*)p);
-	hex_msg(&p->p_align, sizeof(p->p_align),
-		"Seg mem align: ");
-	printf("%d", p->p_align);
-	___br;
-
+		printf("\\ p_align     (+%02ld) ", (void*)&p->p_align - (void*)p);
+		hex_msg(&p->p_align, sizeof(p->p_align),
+			"Seg mem align: ");
+		printf("%d", p->p_align);
+		___br;
+	}
 
 
 
