@@ -349,9 +349,24 @@ void	pretty_print32(t_elf* ex)
 			}
 			if (!s[pi].sh_info && !s[pi].sh_size && !s[pi].sh_link)
 			{
-				printf("| empty/unused.\n");
+				printf("||- empty/unused.\n");
 			}
 		}
+
+		if (pi >= SHN_LORESERVE && pi <= SHN_HIRESERVE)
+			printf("||- reserved.\n");
+		if (pi == SHN_UNDEF)
+			printf("||- meaningless.\n");
+		if (pi == SHN_LORESERVE)
+			printf("||- lower bound of reserved.\n");
+		if (pi >= SHN_LOPROC && pi <= SHN_HIPROC)
+			printf("||- CPU-specific.\n");
+		if (pi == SHN_ABS)
+			printf("||- absolute corresponding reference.\n");
+		if (pi == SHN_COMMON)
+			printf("||- common-relatives reference.\n");
+		if (pi == SHN_HIRESERVE)
+			printf("||- upper bound of reserved.\n");
 	}
 	printf("] -------------------------------------------------/\n");
 
