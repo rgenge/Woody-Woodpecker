@@ -45,7 +45,7 @@ v:			all
 vf:			all
 	$(VAL) $(VALFLAG) ./$(NAME) $(ARGS)
 g:			all
-	gdb ./$(NAME) -args $(ARGS)
+	gdb -args ./$(NAME) $(ARGS)
 t:			all
 	-unit/pass.sh
 
