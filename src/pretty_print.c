@@ -50,10 +50,18 @@ void	pretty_print32(t_elf* ex)
 	uint16_t		u16;
 	uint32_t		u32;
 	size_t			pi;
+	size_t			ph_entries;
+	size_t			sh_entries;
+	size_t			sh_string_table_i;
+
+	e = (Elf32_Ehdr*)ex->ehdr;
+	p = (Elf32_Phdr*)ex->phdr;
+	s = (Elf32_Shdr*)((void*)e + e->e_shoff);
+	ph_entries = e->e_phnum == PN_XNUM ? s[0].sh_info : e->e_phnum;
+	sh_entries = e->e_shnum == 0 ? s[0].sh_size : e->e_shnum;
+	sh_string_table_i = e->e_shstrndx == SHN_XINDEX ? s[0].sh_link : e->e_shstrndx;
 
 	// ELF Header
-	e = (Elf32_Ehdr*)ex->ehdr;
-
 	printf("[ Elf32_Ehdr   %p\n|\\ e_ident    [+%02d]\n", e, 0);
 	h = (unsigned char *)e;
 
@@ -243,14 +251,10 @@ void	pretty_print32(t_elf* ex)
 	printf("] -------------------------------------------------/\n");
 
 	// Program Header	
-	p = (Elf32_Phdr*)ex->phdr;
 	pi = -1;
 
 	printf("[ Elf32_Phdr     %p\n", p);
 
-	s = (Elf32_Shdr*)((void*)e + e->e_shoff);
-
-	size_t ph_entries = (e->e_phnum == 0xffff ? s[0].sh_info : e->e_phnum);
 	while (++pi < ph_entries)
 	{
 		printf("|/-------- [+%03ld] %02ld/%02d phdr segment --------------\\\n", (void*)&p[pi] - (void*)e, pi, e->e_phnum) ;
@@ -314,12 +318,15 @@ void	pretty_print32(t_elf* ex)
 	// Section Header	
 	pi = -1;
 
-	printf("[ Elf32_Shdr  %p (size each: %d B)\n", s, e->e_shentsize);
-	size_t sh_entries = e->e_shnum >= 0xff00 ? s[0].sh_size : e->e_shnum;
+	printf("[ Elf32_Shdr %p (size each: %d B)\n", s, e->e_shentsize);
 	while (++pi < sh_entries)
 	{
-		printf("|/ [+%03ld] %02ld/%02d shdr section ---------------------\\\n",
-		(void*)&s[pi] - (void*)e, pi, e->e_shnum) ;
+		printf("|/ [+%03ld] %02ld/%02d shdr section ", (void*)&s[pi] - (void*)e, pi, e->e_shnum);
+		if (pi == sh_string_table_i)
+			printf(":name string table --\\\n");
+		else
+			printf("---------------------\\\n");
+		
 		if (pi == 0)
 		{
 			if (s[pi].sh_info)
