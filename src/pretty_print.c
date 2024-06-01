@@ -268,36 +268,36 @@ void	pretty_print32(t_elf* ex)
 		printf("%d B", p[pi].p_offset);
 		___br;
 
-		printf("\\ p_vaddr  (+%02ld) ", (void*)&p[pi].p_vaddr - (void*)p);
+		printf("\\ p_vaddr  (+%02ld) ", (void*)&p[pi].p_vaddr - (void*)e);
 		hex_msg(&p[pi].p_vaddr, sizeof(p[pi].p_vaddr),
 			"Segment v. address. ");
 		___br;
 
-		printf("\\ p_paddr  (+%02ld) ", (void*)&p[pi].p_paddr - (void*)p);
+		printf("\\ p_paddr  (+%02ld) ", (void*)&p[pi].p_paddr - (void*)e);
 		hex_msg(&p[pi].p_paddr, sizeof(p[pi].p_paddr),
 			"Seg physical addr.");
 		___br;
 
-		printf("\\ p_filesz (+%02ld) ", (void*)&p[pi].p_filesz - (void*)p);
+		printf("\\ p_filesz (+%02ld) ", (void*)&p[pi].p_filesz - (void*)e);
 		hex_msg(&p[pi].p_filesz, sizeof(p[pi].p_filesz),
 			"Seg file img: ");
 		printf("%d B", p[pi].p_filesz);
 		___br;
 
-		printf("\\ p_memsz  (+%02ld) ", (void*)&p[pi].p_memsz - (void*)p);
+		printf("\\ p_memsz  (+%02ld) ", (void*)&p[pi].p_memsz - (void*)e);
 		hex_msg(&p[pi].p_memsz, sizeof(p[pi].p_memsz),
 			"Seg mem size: ");
 		printf("%d B", p[pi].p_memsz);
 		___br;
 
-		printf("\\ p_flags  (+%02ld) ", (void*)&p[pi].p_flags - (void*)p);
+		printf("\\ p_flags  (+%02ld) ", (void*)&p[pi].p_flags - (void*)e);
 		hex_pure(&p[pi].p_flags, sizeof(p[pi].p_flags));
 		flag_is(p[pi].p_flags, PF_R, "+r");
 		flag_is(p[pi].p_flags, PF_W, "+w");
 		flag_is(p[pi].p_flags, PF_X, "+x");
 		___br;
 
-		printf("\\ p_align  (+%02ld) ", (void*)&p[pi].p_align - (void*)p);
+		printf("\\ p_align  (+%02ld) ", (void*)&p[pi].p_align - (void*)e);
 		hex_msg(&p[pi].p_align, sizeof(p[pi].p_align),
 			"Seg mem align: ");
 		printf("%d", p[pi].p_align);
