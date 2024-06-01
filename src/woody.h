@@ -33,6 +33,11 @@ void	say(char* msg, void* data, char type);
 void	pretty_print(t_elf*);
 void	pretty_print32(t_elf*);
 void	pretty_print64(t_elf*);
+void	byte_is(void* h, long long test, const char* msg);
+void	true_is(long long a, long long b, const char* msg);
+void	flag_is(long long a, long long b, const char* msg);
+void	hex_pure(void* h, size_t amount);
+void	hex_msg(void* h, size_t amount, const char* msg);
 
 # define ___die(_bool, _msg) if (_bool) die(_msg)
 # define bool char

@@ -1,32 +1,5 @@
 #include "woody.h"
 
-void	byte_is(void* h, long long test, const char* msg)
-{	if (*(unsigned char*)h == test) printf("%s", msg); }
-
-void	true_is(long long a, long long b, const char* msg)
-{	if (a == b) printf("%s", msg); }
-
-void	flag_is(long long a, long long b, const char* msg)
-{	if (a & b) printf("%s", msg); }
-
-void	hex_pure(void* h, size_t amount)
-{
-	if (!h)
-		return (void)printf("Dumping address nil, no dump.");
-	for (size_t i = 0; i < amount; i += 8)
-	{
-		h = (char*)(h + i);
-		for (size_t o = 0; o < 8 && o < amount; o++) // offset
-			printf("%02x ", *((char*)h + o) & 0xFF);
-	}
-}
-
-void	hex_msg(void* h, size_t amount, const char* msg)
-{
-	hex_pure(h, amount);
-	printf("%s", msg);
-}
-
 void	pretty_print(t_elf *e)
 {
 	if (e->bit_class == 32)
@@ -62,8 +35,11 @@ void	pretty_print32(t_elf* ex)
 	sh_string_table_i = e->e_shstrndx == SHN_XINDEX ? s[0].sh_link : e->e_shstrndx;
 
 	// ELF Header
-	printf("[ Elf32_Ehdr   %p\n|\\ e_ident    [%02d]\n", e, 0);
+	printf("|=================================================-|\n");
+	printf("[ Elf32_Ehdr   %p\n", e);
 	h = (unsigned char *)e;
+	printf("|--------------------------------------------------|\n");
+	printf("|\\ e_ident    [%02d]\n", 0);
 
 	printf("|| magic    ");
 	hex_byte(h, 4);
@@ -254,10 +230,11 @@ void	pretty_print32(t_elf* ex)
 	pi = -1;
 
 	printf("[ Elf32_Phdr     %p\n", p);
+	printf("|--------------------------------------------------|\n");
 
 	while (++pi < ph_entries)
 	{
-		printf("|/-------- [%03ld] %02ld/%02d phdr segment --------------\\\n", (void*)&p[pi] - (void*)e, pi, e->e_phnum) ;
+		printf("|/-------- [%03ld] %02ld/%02d phdr segment ---------------\\\n", (void*)&p[pi] - (void*)e, pi, e->e_phnum) ;
 		printf("\\ p_type   (%03ld) ", (void*)&p[pi] - (void*)e);
 		hex_pure(&p[pi].p_type, sizeof(p[pi].p_type));
 		byte_is(&p[pi].p_type, PT_NULL, "Null: ignore.");
@@ -319,13 +296,16 @@ void	pretty_print32(t_elf* ex)
 	pi = -1;
 
 	printf("[ Elf32_Shdr %p (size each: %d B)\n", s, e->e_shentsize);
+	printf("| -------------------------------------------------|\n");
 	while (++pi < sh_entries)
 	{
-		printf("|/ [%04ld] %02ld/%02d shdr section ", (void*)&s[pi] - (void*)e, pi, e->e_shnum);
-		if (pi == sh_string_table_i)
-			printf(":name string table --\\\n");
+		printf("\\  [%04ld] %02ld/%02d shdr section ", (void*)&s[pi] - (void*)e, pi, e->e_shnum);
+		if (pi == 0)
+			printf(":0 = special data ----\\\n");
+		else if (pi == sh_string_table_i)
+			printf(":name string table ---\\\n");
 		else
-			printf("---------------------\\\n");
+			printf("----------------------\\\n");
 
 		if (pi == 0)
 		{
@@ -349,26 +329,39 @@ void	pretty_print32(t_elf* ex)
 			}
 			if (!s[pi].sh_info && !s[pi].sh_size && !s[pi].sh_link)
 			{
-				printf("||- empty/unused.\n");
+				printf("|- empty/unused.\n");
 			}
 		}
 
 		if (pi >= SHN_LORESERVE && pi <= SHN_HIRESERVE)
-			printf("||- reserved.\n");
+			printf("|- reserved.\n");
 		if (pi == SHN_UNDEF)
-			printf("||- meaningless.\n");
+			printf("|- meaningless.\n");
 		if (pi == SHN_LORESERVE)
-			printf("||- lower bound of reserved.\n");
+			printf("|- lower bound of reserved.\n");
 		if (pi >= SHN_LOPROC && pi <= SHN_HIPROC)
-			printf("||- CPU-specific.\n");
+			printf("|- CPU-specific.\n");
 		if (pi == SHN_ABS)
-			printf("||- absolute corresponding reference.\n");
+			printf("|- absolute corresponding reference.\n");
 		if (pi == SHN_COMMON)
-			printf("||- common-relatives reference.\n");
+			printf("|- common-relatives reference.\n");
 		if (pi == SHN_HIRESERVE)
-			printf("||- upper bound of reserved.\n");
+			printf("|- upper bound of reserved.\n");
+
+		if (pi != 0
+			&& (pi < SHN_LORESERVE || pi > SHN_HIRESERVE)
+			&& pi != SHN_UNDEF
+			&& (pi < SHN_LORESERVE || pi > SHN_HIRESERVE)
+			&& pi != SHN_ABS
+			&& pi != SHN_COMMON
+			&& pi != SHN_HIRESERVE)
+		{
+			printf("|\\ ");
+			hex_byte(&s[pi].sh_name, sizeof(s[pi].sh_name));
+			___br;
+		}
 	}
-	printf("] -------------------------------------------------/\n");
+	printf("] ----------------------------------------------/\n");
 
 
 	___br;
