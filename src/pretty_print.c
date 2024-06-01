@@ -45,14 +45,16 @@ void	pretty_print32(t_elf* ex)
 {
 	Elf32_Ehdr		*e;
 	Elf32_Phdr		*p;
+	Elf32_Shdr		*s;
 	unsigned char	*h;
 	uint16_t		u16;
 	uint32_t		u32;
+	size_t			pi;
 
 	// ELF Header
 	e = (Elf32_Ehdr*)ex->ehdr;
 
-	printf("[ Elf32_Ehdr  %p\n|\\ e_ident    [+%02d]\n", e, 0);
+	printf("[ Elf32_Ehdr   %p\n|\\ e_ident    [+%02d]\n", e, 0);
 	h = (unsigned char *)e;
 
 	printf("|| magic    ");
@@ -211,7 +213,7 @@ void	pretty_print32(t_elf* ex)
 	if (e->e_phnum != PN_XNUM) // 0xffff
 		printf("%d", e->e_phnum);
 	else
-		printf("see sh_info.");
+		printf("see SH[0]->sh_info.");
 	___br;
 
 	printf("\\ e_shentsize (+%ld) ", (void*)&e->e_shentsize - (void*)e);
@@ -235,75 +237,116 @@ void	pretty_print32(t_elf* ex)
 	if (e->e_shnum < SHN_LORESERVE) // 0xff00
 		printf("%d", e->e_shstrndx);
 	else
-		printf("see sh_link.");
+		printf("see SH[0]->sh_link.");
 	___br;
 
 	printf("] -------------------------------------------------/\n");
 
 	// Program Header	
 	p = (Elf32_Phdr*)ex->phdr;
-	size_t pi = -1;
+	pi = -1;
 
 	printf("[ Elf32_Phdr     %p\n", p);
 
-	while (++pi < e->e_phnum)
+	s = (Elf32_Shdr*)((void*)e + e->e_shoff);
+
+	size_t ph_entries = (e->e_phnum == 0xffff ? s[0].sh_info : e->e_phnum);
+	while (++pi < ph_entries)
 	{
-		printf("|/-------- [+%02ld] %02ld/%02d --- phdr sec. --------------\\\n", (void*)&p[pi] - (void*)e, pi, e->e_phnum) ;
-		printf("\\ p_type   (+%02ld) ", (void*)&p[pi] - (void*)e);
+		printf("|/-------- [+%03ld] %02ld/%02d phdr segment --------------\\\n", (void*)&p[pi] - (void*)e, pi, e->e_phnum) ;
+		printf("\\ p_type   (+%03ld) ", (void*)&p[pi] - (void*)e);
 		hex_pure(&p[pi].p_type, sizeof(p[pi].p_type));
 		byte_is(&p[pi].p_type, PT_NULL, "Null: ignore.");
 		byte_is(&p[pi].p_type, PT_LOAD, "Load.");
 		byte_is(&p[pi].p_type, PT_DYNAMIC, "Dynamic link info.");
-		byte_is(&p[pi].p_type, PT_INTERP, "Loc+size of interpreter.");
+		byte_is(&p[pi].p_type, PT_INTERP, "Interpreter loc+size.");
 		byte_is(&p[pi].p_type, PT_NOTE, "Nhdr location.");
 		byte_is(&p[pi].p_type, PT_SHLIB, "Reserved/unused/non-ABI.");
-		byte_is(&p[pi].p_type, PT_PHDR, "Phdr loc+size.");
-		byte_is(&p[pi].p_type, PT_LOPROC | PT_HIPROC, "Reserved CPU-specific.");
-		byte_is(&p[pi].p_type, PT_GNU_STACK, "Kernel-controled, state of stack.");
+		byte_is(&p[pi].p_type, PT_PHDR, "Phdr table loc+size.");
+		if (p[pi].p_type >= PT_LOPROC && p[pi].p_type <= PT_HIPROC)
+			printf("Reserved CPU-specific.");
+		byte_is(&p[pi].p_type, PT_GNU_STACK, "GNU kernel-controled state.");
 		___br;
 
-		printf("\\ p_offset (+%02ld) ", (void*)&p[pi].p_offset - (void*)e);
+		printf("\\ p_offset (+%03ld) ", (void*)&p[pi].p_offset - (void*)e);
 		hex_msg(&p[pi].p_offset, sizeof(p[pi].p_offset),
 			"Section offset: ");
 		printf("%d B", p[pi].p_offset);
 		___br;
 
-		printf("\\ p_vaddr  (+%02ld) ", (void*)&p[pi].p_vaddr - (void*)e);
+		printf("\\ p_vaddr  (+%03ld) ", (void*)&p[pi].p_vaddr - (void*)e);
 		hex_msg(&p[pi].p_vaddr, sizeof(p[pi].p_vaddr),
 			"Segment v. address. ");
 		___br;
 
-		printf("\\ p_paddr  (+%02ld) ", (void*)&p[pi].p_paddr - (void*)e);
+		printf("\\ p_paddr  (+%03ld) ", (void*)&p[pi].p_paddr - (void*)e);
 		hex_msg(&p[pi].p_paddr, sizeof(p[pi].p_paddr),
 			"Seg physical addr.");
 		___br;
 
-		printf("\\ p_filesz (+%02ld) ", (void*)&p[pi].p_filesz - (void*)e);
+		printf("\\ p_filesz (+%03ld) ", (void*)&p[pi].p_filesz - (void*)e);
 		hex_msg(&p[pi].p_filesz, sizeof(p[pi].p_filesz),
 			"Seg file img: ");
 		printf("%d B", p[pi].p_filesz);
 		___br;
 
-		printf("\\ p_memsz  (+%02ld) ", (void*)&p[pi].p_memsz - (void*)e);
+		printf("\\ p_memsz  (+%03ld) ", (void*)&p[pi].p_memsz - (void*)e);
 		hex_msg(&p[pi].p_memsz, sizeof(p[pi].p_memsz),
 			"Seg mem size: ");
 		printf("%d B", p[pi].p_memsz);
 		___br;
 
-		printf("\\ p_flags  (+%02ld) ", (void*)&p[pi].p_flags - (void*)e);
+		printf("\\ p_flags  (+%03ld) ", (void*)&p[pi].p_flags - (void*)e);
 		hex_pure(&p[pi].p_flags, sizeof(p[pi].p_flags));
 		flag_is(p[pi].p_flags, PF_R, "+r");
 		flag_is(p[pi].p_flags, PF_W, "+w");
 		flag_is(p[pi].p_flags, PF_X, "+x");
 		___br;
 
-		printf("\\ p_align  (+%02ld) ", (void*)&p[pi].p_align - (void*)e);
+		printf("\\ p_align  (+%03ld) ", (void*)&p[pi].p_align - (void*)e);
 		hex_msg(&p[pi].p_align, sizeof(p[pi].p_align),
 			"Seg mem align: ");
 		printf("%d", p[pi].p_align);
 		___br;
 	}
+	printf("] -------------------------------------------------/\n");
 
+	// Section Header	
+	pi = -1;
+
+	printf("[ Elf32_Shdr  %p (size each: %d B)\n", s, e->e_shentsize);
+	size_t sh_entries = e->e_shnum >= 0xff00 ? s[0].sh_size : e->e_shnum;
+	while (++pi < sh_entries)
+	{
+		printf("|/ [+%03ld] %02ld/%02d shdr section ---------------------\\\n",
+		(void*)&s[pi] - (void*)e, pi, e->e_shnum) ;
+		if (pi == 0)
+		{
+			if (s[pi].sh_info)
+			{
+				printf("| ");
+				hex_pure(&s[pi].sh_info, sizeof (s[pi].sh_info));
+				printf("sh_info, PH entries: %d\n", s[pi].sh_info);
+			}
+			if (s[pi].sh_size)
+			{
+				printf("| ");
+				hex_pure(&s[pi].sh_size, sizeof (s[pi].sh_size));
+				printf("sh_size, SH entries: %d\n", s[pi].sh_size);
+			}
+			if (s[pi].sh_link)
+			{
+				printf("| ");
+				hex_pure(&s[pi].sh_link, sizeof (s[pi].sh_link));
+				printf("sh_link, name_string table: SH[%d]\n", s[pi].sh_link);
+			}
+			if (!s[pi].sh_info && !s[pi].sh_size && !s[pi].sh_link)
+			{
+				printf("| empty/unused.\n");
+			}
+		}
+	}
+	printf("] -------------------------------------------------/\n");
 
 
 	___br;
