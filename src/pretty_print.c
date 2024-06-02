@@ -301,11 +301,11 @@ void	pretty_print32(t_elf* ex)
 	{
 		printf("\\  [%04ld] %02ld/%02d shdr section ", (void*)&s[pi] - (void*)e, pi, e->e_shnum);
 		if (pi == 0)
-			printf(":0 = special data ----\\\n");
+			printf(":special data 0 -- sh_\\\n");
 		else if (pi == sh_string_table_i)
-			printf(":name string table ---\\\n");
+			printf(":name string table sh_\\\n");
 		else
-			printf("----------------------\\\n");
+			printf("------------------ sh_\\\n");
 
 		if (pi == 0)
 		{
@@ -329,24 +329,24 @@ void	pretty_print32(t_elf* ex)
 			}
 			if (!s[pi].sh_info && !s[pi].sh_size && !s[pi].sh_link)
 			{
-				printf("|- empty/unused.\n");
+				printf("|  - empty/unused.\n");
 			}
 		}
 
 		if (pi >= SHN_LORESERVE && pi <= SHN_HIRESERVE)
-			printf("|- reserved.\n");
+			printf("|  - reserved.\n");
 		if (pi == SHN_UNDEF)
-			printf("|- meaningless.\n");
+			printf("|  - meaningless.\n");
 		if (pi == SHN_LORESERVE)
-			printf("|- lower bound of reserved.\n");
+			printf("|  - lower bound of reserved.\n");
 		if (pi >= SHN_LOPROC && pi <= SHN_HIPROC)
-			printf("|- CPU-specific.\n");
+			printf("|  - CPU-specific.\n");
 		if (pi == SHN_ABS)
-			printf("|- absolute corresponding reference.\n");
+			printf("|  - absolute corresponding reference.\n");
 		if (pi == SHN_COMMON)
-			printf("|- common-relatives reference.\n");
+			printf("|  - common-relatives reference.\n");
 		if (pi == SHN_HIRESERVE)
-			printf("|- upper bound of reserved.\n");
+			printf("|  - upper bound of reserved.\n");
 
 		if (pi != 0
 			&& (pi < SHN_LORESERVE || pi > SHN_HIRESERVE)
@@ -356,12 +356,76 @@ void	pretty_print32(t_elf* ex)
 			&& pi != SHN_COMMON
 			&& pi != SHN_HIRESERVE)
 		{
-			printf("|\\ ");
-			hex_byte(&s[pi].sh_name, e->e_shentsize);
+
+			printf("|\\ name      (%03ld) ", (void*)&s[pi].sh_name - (void*)e);
+			hex_msg(&s[pi].sh_name, sizeof(s[pi].sh_name),
+				"on str_table[");
+			printf("%d]", s[pi].sh_name);
 			___br;
+
+			printf("|\\ type      (%03ld) ", (void*)&s[pi].sh_type - (void*)e);
+			hex_pure(&s[pi].sh_type, sizeof(s[pi].sh_type));
+			true_is(s[pi].sh_type, SHT_NULL,     "Undefined/unused.");
+			true_is(s[pi].sh_type, SHT_PROGBITS, "Prog-defined sect.");
+			true_is(s[pi].sh_type, SHT_SYMTAB,   "Link symbol table.");
+			true_is(s[pi].sh_type, SHT_STRTAB,   "String table.");
+			true_is(s[pi].sh_type, SHT_RELA,     "Reloc w/ addends.");
+			true_is(s[pi].sh_type, SHT_HASH,     "Symbol hash table.");
+			true_is(s[pi].sh_type, SHT_DYNAMIC,  "Dyn-linking infos.");
+			true_is(s[pi].sh_type, SHT_NOTE,     "Notes.");
+			true_is(s[pi].sh_type, SHT_NOBITS,   "Conceptual offset.");
+			true_is(s[pi].sh_type, SHT_REL,      "Reloc w/o addends.");
+			true_is(s[pi].sh_type, SHT_SHLIB,    "Unespecified.");
+			true_is(s[pi].sh_type, SHT_DYNSYM,   "Dynmic links.");
+			if (s[pi].sh_type >= SHT_LOPROC && s[pi].sh_type <= SHT_HIUSER)
+				printf("CPU-specific.");
+			true_is(s[pi].sh_type, SHT_LOUSER,   "Low i for app.");
+			true_is(s[pi].sh_type, SHT_HIUSER,   "High i for app.");
+			___br;
+
+			printf("|\\ flags     (%03ld) ", (void*)&s[pi].sh_flags - (void*)e);
+			hex_pure(&s[pi].sh_flags, sizeof(s[pi].sh_flags));
+			true_is(s[pi].sh_flags & SHF_WRITE, !0, "Writable data.");
+			true_is(s[pi].sh_flags & SHF_ALLOC, !0, "Alloc'd on exec.");
+			true_is(s[pi].sh_flags & SHF_EXECINSTR, !0, "Machine language.");
+			true_is(s[pi].sh_flags & SHF_MASKPROC, !0, "CPU-specific.");
+			___br;
+
+			printf("|\\ addr      (%03ld) ", (void*)&s[pi].sh_addr - (void*)e);
+			hex_msg(&s[pi].sh_addr, sizeof(s[pi].sh_addr),
+				"First byte addr.");
+			___br;
+
+			printf("|\\ offset    (%03ld) ", (void*)&s[pi].sh_offset - (void*)e);
+			hex_msg(&s[pi].sh_offset, sizeof(s[pi].sh_offset),
+				"Offset: ");
+			printf("%d B", s[pi].sh_offset);
+			___br;
+
+			printf("|\\ size      (%03ld) ", (void*)&s[pi].sh_size - (void*)e);
+			hex_msg(&s[pi].sh_size, sizeof(s[pi].sh_size),
+				"Size: ");
+			printf("%d B", s[pi].sh_size);
+			___br;
+
+			printf("|\\ addralign (%03ld) ", (void*)&s[pi].sh_addralign - (void*)e);
+			hex_msg(&s[pi].sh_addralign, sizeof(s[pi].sh_addralign),
+				"Index info: ");
+			printf("%d", s[pi].sh_addralign);
+			___br;
+
+			printf("|\\ entsize   (%03ld) ", (void*)&s[pi].sh_entsize - (void*)e);
+			hex_msg(&s[pi].sh_entsize, sizeof(s[pi].sh_entsize),
+				"Fixed-size pad.: ");
+			printf("%d", s[pi].sh_entsize);
+			___br;
+
+//			hex_byte(&s[pi], sizeof(s[pi]));
+
+
 		}
 	}
-	printf("] ----------------------------------------------/\n");
+	printf("] -------------------------------------------------/\n");
 
 
 	___br;
