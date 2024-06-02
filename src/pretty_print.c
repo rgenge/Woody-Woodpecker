@@ -373,7 +373,7 @@ void	pretty_print32(t_elf* ex)
 			true_is(s[pi].sh_type, SHT_HASH,     "Symbol hash table.");
 			true_is(s[pi].sh_type, SHT_DYNAMIC,  "Dyn-linking infos.");
 			true_is(s[pi].sh_type, SHT_NOTE,     "Notes.");
-			true_is(s[pi].sh_type, SHT_NOBITS,   "Conceptual offset.");
+			true_is(s[pi].sh_type, SHT_NOBITS,   "No-bits mem.");
 			true_is(s[pi].sh_type, SHT_REL,      "Reloc w/o addends.");
 			true_is(s[pi].sh_type, SHT_SHLIB,    "Unespecified.");
 			true_is(s[pi].sh_type, SHT_DYNSYM,   "Dynmic links.");
@@ -420,9 +420,22 @@ void	pretty_print32(t_elf* ex)
 			printf("%d", s[pi].sh_entsize);
 			___br;
 
-			printf("\\___________ (0000) Foo:\n");
-			hex_byte(&s[pi], sizeof(s[pi])); // Mock
+			// Sections:
 
+			char	*ss;
+
+			ss = (char*)((void*)e + s[pi].sh_offset);
+			if (s[pi].sh_type == SHT_NOBITS)
+			{
+				printf("\\/           (%04ld) .bss:\n", (void*)ss - (void*)e);
+				hex_byte(ss, s[pi].sh_size);
+			}
+			else
+			{
+				printf("\\/           (0000) Foo:\n");
+	//			hex_byte(&s[pi], sizeof(s[pi])); // Mock
+			}
+			printf("___________________________________________________/\n");
 
 		}
 	}
