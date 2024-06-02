@@ -420,7 +420,8 @@ void	pretty_print32(t_elf* ex)
 			printf("%d", s[pi].sh_entsize);
 			___br;
 
-//			hex_byte(&s[pi], sizeof(s[pi]));
+			printf("\\___________ (0000) Foo:\n");
+			hex_byte(&s[pi], sizeof(s[pi])); // Mock
 
 
 		}
