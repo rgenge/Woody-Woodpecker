@@ -31,7 +31,13 @@ void	hex_dump(void* address, size_t amount)
 		h = (char*)(address + i);
 		printf("%05ld ", (void *)h - address);
 		for (size_t o = 0; o < 8 && o < amount; o++) // offset
+		{
+			if (!(*((char*)h + o) & 0xFF))
+				printf("\033[38;5;240m");
 			printf("%02x ", *(h + o) & 0xFF);
+			if (!(*((char*)h + o) & 0xFF))
+				printf("\033[0m");
+		}
 		for (size_t o = 0; o < 8 && o < amount; o += 1)
 		{
 			if (isprint(*(h + o)))
@@ -54,7 +60,13 @@ void	hex_byte(void* address, size_t amount)
 	{
 		h = (char*)(address + i);
 		for (size_t o = 0; o < 8 && o < amount; o++) // offset
+		{
+			if (!(*((char*)h + o) & 0xFF))
+				printf("\033[38;5;240m");
 			printf("%02x ", *(h + o) & 0xFF);
+			if (!(*((char*)h + o) & 0xFF))
+				printf("\033[0m");
+		}
 		for (size_t o = 0; o < 8 && o < amount; o += 1)
 		{
 			if (isprint(*(h + o)))
@@ -85,7 +97,13 @@ void	hex_pure(void* h, size_t amount)
 	{
 		h = (char*)(h + i);
 		for (size_t o = 0; o < 8 && o < amount; o++) // offset
+		{
+			if (!(*((char*)h + o) & 0xFF))
+				printf("\033[38;5;240m");
 			printf("%02x ", *((char*)h + o) & 0xFF);
+			if (!(*((char*)h + o) & 0xFF))
+				printf("\033[0m");
+		}
 	}
 }
 
