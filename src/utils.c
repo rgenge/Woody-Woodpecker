@@ -113,15 +113,17 @@ void	hex_msg(void* h, size_t amount, const char* msg)
 	printf("%s", msg);
 }
 
-void	lin_dump(void* address, size_t amount)
+void	lin_dump(void* address, size_t amount, size_t line_break)
 {
 	char*	h; // head
 	bool	n; // non-printable printed
 	char	c;
+	size_t	col;
 
 	if (!address)
 		return (void)printf("Dumping address nil, no dump.");
 
+	col = 0;
 	for (size_t i = 0; i < amount; i += 8)
 	{
 		h = (char*)(address + i);
@@ -134,12 +136,19 @@ void	lin_dump(void* address, size_t amount)
 				{
 					printf(" ");
 					n = true;
+					col++;
 				}
 			}
 			else
 			{
 				printf("%c", c);
 				n = false;
+				col++;
+			}
+			if (line_break && col >= line_break)
+			{
+				col = 0;
+				printf("\n");
 			}
 		}
 	}

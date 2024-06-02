@@ -28,7 +28,7 @@ void	die(char* message);
 void	*ft_memset(void *s, unsigned char c, size_t size);
 void	hex_dump(void* address, size_t amount);
 void	hex_byte(void* address, size_t amount);
-void	lin_dump(void* address, size_t offset);
+void	lin_dump(void* address, size_t offset, size_t line_break);
 void	say(char* msg, void* data, char type);
 void	pretty_print(t_elf*);
 void	pretty_print32(t_elf*);

@@ -425,17 +425,23 @@ void	pretty_print32(t_elf* ex)
 			char	*ss;
 
 			ss = (char*)((void*)e + s[pi].sh_offset);
+			printf("\\/¨¨¨¨¨¨¨¨¨¨¨(%04d) ", s[pi].sh_offset);
+
 			if (s[pi].sh_type == SHT_NOBITS)
 			{
-				printf("\\/           (%04ld) .bss:\n", (void*)ss - (void*)e);
+				printf("SHT_NOBITS.bss\n");
 				hex_byte(ss, s[pi].sh_size);
 			}
-			else
+
+			if (s[pi].sh_type == SHT_PROGBITS)
 			{
-				printf("\\/           (0000) Foo:\n");
-	//			hex_byte(&s[pi], sizeof(s[pi])); // Mock
+				printf("SHT_PROGBITS.comment\n");
+				lin_dump(ss, s[pi].sh_size, 51);
 			}
-			printf("___________________________________________________/\n");
+
+			___br;
+
+			printf("___________/\\(%04d)\n", s[pi].sh_offset + s[pi].sh_size);
 
 		}
 	}

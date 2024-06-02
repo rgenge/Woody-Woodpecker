@@ -30,7 +30,7 @@ void  read_file(char *filename)
 	___die (!bytes_read, "Is file empty?");
 	___die (bytes_read == -1, "Error reading file");
 	elf.data[bytes_read] = 0; // Null-terminate.
-//	___deb lin_dump(elf.data, bytes_read);
+//	___deb lin_dump(elf.data, bytes_read, 0);
 //	___deb hex_dump(elf.ehdr, sizeof(elf.ehdr));
 }
 
