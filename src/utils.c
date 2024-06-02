@@ -86,6 +86,9 @@ void	byte_is(void* h, long long test, const char* msg)
 void	true_is(long long a, long long b, const char* msg)
 {	if (a == b) printf("%s", msg); }
 
+void	condition_msg(long long cond, const char* msg)
+{	if (cond) printf("%s", msg); }
+
 void	flag_is(long long a, long long b, const char* msg)
 {	if (a & b) printf("%s", msg); }
 

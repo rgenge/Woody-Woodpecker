@@ -19,6 +19,9 @@ void	pretty_print32(t_elf* ex)
 	Elf32_Ehdr		*e;
 	Elf32_Phdr		*p;
 	Elf32_Shdr		*s;
+	Elf32_Half		*half;
+	Elf32_Verdef	*v_def;
+	Elf32_Verneed	*v_need;
 	unsigned char	*h;
 	uint16_t		u16;
 	uint32_t		u32;
@@ -90,11 +93,10 @@ void	pretty_print32(t_elf* ex)
 	h++;
 	printf("|\\___________ (%02ld) padding from here.\n",
 		h - e->e_ident);
-	printf("|                   ");
+	printf("|                  ");
 	hex_byte(h,
 		((unsigned char *)&e->e_type - e->e_ident)
 		- (h - e->e_ident));
-	___br;
 
 	printf("\\ e_type      (%ld) ",
 		(unsigned char *)&e->e_type - e->e_ident);
@@ -329,24 +331,24 @@ void	pretty_print32(t_elf* ex)
 			}
 			if (!s[pi].sh_info && !s[pi].sh_size && !s[pi].sh_link)
 			{
-				printf("|  - empty/unused.\n");
+				printf("|- empty/unused.\n");
 			}
 		}
 
 		if (pi >= SHN_LORESERVE && pi <= SHN_HIRESERVE)
-			printf("|  - reserved.\n");
+			printf("|- reserved.\n");
 		if (pi == SHN_UNDEF)
-			printf("|  - meaningless.\n");
+			printf("|- meaningless.\n");
 		if (pi == SHN_LORESERVE)
-			printf("|  - lower bound of reserved.\n");
+			printf("|- lower bound of reserved.\n");
 		if (pi >= SHN_LOPROC && pi <= SHN_HIPROC)
-			printf("|  - CPU-specific.\n");
+			printf("|- CPU-specific.\n");
 		if (pi == SHN_ABS)
-			printf("|  - absolute corresponding reference.\n");
+			printf("|- absolute corresponding reference.\n");
 		if (pi == SHN_COMMON)
-			printf("|  - common-relatives reference.\n");
+			printf("|- common-relatives reference.\n");
 		if (pi == SHN_HIRESERVE)
-			printf("|  - upper bound of reserved.\n");
+			printf("|- upper bound of reserved.\n");
 
 		if (pi != 0
 			&& (pi < SHN_LORESERVE || pi > SHN_HIRESERVE)
@@ -385,10 +387,10 @@ void	pretty_print32(t_elf* ex)
 
 			printf("|\\ flags     (%03ld) ", (void*)&s[pi].sh_flags - (void*)e);
 			hex_pure(&s[pi].sh_flags, sizeof(s[pi].sh_flags));
-			true_is(s[pi].sh_flags & SHF_WRITE, !0, "Writable data.");
-			true_is(s[pi].sh_flags & SHF_ALLOC, !0, "Alloc'd on exec.");
-			true_is(s[pi].sh_flags & SHF_EXECINSTR, !0, "Machine language.");
-			true_is(s[pi].sh_flags & SHF_MASKPROC, !0, "CPU-specific.");
+			condition_msg(s[pi].sh_flags & SHF_WRITE,     "\n|                 - Writable data.");
+			condition_msg(s[pi].sh_flags & SHF_ALLOC,     "\n|                 - Alloc'd on exec.");
+			condition_msg(s[pi].sh_flags & SHF_EXECINSTR, "\n|                 - Machine language.");
+			condition_msg(s[pi].sh_flags & SHF_MASKPROC,  "\n|                 - CPU-specific.");
 			___br;
 
 			printf("|\\ addr      (%03ld) ", (void*)&s[pi].sh_addr - (void*)e);
@@ -427,26 +429,140 @@ void	pretty_print32(t_elf* ex)
 			ss = (char*)((void*)e + s[pi].sh_offset);
 			printf("\\/¨¨¨¨¨¨¨¨¨¨¨(%04d) ", s[pi].sh_offset);
 
-			if (s[pi].sh_type == SHT_NOBITS)
+			if (s[pi].sh_type == SHT_NOBITS
+				&& (s[pi].sh_flags & SHF_ALLOC
+					|| s[pi].sh_flags & SHF_WRITE))
 			{
-				printf("SHT_NOBITS.bss\n");
+				printf("SHT_NOBITS ");
+				if (s[pi].sh_flags & SHF_ALLOC)
+					printf("SHF_ALLOC ");
+				if (s[pi].sh_flags & SHF_WRITE)
+					printf("WRITE");
+				___br;
+				printf(".bss Uninit wiped data area.\n");
 				hex_byte(ss, s[pi].sh_size);
 			}
 
-			if (s[pi].sh_type == SHT_PROGBITS)
+			if (s[pi].sh_type == SHT_PROGBITS
+				&& !s[pi].sh_flags)
 			{
-				printf("SHT_PROGBITS.comment\n");
+				printf("SHT_PROGBITS, no flags\n");
+				printf(".comment Version control info.\n");
+				printf(".debug Symbolic info.\n");
 				lin_dump(ss, s[pi].sh_size, 51);
 			}
 
-			___br;
+			if (s[pi].sh_type == SHT_PROGBITS
+				&& (s[pi].sh_flags & SHF_ALLOC
+					|| s[pi].sh_flags & SHF_WRITE))
+			{
+				printf("SHT_PROGBITS ");
+				if (s[pi].sh_flags & SHF_ALLOC)
+					printf("SHF_ALLOC ");
+				if (s[pi].sh_flags & SHF_WRITE)
+					printf("WRITE");
+				___br;
+				printf(".ctor Pointers to constructors.\n");
+				printf(".data Initialized data.\n");
+				printf(".data1 Initialized data.\n");
+				printf(".dtors Pointers to descructors.\n");
+				hex_byte(ss, s[pi].sh_size);
+			}
+
+			if (s[pi].sh_type == SHT_DYNAMIC
+				&& s[pi].sh_flags & SHF_ALLOC)
+			{
+				printf("SHT_DYNAMIC SHF_ALLOC");
+				if (s[pi].sh_flags & SHF_WRITE)
+					printf("WRITE");
+				___br;
+				printf(".dynamic Dynamic linking info.\n");
+				hex_byte(ss, s[pi].sh_size);
+			}
+
+			if (s[pi].sh_type == SHT_STRTAB
+				&& s[pi].sh_flags & SHF_ALLOC)
+			{
+				printf("SHT_STRTAB SHF_ALLOC\n");
+				printf(".dynstr Strings for dynamic linking.\n");
+				hex_byte(ss, s[pi].sh_size);
+			}
+
+			if (s[pi].sh_type == SHT_DYNSYM
+				&& s[pi].sh_flags & SHF_ALLOC)
+			{
+				printf("SHT_DYNSYM SHF_ALLOC\n");
+				printf(".dynsym Dynamic symbol table.\n");
+				hex_byte(ss, s[pi].sh_size);
+			}
+
+			if (s[pi].sh_type == SHT_PROGBITS
+				&& (s[pi].sh_flags & SHF_ALLOC
+					|| s[pi].sh_flags & SHF_EXECINSTR))
+			{
+				printf("SHT_PROGBITS ");
+				if (s[pi].sh_flags & SHF_ALLOC)
+					printf("SHF_ALLOC ");
+				if (s[pi].sh_flags & SHF_EXECINSTR)
+					printf("EXECINSTR");
+				___br;
+				printf(".fini Finish exec code.\n");
+				hex_byte(ss, s[pi].sh_size);
+			}
+
+			if (s[pi].sh_type == SHT_GNU_versym
+				&& (s[pi].sh_flags & SHF_ALLOC))
+			{
+				printf("SHT_GNU_versym SHF_ALLOC\n");
+				printf(".gnu.version Version symbol table.\n");
+				printf("\\ Array of Elf32_Half elements.\n");
+				half = (Elf32_Half*)ss;
+				printf("[");
+				for (size_t i = 0; i < s[pi].sh_size; i += sizeof(Elf32_Half))
+				{
+					printf("%d", *(half + i));
+					if (i + sizeof(Elf32_Half) < s[pi].sh_size)
+						printf(", ");
+					else
+						printf("]\n");
+				}
+				printf(".gnu.version_r Needed elements\n");
+
+				v_need = (Elf32_Verneed*)ss;
+				printf("\\ Array of Elf32_Verneed elements.\n");
+				printf("[");
+				for (size_t i = 0; i < s[pi].sh_size; i += sizeof(Elf32_Verneed))
+				{
+					printf("%d", *((uint*)v_need + i)); // uint16 on man
+					if (i + sizeof(Elf32_Verneed) < s[pi].sh_size)
+						printf(", ");
+					else
+						printf("]\n");
+				}
+			}
+
+			if (s[pi].sh_type == SHT_GNU_verdef
+				&& (s[pi].sh_flags & SHF_ALLOC))
+			{
+				printf("SHT_GNU_verdef SHF_ALLOC\n");
+				printf(".gnu.version_d Version symbol definitions.\n");
+				v_def = (Elf32_Verdef*)ss;
+				printf("[");
+				for (size_t i = 0; i < s[pi].sh_size; i += sizeof(Elf32_Verdef))
+				{
+					printf("%d", *((uint*)v_def + i)); // uint16 on man
+					if (i + sizeof(Elf32_Verdef) < s[pi].sh_size)
+						printf(", ");
+					else
+						printf("]\n");
+				}
+			}
 
 			printf("___________/\\(%04d)\n", s[pi].sh_offset + s[pi].sh_size);
 
 		}
 	}
 	printf("] -------------------------------------------------/\n");
-
 
 	___br;
 	return ;

@@ -35,6 +35,7 @@ void	pretty_print32(t_elf*);
 void	pretty_print64(t_elf*);
 void	byte_is(void* h, long long test, const char* msg);
 void	true_is(long long a, long long b, const char* msg);
+void	condition_msg(long long, const char* msg);
 void	flag_is(long long a, long long b, const char* msg);
 void	hex_pure(void* h, size_t amount);
 void	hex_msg(void* h, size_t amount, const char* msg);
