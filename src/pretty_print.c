@@ -44,11 +44,11 @@ void	pretty_print32(t_elf* ex)
 	printf("|--------------------------------------------------|\n");
 	printf("|\\ e_ident    [%02d]\n", 0);
 
-	printf("|| magic    ");
+	printf("|| EI_MAG 4b: ");
 	hex_byte(h, 4);
-	___deb printf("||      \\__ 7f 45 4c 46 .ELF <- eq to validate.\n");
+	___deb printf("||       \\___ 7f 45 4c 46 .ELF <- eq to validate.\n");
 
-	printf("|| class    ");
+	printf("|| EI_CLASS 1b: ");
 	h += 4;
 	hex_pure(h, 1);
 	byte_is(h, ELFCLASSNONE, "None/invalid architecture.");
@@ -56,21 +56,21 @@ void	pretty_print32(t_elf* ex)
 	byte_is(h, ELFCLASS64, "64-bit architecture.");
 	___br;
 
-	printf("|| data enc ");
+	printf("|| EI_DATA 1b: ");
 	hex_pure(++h, 1);
 	byte_is(h, ELFDATANONE, "Unknown data format.");
 	byte_is(h, ELFDATA2LSB, "2-complement, litte-endian.");
 	byte_is(h, ELFDATA2MSB, "2-complement, big-endian.");
 	___br;
 
-	printf("|| elf ver  ");
+	printf("|| EI_VERSION 1b: ");
 	if (++h == EV_NONE)
 		hex_msg(h, EV_CURRENT, "Ivalid version.");
 	else
-		hex_msg(h, EV_CURRENT, "<- Represents current version (hex).");
+		hex_msg(h, EV_CURRENT, "<- Current version (hex).");
 	___br;
 
-	printf("|| OS ABI   ");
+	printf("|| EI_OSABI 1b: ");
 	hex_pure(++h, 1);
 	byte_is(h, ELFOSABI_NONE | ELFOSABI_SYSV, "UNIX System VABI.");
 	byte_is(h, ELFOSABI_HPUX, "HP-UX.");
@@ -84,14 +84,13 @@ void	pretty_print32(t_elf* ex)
 	byte_is(h, ELFOSABI_STANDALONE, "Stand-alone (embedded).");
 	___br;
 
-	printf("|| abi ver  ");
-	hex_msg(++h, 1, "<- Represents target object version.");
+	printf("|| EI_ABIVERSION 1b: ");
+	hex_msg(++h, 1, "<- (Hex) target version.");
 	___br;
 
 	h++;
-	printf("|\\___________ (%02ld) padding from here.\n",
+	printf("|\\__padding__ (%02ld) ",
 		h - e->e_ident);
-	printf("|                  ");
 	hex_byte(h,
 		((unsigned char *)&e->e_type - e->e_ident)
 		- (h - e->e_ident));
