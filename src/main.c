@@ -36,7 +36,7 @@ void  read_file(char *filename)
 
 void	set_data_32_64()
 {
-	elf.bit_class = elf.data[EI_CLASS] == 64 ? 64 : 32;
+	elf.bit_class = elf.data[EI_CLASS] == ELFCLASS64 ? 64 : elf.data[EI_CLASS] == ELFCLASS32 ? 32 : 0;
 	if (elf.bit_class == 32)
 	{
 		elf.ehdr = (Elf32_Ehdr*)elf.data;
