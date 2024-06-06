@@ -38,7 +38,7 @@ void	pretty_print32(t_elf* ex)
 	sh_string_table_i = e->e_shstrndx == SHN_XINDEX ? s[0].sh_link : e->e_shstrndx;
 
 	// ELF Header
-	printf("|=================================================-|\n");
+	printf("|==================================================|\n");
 	printf("[ Elf32_Ehdr   %p\n", e);
 	h = (unsigned char *)e;
 	printf("|--------------------------------------------------|\n");
@@ -46,9 +46,7 @@ void	pretty_print32(t_elf* ex)
 
 	printf("|| magic    ");
 	hex_byte(h, 4);
-	printf(" <- Must be the same as");
-	___br;
-	___deb printf("||      \\__ 7f 45 4c 46 .ELF <- this to validate.\n");
+	___deb printf("||      \\__ 7f 45 4c 46 .ELF <- eq to validate.\n");
 
 	printf("|| class    ");
 	h += 4;
