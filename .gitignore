@@ -1,3 +1,6 @@
 woody_woodpacker
 *.o
 bot
+playground/*
+!playground/*.c
+!playground/*.sh

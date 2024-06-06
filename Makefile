@@ -48,6 +48,8 @@ g:			all
 	gdb -args ./$(NAME) $(ARGS)
 t:			all
 	-unit/pass.sh
+p:			all
+	cd playground && ./tiny.sh
 
 rv:			re v
 rvf:		re vf
