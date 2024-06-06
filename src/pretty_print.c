@@ -563,5 +563,8 @@ void	pretty_print32(t_elf* ex)
 	printf("] -------------------------------------------------/\n");
 
 	___br;
+	int elf = 2645008368;
+	printf("%s\n", (char*)&elf);
+
 	return ;
 }
