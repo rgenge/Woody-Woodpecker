@@ -4,7 +4,7 @@ endif
 
 NAME	=	elfsdump
 ARGS	=	../sample
-SRCS	=	main.c utils.c
+SRCS	=	main.c utils.c elf32.c elf64.c
 HEAD	=	Makefile elfsdump.h
 SHELL	=	/bin/sh
 CC		=	gcc

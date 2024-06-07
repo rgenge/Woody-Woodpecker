@@ -44,6 +44,8 @@ typedef					Elf64_Ehdr
 # define ELF_DUMP \
 	"\U0001F9DD\U0001F4A9 "
 
+void	pretty_print64();
+void	pretty_print32();
 void	hex_byte(void* address, size_t amount);
 void	byte_is(void* h, long long test, const char* msg);
 void	true_is(long long a, long long b, const char* msg);
