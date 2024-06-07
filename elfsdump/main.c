@@ -1,38 +1,35 @@
 #include "elfsdump.h"
 
-dumpster elf;
+dumpster			elf;
 
-void	pretty_print64()
-{
-//	___deb printf("pretty_print64() not implemented.");
-}
-//
-void	pretty_print32()
-{
+unsigned char	*h;
+uint16_t			u16;
+uint32_t			u32;
+
 //	Elf32_Phdr		*p;
 //	Elf32_Shdr		*s;
 //	Elf32_Half		*half;
 //	Elf32_Verdef	*v_def;
 //	Elf32_Verneed	*v_need;
 //	size_t			pi;
-//	size_t			ph_entries;
 //	size_t			sh_entries;
 //	size_t			sh_string_table_i;
 //
 //	e = (Elf32_Ehdr*)ex->ehdr;
 //	p = (Elf32_Phdr*)ex->phdr;
 //	s = (Elf32_Shdr*)((void*)e + e->e_shoff);
-//	ph_entries = e->e_phnum == PN_XNUM ? s[0].sh_info : e->e_phnum;
 //	sh_entries = e->e_shnum == 0 ? s[0].sh_size : e->e_shnum;
 //	sh_string_table_i = e->e_shstrndx == SHN_XINDEX ? s[0].sh_link : e->e_shstrndx;
-//
 
-	Elf32_Ehdr		*e;
-	e = elf.ehdr._32;
+void	pretty_print64()
+{
+//	___deb printf("pretty_print64() not implemented.");
+}
 
-	unsigned char	*h;
-	uint16_t			u16;
-	uint32_t			u32;
+void	pretty_print32()
+{
+	Elf32_Ehdr *e = elf.ehdr._32; // for alias only.
+	Elf32_Phdr *p = elf.phdr._32;
 
 	// ELF Header
 	printf("|==================================================|\n");
@@ -225,14 +222,15 @@ void	pretty_print32()
 
 	printf("] -------------------------------------------------/\n");
 
-//	// Program Header	
-//	pi = -1;
-//
-//	printf("[ Elf32_Phdr     %p\n", p);
-//	printf("|--------------------------------------------------|\n");
-//
-//	while (++pi < ph_entries)
-//	{
+	// Program Header	
+
+	printf("[ Elf32_Phdr     %p\n", p);
+	printf("|--------------------------------------------------|\n");
+
+	uint32_t pi = -1; // same type for 32 and 64-bit.
+
+	while (++pi < elf.phnum)
+	{
 //		printf("|/-------- [%03ld] %02ld/%02d phdr segment ---------------\\\n", (void*)&p[pi] - (void*)e, pi, e->e_phnum) ;
 //		printf("\\ p_type   (%03ld) ", (void*)&p[pi] - (void*)e);
 //		hex_pure(&p[pi].p_type, sizeof(p[pi].p_type));
@@ -288,8 +286,8 @@ void	pretty_print32()
 //			"Seg mem align: ");
 //		printf("%d", p[pi].p_align);
 //		___br;
-//	}
-//	printf("] -------------------------------------------------/\n");
+	}
+	printf("] -------------------------------------------------/\n");
 //
 //	// Section Header	
 //	pi = -1;
@@ -614,7 +612,7 @@ void	validate_file()
 			"File is not suitable bit class.");
 }
 
-void	set_data_32_64()
+void	elf_init()
 {
 	elf.bit_class =
 		elf.data[EI_CLASS] == ELFCLASS64 ? 64
@@ -623,12 +621,18 @@ void	set_data_32_64()
 	if (elf.bit_class == 32)
 	{
 		elf.ehdr._32 = (Elf32_Ehdr*)elf.data;
-		elf.phdr._32 = (Elf32_Phdr*)(elf.data + EI_NIDENT);
+		elf.phdr._32 = (Elf32_Phdr*)(elf.data + elf.ehdr._32->e_phoff);
+		elf.shdr._32 = (Elf32_Shdr*)(elf.data + elf.ehdr._32->e_phoff);
+		elf.phnum = elf.ehdr._32->e_phnum == PN_XNUM ?
+			elf.shdr._32->sh_info : elf.ehdr._32->e_phnum;
 	}
 	else if (elf.bit_class == 64)
 	{
 		elf.ehdr._64 = (Elf64_Ehdr*)elf.data;
-		elf.phdr._64 = (Elf64_Phdr*)(elf.data + EI_NIDENT);
+		elf.phdr._64 = (Elf64_Phdr*)(elf.data + elf.ehdr._64->e_phoff);
+		elf.shdr._64 = (Elf64_Shdr*)(elf.data + elf.ehdr._64->e_phoff);
+		elf.phnum = elf.ehdr._64->e_phnum == PN_XNUM ?
+			elf.shdr._64->sh_info : elf.ehdr._64->e_phnum;
 	}
 }
 
@@ -654,7 +658,7 @@ int main(int argc, char **argv) {
 	___die(argc != 2, BAD_ARGUMENTS);
 	read_file(argv[1]);
 	validate_file();
-	set_data_32_64();
+	elf_init();
 	take_a_dump();
 	free(elf.data);
 	printf(ELF_DUMP);
