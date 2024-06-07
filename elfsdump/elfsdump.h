@@ -1,5 +1,5 @@
-#ifndef ELFDUMP_H
-# define ELFDUMP_H
+#ifndef ELFSDUMP_H
+# define ELFSDUMP_H
 
 # include <elf.h>
 # include <stdio.h>
