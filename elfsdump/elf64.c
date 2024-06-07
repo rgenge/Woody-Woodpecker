@@ -120,29 +120,29 @@ void	pretty_print64()
 	printf("\\ e_entry     (%ld) ", (void*)&e->e_entry - (void*)e);
 	if (e->e_entry)
 		hex_msg((void*)&e->e_entry, sizeof(e->e_entry),
-			"Entry point address.");
+			___spc64 "Entry point address.");
 	else
 		hex_msg((void*)&e->e_entry, sizeof(e->e_entry),
-			"No associated entry point.");
+			___spc64 "No associated entry point.");
 	___br;
 
 	printf("\\ e_phoff     (%ld) ", (void*)&e->e_phoff - (void*)e);
 	if (e->e_phoff)
 	{
 		hex_msg((void*)&e->e_phoff, sizeof(e->e_phoff),
-			"PH offset: ");
+			___spc64 "PH offset: ");
 		printf("%ld B", e->e_phoff);
 	}
 	else
 	{
 		hex_msg((void*)&e->e_phoff, sizeof(e->e_phoff),
-			"PH zero, no prog. table");
+			___spc64 "PH zero, no prog. table");
 	}
 	___br;
 
 	printf("\\ e_shoff     (%ld) ", (void*)&e->e_shoff - (void*)e);
 	hex_msg((void*)&e->e_shoff, sizeof(e->e_shoff),
-		"SH offset: ");
+		___spc64 "SH offset: ");
 	if (e->e_shoff)
 		printf("%ld B", e->e_shoff);
 	else

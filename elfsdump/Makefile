@@ -3,7 +3,8 @@ ifndef OUTPUT
 endif
 
 NAME	=	elfsdump
-ARGS	=	../sample
+ARGS1	=	samples/return32
+ARGS2	=	samples/return64
 SRCS	=	main.c utils.c elf32.c elf64.c
 HEAD	=	Makefile elfsdump.h
 SHELL	=	/bin/sh
@@ -33,7 +34,9 @@ vf:			all
 g:			all
 	gdb ./$(NAME)
 t:			all
-	./$(NAME) $(ARGS)
+	./$(NAME) $(ARGS1)
+tt:			all
+	./$(NAME) $(ARGS2)
 rv:			re v
 rvf:		re vf
 rg:			re g

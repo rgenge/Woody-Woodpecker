@@ -210,20 +210,20 @@ void	pretty_print32()
 
 	while (++pi < elf.phnum)
 	{
-//		printf("|/-------- [%03ld] %02ld/%02d phdr segment ---------------\\\n", (void*)&p[pi] - (void*)e, pi, e->e_phnum) ;
-//		printf("\\ p_type   (%03ld) ", (void*)&p[pi] - (void*)e);
-//		hex_pure(&p[pi].p_type, sizeof(p[pi].p_type));
-//		byte_is(&p[pi].p_type, PT_NULL, "Null: ignore.");
-//		byte_is(&p[pi].p_type, PT_LOAD, "Load.");
-//		byte_is(&p[pi].p_type, PT_DYNAMIC, "Dynamic link info.");
-//		byte_is(&p[pi].p_type, PT_INTERP, "Interpreter loc+size.");
-//		byte_is(&p[pi].p_type, PT_NOTE, "Nhdr location.");
-//		byte_is(&p[pi].p_type, PT_SHLIB, "Reserved/unused/non-ABI.");
-//		byte_is(&p[pi].p_type, PT_PHDR, "Phdr table loc+size.");
-//		if (p[pi].p_type >= PT_LOPROC && p[pi].p_type <= PT_HIPROC)
-//			printf("Reserved CPU-specific.");
-//		byte_is(&p[pi].p_type, PT_GNU_STACK, "GNU kernel-controled state.");
-//		___br;
+		printf("|/-------- [%03ld] %02d/%02d phdr segment ---------------\\\n", (void*)&p[pi] - (void*)e, pi, e->e_phnum) ;
+		printf("\\ p_type   (%03ld) ", (void*)&p[pi] - (void*)e);
+		hex_pure(&p[pi].p_type, sizeof(p[pi].p_type));
+		byte_is(&p[pi].p_type, PT_NULL, "Null: ignore.");
+		byte_is(&p[pi].p_type, PT_LOAD, "Load.");
+		byte_is(&p[pi].p_type, PT_DYNAMIC, "Dynamic link info.");
+		byte_is(&p[pi].p_type, PT_INTERP, "Interpreter loc+size.");
+		byte_is(&p[pi].p_type, PT_NOTE, "Nhdr location.");
+		byte_is(&p[pi].p_type, PT_SHLIB, "Reserved/unused/non-ABI.");
+		byte_is(&p[pi].p_type, PT_PHDR, "Phdr table loc+size.");
+		if (p[pi].p_type >= PT_LOPROC && p[pi].p_type <= PT_HIPROC)
+			printf("Reserved CPU-specific.");
+		byte_is(&p[pi].p_type, PT_GNU_STACK, "GNU kernel-controled state.");
+		___br;
 //
 //		printf("\\ p_offset (%03ld) ", (void*)&p[pi].p_offset - (void*)e);
 //		hex_msg(&p[pi].p_offset, sizeof(p[pi].p_offset),

@@ -35,6 +35,7 @@ typedef					Elf64_Ehdr
 # define true !false
 # define ___die(_bool, _msg) if (_bool) die(_msg)
 # define ___br printf("\n");
+# define ___spc64 "\n|             \\___ "
 
 # define BAD_ARGUMENTS \
 	"Just point me towards the nearest mushroom ring, would you? " \
