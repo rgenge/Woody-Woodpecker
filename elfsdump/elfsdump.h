@@ -13,6 +13,8 @@ typedef struct	elf_is_such_a
 	char					*data; // raw bin content
 	unsigned char	bit_class; // 32 || 64 bit
 	uint32_t			phnum;
+	uint32_t			shnum;
+	uint32_t			shstrndx;
 	union {
 		Elf32_Ehdr	*_32;
 		Elf64_Ehdr	*_64;

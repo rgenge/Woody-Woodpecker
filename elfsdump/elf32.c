@@ -9,6 +9,7 @@ void	pretty_print32()
 {
 	Elf32_Ehdr *e = elf.ehdr._32; // for alias only.
 	Elf32_Phdr *p = elf.phdr._32;
+	Elf32_Shdr *s = elf.shdr._32;
 
 	// ELF Header
 	printf("|==================================================|\n");
@@ -271,20 +272,22 @@ void	pretty_print32()
 	}
 	printf("] -------------------------------------------------/\n");
 
-//	// Section Header	
-//	pi = -1;
+	// Section Header	
+	pi = -1;
 
-//	printf("[ Elf32_Shdr %p (size each: %d B)\n", s, e->e_shentsize);
-//	printf("| -------------------------------------------------|\n");
-//	while (++pi < sh_entries)
-//	{
-//		printf("\\  [%04ld] %02ld/%02d shdr section ", (void*)&s[pi] - (void*)e, pi, e->e_shnum);
-//		if (pi == 0)
-//			printf(":special data 0 -- sh_\\\n");
-//		else if (pi == sh_string_table_i)
-//			printf(":name string table sh_\\\n");
-//		else
-//			printf("------------------ sh_\\\n");
+	printf("[ Elf32_Shdr %p (size each: %d B)\n", s, e->e_shentsize);
+	printf("| -------------------------------------------------|\n");
+
+	while (++pi < elf.shnum)
+	{
+		printf("\\  [%04ld] %02d/%02d shdr section ",
+			(void*)&s[pi] - (void*)e, pi, e->e_shnum);
+		if (pi == 0)
+			printf(":special data 0 -- sh_\\\n");
+		else if (pi == elf.shstrndx)
+			printf(":name string table sh_\\\n");
+		else
+			printf("------------------ sh_\\\n");
 
 //		if (pi == 0)
 //		{
@@ -537,7 +540,7 @@ void	pretty_print32()
 
 //			printf("___________/\\(%04d)\n", s[pi].sh_offset + s[pi].sh_size);
 
-//		}
+		}
 //	}
 //	printf("] -------------------------------------------------/\n");
 

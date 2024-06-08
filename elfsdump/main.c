@@ -78,6 +78,10 @@ void	elf_init()
 		elf.shdr._32 = (Elf32_Shdr*)(elf.data + elf.ehdr._32->e_phoff);
 		elf.phnum = elf.ehdr._32->e_phnum == PN_XNUM ?
 			elf.shdr._32->sh_info : elf.ehdr._32->e_phnum;
+		elf.shnum = elf.ehdr._32->e_shnum == 0 ?
+			elf.shdr._32[0].sh_size : elf.ehdr._32->e_shnum;
+		elf.shstrndx = elf.ehdr._32->e_shstrndx == SHN_XINDEX ?
+			elf.shdr._32[0].sh_link : elf.ehdr._32->e_shstrndx;
 	}
 	else if (elf.bit_class == 64)
 	{
@@ -86,6 +90,10 @@ void	elf_init()
 		elf.shdr._64 = (Elf64_Shdr*)(elf.data + elf.ehdr._64->e_phoff);
 		elf.phnum = elf.ehdr._64->e_phnum == PN_XNUM ?
 			elf.shdr._64->sh_info : elf.ehdr._64->e_phnum;
+		elf.shnum = elf.ehdr._64->e_shnum == 0 ?
+			elf.shdr._64[0].sh_size : elf.ehdr._64->e_shnum;
+		elf.shstrndx = elf.ehdr._64->e_shstrndx == SHN_XINDEX ?
+			elf.shdr._64[0].sh_link : elf.ehdr._64->e_shstrndx;
 	}
 }
 

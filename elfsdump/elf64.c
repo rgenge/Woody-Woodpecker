@@ -9,6 +9,7 @@ void	pretty_print64()
 {
 	Elf64_Ehdr *e = elf.ehdr._64; // for alias only.
 	Elf64_Phdr *p = elf.phdr._64;
+	Elf64_Shdr *s = elf.shdr._64;
 
 	// ELF Header
 	printf("|==================================================|\n");
@@ -268,5 +269,23 @@ void	pretty_print64()
 		___br;
 	}
 	printf("] -------------------------------------------------/\n");
+
+	// Section Header	
+	pi = -1;
+
+	printf("[ Elf64_Shdr %p (size each: %d B)\n", s, e->e_shentsize);
+	printf("| -------------------------------------------------|\n");
+
+	while (++pi < elf.shnum)
+	{
+		printf("\\  [%04ld] %02d/%02d shdr section ", (void*)&s[pi] - (void*)e, pi, e->e_shnum);
+		if (pi == 0)
+			printf(":special data 0 -- sh_\\\n");
+		else if (pi == elf.shstrndx)
+			printf(":name string table sh_\\\n");
+		else
+			printf("------------------ sh_\\\n");
+
+	}
 
 }
