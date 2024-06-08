@@ -210,7 +210,8 @@ void	pretty_print32()
 
 	while (++pi < elf.phnum)
 	{
-		printf("|/-------- [%03ld] %02d/%02d phdr segment ---------------\\\n", (void*)&p[pi] - (void*)e, pi, e->e_phnum) ;
+		printf("/--------- [%03ld] %02d/%02d phdr segment ---------------\\\n",
+			(void*)&p[pi] - (void*)e, pi, e->e_phnum);
 		printf("\\ p_type   (%03ld) ", (void*)&p[pi] - (void*)e);
 		hex_pure(&p[pi].p_type, sizeof(p[pi].p_type));
 		byte_is(&p[pi].p_type, PT_NULL, "Null: ignore.");
@@ -224,53 +225,55 @@ void	pretty_print32()
 			printf("Reserved CPU-specific.");
 		byte_is(&p[pi].p_type, PT_GNU_STACK, "GNU kernel-controled state.");
 		___br;
-//
-//		printf("\\ p_offset (%03ld) ", (void*)&p[pi].p_offset - (void*)e);
-//		hex_msg(&p[pi].p_offset, sizeof(p[pi].p_offset),
-//			"Section offset: ");
-//		printf("%d B", p[pi].p_offset);
-//		___br;
-//
-//		printf("\\ p_vaddr  (%03ld) ", (void*)&p[pi].p_vaddr - (void*)e);
-//		hex_msg(&p[pi].p_vaddr, sizeof(p[pi].p_vaddr),
-//			"Segment v. address. ");
-//		___br;
-//
-//		printf("\\ p_paddr  (%03ld) ", (void*)&p[pi].p_paddr - (void*)e);
-//		hex_msg(&p[pi].p_paddr, sizeof(p[pi].p_paddr),
-//			"Seg physical addr.");
-//		___br;
-//
-//		printf("\\ p_filesz (%03ld) ", (void*)&p[pi].p_filesz - (void*)e);
-//		hex_msg(&p[pi].p_filesz, sizeof(p[pi].p_filesz),
-//			"Seg file img: ");
-//		printf("%d B", p[pi].p_filesz);
-//		___br;
-//
-//		printf("\\ p_memsz  (%03ld) ", (void*)&p[pi].p_memsz - (void*)e);
-//		hex_msg(&p[pi].p_memsz, sizeof(p[pi].p_memsz),
-//			"Seg mem size: ");
-//		printf("%d B", p[pi].p_memsz);
-//		___br;
-//
-//		printf("\\ p_flags  (%03ld) ", (void*)&p[pi].p_flags - (void*)e);
-//		hex_pure(&p[pi].p_flags, sizeof(p[pi].p_flags));
-//		flag_is(p[pi].p_flags, PF_R, "+r");
-//		flag_is(p[pi].p_flags, PF_W, "+w");
-//		flag_is(p[pi].p_flags, PF_X, "+x");
-//		___br;
-//
-//		printf("\\ p_align  (%03ld) ", (void*)&p[pi].p_align - (void*)e);
-//		hex_msg(&p[pi].p_align, sizeof(p[pi].p_align),
-//			"Seg mem align: ");
-//		printf("%d", p[pi].p_align);
-//		___br;
+
+		printf("\\ p_offset (%03ld) ", (void*)&p[pi].p_offset - (void*)e);
+		hex_msg(&p[pi].p_offset, sizeof(p[pi].p_offset),
+			"Section offset: ");
+		printf("%d B", p[pi].p_offset);
+		___br;
+
+		printf("\\ p_vaddr  (%03ld) ", (void*)&p[pi].p_vaddr - (void*)e);
+		hex_msg(&p[pi].p_vaddr, sizeof(p[pi].p_vaddr),
+			"Seg virt address. ");
+		___br;
+
+		printf("\\ p_paddr  (%03ld) ", (void*)&p[pi].p_paddr - (void*)e);
+		hex_msg(&p[pi].p_paddr, sizeof(p[pi].p_paddr),
+			"Seg physical addr.");
+		___br;
+
+		printf("\\ p_filesz (%03ld) ", (void*)&p[pi].p_filesz - (void*)e);
+		hex_msg(&p[pi].p_filesz, sizeof(p[pi].p_filesz),
+			"Seg file img: ");
+		printf("%d B", p[pi].p_filesz);
+		___br;
+
+		printf("\\ p_memsz  (%03ld) ", (void*)&p[pi].p_memsz - (void*)e);
+		hex_msg(&p[pi].p_memsz, sizeof(p[pi].p_memsz),
+			"Seg mem size: ");
+		printf("%d B", p[pi].p_memsz);
+		___br;
+
+		printf("\\ p_flags  (%03ld) ",
+			(void*)&p[pi].p_flags - (void*)e);
+		hex_pure(&p[pi].p_flags, sizeof(p[pi].p_flags));
+		flag_is(p[pi].p_flags, PF_R, "+r");
+		flag_is(p[pi].p_flags, PF_W, "+w");
+		flag_is(p[pi].p_flags, PF_X, "+x");
+		___br;
+
+		printf("\\ p_align  (%03ld) ", (void*)&p[pi].p_align - (void*)e);
+		hex_msg(&p[pi].p_align, sizeof(p[pi].p_align),
+			"Seg mem align: ");
+		printf("%d", p[pi].p_align);
+		___br;
+
 	}
 	printf("] -------------------------------------------------/\n");
-//
+
 //	// Section Header	
 //	pi = -1;
-//
+
 //	printf("[ Elf32_Shdr %p (size each: %d B)\n", s, e->e_shentsize);
 //	printf("| -------------------------------------------------|\n");
 //	while (++pi < sh_entries)
@@ -282,7 +285,7 @@ void	pretty_print32()
 //			printf(":name string table sh_\\\n");
 //		else
 //			printf("------------------ sh_\\\n");
-//
+
 //		if (pi == 0)
 //		{
 //			if (s[pi].sh_info)
@@ -308,7 +311,7 @@ void	pretty_print32()
 //				printf("|- empty/unused.\n");
 //			}
 //		}
-//
+
 //		if (pi >= SHN_LORESERVE && pi <= SHN_HIRESERVE)
 //			printf("|- reserved.\n");
 //		if (pi == SHN_UNDEF)
@@ -323,7 +326,7 @@ void	pretty_print32()
 //			printf("|- common-relatives reference.\n");
 //		if (pi == SHN_HIRESERVE)
 //			printf("|- upper bound of reserved.\n");
-//
+
 //		if (pi != 0
 //			&& (pi < SHN_LORESERVE || pi > SHN_HIRESERVE)
 //			&& pi != SHN_UNDEF
@@ -332,13 +335,13 @@ void	pretty_print32()
 //			&& pi != SHN_COMMON
 //			&& pi != SHN_HIRESERVE)
 //		{
-//
+
 //			printf("|\\ name      (%03ld) ", (void*)&s[pi].sh_name - (void*)e);
 //			hex_msg(&s[pi].sh_name, sizeof(s[pi].sh_name),
 //				"on str_table[");
 //			printf("%d]", s[pi].sh_name);
 //			___br;
-//
+
 //			printf("|\\ type      (%03ld) ", (void*)&s[pi].sh_type - (void*)e);
 //			hex_pure(&s[pi].sh_type, sizeof(s[pi].sh_type));
 //			true_is(s[pi].sh_type, SHT_NULL,     "Undefined/unused.");
@@ -358,7 +361,7 @@ void	pretty_print32()
 //			true_is(s[pi].sh_type, SHT_LOUSER,   "Low i for app.");
 //			true_is(s[pi].sh_type, SHT_HIUSER,   "High i for app.");
 //			___br;
-//
+
 //			printf("|\\ flags     (%03ld) ", (void*)&s[pi].sh_flags - (void*)e);
 //			hex_pure(&s[pi].sh_flags, sizeof(s[pi].sh_flags));
 //			condition_msg(s[pi].sh_flags & SHF_WRITE,     "\n|                 - Writable data.");
@@ -366,43 +369,43 @@ void	pretty_print32()
 //			condition_msg(s[pi].sh_flags & SHF_EXECINSTR, "\n|                 - Machine language.");
 //			condition_msg(s[pi].sh_flags & SHF_MASKPROC,  "\n|                 - CPU-specific.");
 //			___br;
-//
+
 //			printf("|\\ addr      (%03ld) ", (void*)&s[pi].sh_addr - (void*)e);
 //			hex_msg(&s[pi].sh_addr, sizeof(s[pi].sh_addr),
 //				"First byte addr.");
 //			___br;
-//
+
 //			printf("|\\ offset    (%03ld) ", (void*)&s[pi].sh_offset - (void*)e);
 //			hex_msg(&s[pi].sh_offset, sizeof(s[pi].sh_offset),
 //				"Offset: ");
 //			printf("%d B", s[pi].sh_offset);
 //			___br;
-//
+
 //			printf("|\\ size      (%03ld) ", (void*)&s[pi].sh_size - (void*)e);
 //			hex_msg(&s[pi].sh_size, sizeof(s[pi].sh_size),
 //				"Size: ");
 //			printf("%d B", s[pi].sh_size);
 //			___br;
-//
+
 //			printf("|\\ addralign (%03ld) ", (void*)&s[pi].sh_addralign - (void*)e);
 //			hex_msg(&s[pi].sh_addralign, sizeof(s[pi].sh_addralign),
 //				"Index info: ");
 //			printf("%d", s[pi].sh_addralign);
 //			___br;
-//
+
 //			printf("|\\ entsize   (%03ld) ", (void*)&s[pi].sh_entsize - (void*)e);
 //			hex_msg(&s[pi].sh_entsize, sizeof(s[pi].sh_entsize),
 //				"Fixed-size pad.: ");
 //			printf("%d", s[pi].sh_entsize);
 //			___br;
-//
+
 //			// Sections:
-//
+
 //			char	*ss;
-//
+
 //			ss = (char*)((void*)e + s[pi].sh_offset);
 //			printf("\\/¨¨¨¨¨¨¨¨¨¨¨(%04d) ", s[pi].sh_offset);
-//
+
 //			if (s[pi].sh_type == SHT_NOBITS
 //				&& (s[pi].sh_flags & SHF_ALLOC
 //					|| s[pi].sh_flags & SHF_WRITE))
@@ -416,7 +419,7 @@ void	pretty_print32()
 //				printf(".bss Uninit wiped data area.\n");
 //				hex_byte(ss, s[pi].sh_size);
 //			}
-//
+
 //			if (s[pi].sh_type == SHT_PROGBITS
 //				&& !s[pi].sh_flags)
 //			{
@@ -425,7 +428,7 @@ void	pretty_print32()
 //				printf(".debug Symbolic info.\n");
 //				lin_dump(ss, s[pi].sh_size, 51);
 //			}
-//
+
 //			if (s[pi].sh_type == SHT_PROGBITS
 //				&& (s[pi].sh_flags & SHF_ALLOC
 //					|| s[pi].sh_flags & SHF_WRITE))
@@ -442,7 +445,7 @@ void	pretty_print32()
 //				printf(".dtors Pointers to descructors.\n");
 //				hex_byte(ss, s[pi].sh_size);
 //			}
-//
+
 //			if (s[pi].sh_type == SHT_DYNAMIC
 //				&& s[pi].sh_flags & SHF_ALLOC)
 //			{
@@ -453,7 +456,7 @@ void	pretty_print32()
 //				printf(".dynamic Dynamic linking info.\n");
 //				hex_byte(ss, s[pi].sh_size);
 //			}
-//
+
 //			if (s[pi].sh_type == SHT_STRTAB
 //				&& s[pi].sh_flags & SHF_ALLOC)
 //			{
@@ -461,7 +464,7 @@ void	pretty_print32()
 //				printf(".dynstr Strings for dynamic linking.\n");
 //				hex_byte(ss, s[pi].sh_size);
 //			}
-//
+
 //			if (s[pi].sh_type == SHT_DYNSYM
 //				&& s[pi].sh_flags & SHF_ALLOC)
 //			{
@@ -469,7 +472,7 @@ void	pretty_print32()
 //				printf(".dynsym Dynamic symbol table.\n");
 //				hex_byte(ss, s[pi].sh_size);
 //			}
-//
+
 //			if (s[pi].sh_type == SHT_PROGBITS
 //				&& (s[pi].sh_flags & SHF_ALLOC
 //					|| s[pi].sh_flags & SHF_EXECINSTR))
@@ -483,7 +486,7 @@ void	pretty_print32()
 //				printf(".fini Finish exec code.\n");
 //				hex_byte(ss, s[pi].sh_size);
 //			}
-//
+
 //			if (s[pi].sh_type == SHT_GNU_versym
 //				&& (s[pi].sh_flags & SHF_ALLOC))
 //			{
@@ -501,7 +504,7 @@ void	pretty_print32()
 //						printf("]\n");
 //				}
 //				printf(".gnu.version_r Needed elements\n");
-//
+
 //				v_need = (Elf32_Verneed*)ss;
 //				printf("\\ Array of Elf32_Verneed elements.\n");
 //				printf("[");
@@ -514,7 +517,7 @@ void	pretty_print32()
 //						printf("]\n");
 //				}
 //			}
-//
+
 //			if (s[pi].sh_type == SHT_GNU_verdef
 //				&& (s[pi].sh_flags & SHF_ALLOC))
 //			{
@@ -531,16 +534,16 @@ void	pretty_print32()
 //						printf("]\n");
 //				}
 //			}
-//
+
 //			printf("___________/\\(%04d)\n", s[pi].sh_offset + s[pi].sh_size);
-//
+
 //		}
 //	}
 //	printf("] -------------------------------------------------/\n");
-//
+
 //	___br;
 //	int elf = 2645008368;
 //	printf("%s\n", (char*)&elf);
-//
+
 //	return ;
 }

@@ -8,7 +8,7 @@ extern uint32_t				u32;
 void	pretty_print64()
 {
 	Elf64_Ehdr *e = elf.ehdr._64; // for alias only.
-//	Elf64_Phdr *p = elf.phdr._64;
+	Elf64_Phdr *p = elf.phdr._64;
 
 	// ELF Header
 	printf("|==================================================|\n");
@@ -199,6 +199,74 @@ void	pretty_print64()
 		printf("see SH[0]->sh_link.");
 	___br;
 
+	printf("] -------------------------------------------------/\n");
+
+	// Program Header	
+
+	printf("[ Elf64_Phdr     %p\n", p);
+	printf("|--------------------------------------------------|\n");
+
+	uint32_t pi = -1; // same type for 32 and 64-bit.
+
+	while (++pi < elf.phnum)
+	{
+		printf("/--------- [%03ld] %02d/%02d phdr segment ---------------\\\n", (void*)&p[pi] - (void*)e, pi, e->e_phnum) ;
+		printf("\\ p_type   (%03ld) ", (void*)&p[pi] - (void*)e);
+		hex_pure(&p[pi].p_type, sizeof(p[pi].p_type));
+		byte_is(&p[pi].p_type, PT_NULL, "Null: ignore.");
+		byte_is(&p[pi].p_type, PT_LOAD, "Load.");
+		byte_is(&p[pi].p_type, PT_DYNAMIC, "Dynamic link info.");
+		byte_is(&p[pi].p_type, PT_INTERP, "Interpreter loc+size.");
+		byte_is(&p[pi].p_type, PT_NOTE, "Nhdr location.");
+		byte_is(&p[pi].p_type, PT_SHLIB, "Reserved/unused/non-ABI.");
+		byte_is(&p[pi].p_type, PT_PHDR, "Phdr table loc+size.");
+		if (p[pi].p_type >= PT_LOPROC && p[pi].p_type <= PT_HIPROC)
+			printf("Reserved CPU-specific.");
+		byte_is(&p[pi].p_type, PT_GNU_STACK, "GNU kernel-controled state.");
+		___br;
+
+		printf("\\ p_flags  (%03ld) ",
+			(void*)&p[pi].p_flags - (void*)e);
+		hex_pure(&p[pi].p_flags, sizeof(p[pi].p_flags));
+		flag_is(p[pi].p_flags, PF_R, "+r");
+		flag_is(p[pi].p_flags, PF_W, "+w");
+		flag_is(p[pi].p_flags, PF_X, "+x");
+		___br;
+
+		printf("\\ p_offset (%03ld) ", (void*)&p[pi].p_offset - (void*)e);
+		hex_msg(&p[pi].p_offset, sizeof(p[pi].p_offset),
+			___spc64 "Section offset: ");
+		printf("%ld B", p[pi].p_offset);
+		___br;
+
+		printf("\\ p_vaddr  (%03ld) ", (void*)&p[pi].p_vaddr - (void*)e);
+		hex_msg(&p[pi].p_vaddr, sizeof(p[pi].p_vaddr),
+			___spc64 "Seg virt address. ");
+		___br;
+
+		printf("\\ p_paddr  (%03ld) ", (void*)&p[pi].p_paddr - (void*)e);
+		hex_msg(&p[pi].p_paddr, sizeof(p[pi].p_paddr),
+			___spc64 "Seg physical addr.");
+		___br;
+
+		printf("\\ p_filesz (%03ld) ", (void*)&p[pi].p_filesz - (void*)e);
+		hex_msg(&p[pi].p_filesz, sizeof(p[pi].p_filesz),
+			___spc64 "Seg file img: ");
+		printf("%ld B", p[pi].p_filesz);
+		___br;
+
+		printf("\\ p_memsz  (%03ld) ", (void*)&p[pi].p_memsz - (void*)e);
+		hex_msg(&p[pi].p_memsz, sizeof(p[pi].p_memsz),
+			___spc64 "Seg mem size: ");
+		printf("%ld B", p[pi].p_memsz);
+		___br;
+
+		printf("\\ p_align  (%03ld) ", (void*)&p[pi].p_align - (void*)e);
+		hex_msg(&p[pi].p_align, sizeof(p[pi].p_align),
+			___spc64 "Seg mem align: ");
+		printf("%ld", p[pi].p_align);
+		___br;
+	}
 	printf("] -------------------------------------------------/\n");
 
 }
