@@ -18,12 +18,12 @@ void	pretty_print64()
 
 	printf("|\\ e_ident    [%02d]\n", 0);
 
-	printf("|| EI_MAG 4b: ");
+	printf("|| EI_MAG       : ");
 	h = (unsigned char*)e;
 	hex_byte(h, 4);
-	printf("||       \\___ 7f 45 4c 46 .ELF <- eq to validate.\n");
+	printf("||       \\_______ 7f 45 4c 46 .ELF <- check.\n");
 
-	printf("|| EI_CLASS 1b: ");
+	printf("|| EI_CLASS     : ");
 	h = (unsigned char*)e + EI_CLASS;
 	hex_pure(h, 1);
 	byte_is(h, ELFCLASSNONE, "None/invalid architecture.");
@@ -31,7 +31,7 @@ void	pretty_print64()
 	byte_is(h, ELFCLASS64, "64-bit architecture.");
 	___br;
 
-	printf("|| EI_DATA 1b: ");
+	printf("|| EI_DATA      : ");
 	h = (unsigned char*)e + EI_DATA;
 	hex_pure(h, 1);
 	byte_is(h, ELFDATANONE, "Unknown data format.");
@@ -39,7 +39,7 @@ void	pretty_print64()
 	byte_is(h, ELFDATA2MSB, "2-complement, big-endian.");
 	___br;
 
-	printf("|| EI_VERSION 1b: ");
+	printf("|| EI_VERSION   : ");
 	h = (unsigned char*)e + EI_VERSION;
 	if (h == EV_NONE)
 		hex_msg(h, EV_CURRENT, "Ivalid version.");
@@ -47,7 +47,7 @@ void	pretty_print64()
 		hex_msg(h, EV_CURRENT, "<- Current version (hex).");
 	___br;
 
-	printf("|| EI_OSABI 1b: ");
+	printf("|| EI_OSABI     : ");
 	h = (unsigned char*)e + EI_OSABI;
 	hex_pure(h, 1);
 	byte_is(h, ELFOSABI_NONE | ELFOSABI_SYSV, "UNIX System VABI.");
@@ -62,7 +62,7 @@ void	pretty_print64()
 	byte_is(h, ELFOSABI_STANDALONE, "Stand-alone (embedded).");
 	___br;
 
-	printf("|| EI_ABIVERSION 1b: ");
+	printf("|| EI_ABIVERSION: ");
 	h = (unsigned char*)e + EI_ABIVERSION;
 	hex_msg(h, 1, "<- (Hex) target version.");
 	___br;
@@ -285,6 +285,33 @@ void	pretty_print64()
 			printf(":name string table sh_\\\n");
 		else
 			printf("------------------ sh_\\\n");
+
+		if (pi == 0)
+		{
+			if (s[pi].sh_info)
+			{
+				printf("|--(%04ld) ", (void*)&s[pi].sh_info - (void*)e);
+				hex_pure(&s[pi].sh_info, sizeof (s[pi].sh_info));
+				printf(___spc64 "sh_info, PH entries: %d\n", s[pi].sh_info);
+			}
+			if (s[pi].sh_size)
+			{
+				printf("|--(%04ld) ", (void*)&s[pi].sh_size - (void*)e);
+				hex_pure(&s[pi].sh_size, sizeof (s[pi].sh_size));
+				printf(___spc64 "sh_size, SH entries: %ld\n", s[pi].sh_size);
+			}
+			if (s[pi].sh_link)
+			{
+				printf("|--(%04ld) ", (void*)&s[pi].sh_link - (void*)e);
+				hex_pure(&s[pi].sh_link, sizeof (s[pi].sh_link));
+				printf(___spc64 "sh_link, name_string table: SH[%d]\n", s[pi].sh_link);
+			}
+			if (!s[pi].sh_info && !s[pi].sh_size && !s[pi].sh_link)
+			{
+				printf("|- empty/unused.\n");
+			}
+		}
+
 
 	}
 
