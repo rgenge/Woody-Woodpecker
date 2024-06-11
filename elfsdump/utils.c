@@ -1,14 +1,57 @@
 #include "elfsdump.h"
 
-void	hex_byte(void* address, size_t amount)
+void	lin_dump(void* address, size_t amount, size_t line_break)
 {
 	char*	h; // head
+	bool	n; // non-printable printed
+	char	c;
+	size_t	col;
+
 	if (!address)
-		return (void)printf(NO_ADDRESS);
+		return (void)printf("Dumping address nil, no dump.");
+	col = 0;
 	for (size_t i = 0; i < amount; i += 8)
 	{
 		h = (char*)(address + i);
-		for (size_t o = 0; o < 8 && o < amount; o++) // offset
+		for (size_t o = 0; o < 8; o += 1) // offset
+		{
+			c = *(h + o);
+			if (!isprint(c) || c == ' ')
+			{
+				if (!n)
+				{
+					printf(" ");
+					n = true;
+					col++;
+				}
+			}
+			else
+			{
+				printf("%c", c);
+				n = false;
+				col++;
+			}
+			if (line_break && col >= line_break)
+			{
+				col = 0;
+				printf("\n");
+			}
+		}
+	}
+}
+
+void	hex_byte(void* address, size_t amount)
+{
+	char*	h; // head
+	size_t a = amount;
+	if (a > 80)
+		a = 80;
+	if (!address)
+		return (void)printf(NO_ADDRESS);
+	for (size_t i = 0; i < a; i += 8)
+	{
+		h = (char*)(address + i);
+		for (size_t o = 0; o < 8 && o < a; o++) // offset
 		{
 			if (!(*((char*)h + o) & 0xFF))
 				printf("\033[38;5;240m");
@@ -16,7 +59,7 @@ void	hex_byte(void* address, size_t amount)
 			if (!(*((char*)h + o) & 0xFF))
 				printf("\033[0m");
 		}
-		for (size_t o = 0; o < 8 && o < amount; o += 1)
+		for (size_t o = 0; o < 8 && o < a; o += 1)
 		{
 			if (isprint(*(h + o)))
 				printf("%c", *(h + o));
@@ -26,6 +69,8 @@ void	hex_byte(void* address, size_t amount)
 				printf(".");
 		}
 		printf("\n");
+		if (amount > 100)
+			printf("...(%ld)\n", amount);
 	}
 }
 

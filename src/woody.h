@@ -11,16 +11,26 @@
 
 # define __debug true
 
-typedef struct		s_elf
+typedef struct	elf_is_such_a
 {
-	char			*data; // raw bin content
-	uint64_t		*key;
-	ssize_t			filesize;
-	int				decrypt;
-	unsigned char	bit_class; // 32 || 64
-	void			*ehdr;
-	void			*phdr;
-}					t_elf;	  
+	char					*data; // raw bin content
+	unsigned char	bit_class; // 32 || 64 bit
+	uint32_t			phnum;
+	uint32_t			shnum;
+	uint32_t			shstrndx;
+	union {
+		Elf32_Ehdr	*_32;
+		Elf64_Ehdr	*_64;
+	}							ehdr;
+	union {
+		Elf32_Phdr	*_32;
+		Elf64_Phdr	*_64;
+	}							phdr;
+	union {
+		Elf32_Shdr	*_32;
+		Elf64_Shdr	*_64;
+	}							shdr;
+}								dumpster;
 
 off_t	get_filesize(int fd);
 void	read_file(char *filename);
@@ -30,9 +40,6 @@ void	hex_dump(void* address, size_t amount);
 void	hex_byte(void* address, size_t amount);
 void	lin_dump(void* address, size_t offset, size_t line_break);
 void	say(char* msg, void* data, char type);
-void	pretty_print(t_elf*);
-void	pretty_print32(t_elf*);
-void	pretty_print64(t_elf*);
 void	byte_is(void* h, long long test, const char* msg);
 void	true_is(long long a, long long b, const char* msg);
 void	condition_msg(long long, const char* msg);
@@ -46,5 +53,6 @@ void	hex_msg(void* h, size_t amount, const char* msg);
 # define true !false
 # define ___deb if (__debug) 
 # define ___br printf("\n")
+# define ___debp(x, y) if (__debug) { printf(x "\n", y); };
 
 #endif

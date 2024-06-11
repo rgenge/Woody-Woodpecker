@@ -1,6 +1,9 @@
 #ifndef ELFSDUMP_H
 # define ELFSDUMP_H
 
+# define NOZERO 0
+# define ___nonzero NOZERO ||
+
 # include <elf.h>
 # include <stdio.h>
 # include <stdlib.h>
@@ -37,7 +40,7 @@ typedef					Elf64_Ehdr
 # define true !false
 # define ___die(_bool, _msg) if (_bool) die(_msg)
 # define ___br printf("\n");
-# define ___spc64 "\n| \\_             "
+# define ___spc "\n| \\_ "
 
 # define BAD_ARGUMENTS \
 	"Just point me towards the nearest mushroom ring, would you? " \
@@ -65,5 +68,6 @@ void	flag_is(long long a, long long b, const char* msg);
 void	hex_pure(void* h, size_t amount);
 void	hex_msg(void* h, size_t amount, const char* msg);
 void	hex_dump(void* address, size_t amount);
+void	lin_dump(void* address, size_t amount, size_t line_break);
 
 #endif

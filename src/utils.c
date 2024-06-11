@@ -125,7 +125,6 @@ void	lin_dump(void* address, size_t amount, size_t line_break)
 
 	if (!address)
 		return (void)printf("Dumping address nil, no dump.");
-
 	col = 0;
 	for (size_t i = 0; i < amount; i += 8)
 	{

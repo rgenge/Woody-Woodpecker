@@ -3,11 +3,11 @@ ifndef OUTPUT
 endif
 
 NAME	= woody_woodpacker
-ARGS	=	sample
+ARGS	=	"samples/sample"
 
 CFLAGS	= -Wall -Werror -Wextra -g -Wfatal-errors
 
-SRC		= src/error.c src/main.c src/utils.c src/pretty_print.c
+SRC		= src/error.c src/main.c src/utils.c
 HEAD	=	Makefile src/woody.h
 
 CC		= gcc
@@ -47,9 +47,7 @@ vf:			all
 g:			all
 	gdb -args ./$(NAME) $(ARGS)
 t:			all
-	-unit/pass.sh
-p:			all
-	cd playground && ./tiny.sh
+	-unit/pass.sh $(ARGS)
 
 rv:			re v
 rvf:		re vf

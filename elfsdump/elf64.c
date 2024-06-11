@@ -120,30 +120,32 @@ void	pretty_print64()
 
 	printf("\\ e_entry     (%ld) ", (void*)&e->e_entry - (void*)e);
 	if (e->e_entry)
-		hex_msg((void*)&e->e_entry, sizeof(e->e_entry),
-			___spc64 "Entry point address.");
+	{
+		hex_pure((void*)&e->e_entry, sizeof(e->e_entry));
+		printf(___spc "Entry point address: %ld", e->e_entry);
+		}
 	else
 		hex_msg((void*)&e->e_entry, sizeof(e->e_entry),
-			___spc64 "No associated entry point.");
+			___spc "No associated entry point.");
 	___br;
 
 	printf("\\ e_phoff     (%ld) ", (void*)&e->e_phoff - (void*)e);
 	if (e->e_phoff)
 	{
 		hex_msg((void*)&e->e_phoff, sizeof(e->e_phoff),
-			___spc64 "PH offset: ");
+			___spc "PH offset: ");
 		printf("%ld B", e->e_phoff);
 	}
 	else
 	{
 		hex_msg((void*)&e->e_phoff, sizeof(e->e_phoff),
-			___spc64 "PH zero, no prog. table");
+			___spc "PH zero, no prog. table");
 	}
 	___br;
 
 	printf("\\ e_shoff     (%ld) ", (void*)&e->e_shoff - (void*)e);
 	hex_msg((void*)&e->e_shoff, sizeof(e->e_shoff),
-		___spc64 "SH offset: ");
+		___spc "SH offset: ");
 	if (e->e_shoff)
 		printf("%ld B", e->e_shoff);
 	else
@@ -236,35 +238,35 @@ void	pretty_print64()
 
 		printf("\\ p_offset (%03ld) ", (void*)&p[pi].p_offset - (void*)e);
 		hex_msg(&p[pi].p_offset, sizeof(p[pi].p_offset),
-			___spc64 "Section offset: ");
+			___spc "Section offset: ");
 		printf("%ld B", p[pi].p_offset);
 		___br;
 
 		printf("\\ p_vaddr  (%03ld) ", (void*)&p[pi].p_vaddr - (void*)e);
 		hex_msg(&p[pi].p_vaddr, sizeof(p[pi].p_vaddr),
-			___spc64 "Seg virt address. ");
+			___spc "Seg virt address. ");
 		___br;
 
 		printf("\\ p_paddr  (%03ld) ", (void*)&p[pi].p_paddr - (void*)e);
 		hex_msg(&p[pi].p_paddr, sizeof(p[pi].p_paddr),
-			___spc64 "Seg physical addr.");
+			___spc "Seg physical addr.");
 		___br;
 
 		printf("\\ p_filesz (%03ld) ", (void*)&p[pi].p_filesz - (void*)e);
 		hex_msg(&p[pi].p_filesz, sizeof(p[pi].p_filesz),
-			___spc64 "Seg file img: ");
+			___spc "Seg file img: ");
 		printf("%ld B", p[pi].p_filesz);
 		___br;
 
 		printf("\\ p_memsz  (%03ld) ", (void*)&p[pi].p_memsz - (void*)e);
 		hex_msg(&p[pi].p_memsz, sizeof(p[pi].p_memsz),
-			___spc64 "Seg mem size: ");
+			___spc "Seg mem size: ");
 		printf("%ld B", p[pi].p_memsz);
 		___br;
 
 		printf("\\ p_align  (%03ld) ", (void*)&p[pi].p_align - (void*)e);
 		hex_msg(&p[pi].p_align, sizeof(p[pi].p_align),
-			___spc64 "Seg mem align: ");
+			___spc "Seg mem align: ");
 		printf("%ld", p[pi].p_align);
 		___br;
 	}
@@ -278,33 +280,33 @@ void	pretty_print64()
 
 	while (++pi < elf.shnum)
 	{
-		printf("\\  [%04ld] %02d/%02d shdr section ", (void*)&s[pi] - (void*)e, pi, e->e_shnum);
+		printf("\\= [%04ld] %02d/%02d =============", (void*)&s[pi] - (void*)e, pi, e->e_shnum);
 		if (pi == 0)
-			printf(":special data 0 -- sh_\\\n");
+			printf(":special data 0 ======\\\n");
 		else if (pi == elf.shstrndx)
-			printf(":name string table sh_\\\n");
+			printf(":name string table ===\\\n");
 		else
-			printf("------------------ sh_\\\n");
+			printf("======================\\\n");
 
 		if (pi == 0)
 		{
-			if (s[pi].sh_info)
+			if (___nonzero s[pi].sh_info)
 			{
 				printf("|--(%04ld) ", (void*)&s[pi].sh_info - (void*)e);
 				hex_pure(&s[pi].sh_info, sizeof (s[pi].sh_info));
-				printf(___spc64 "sh_info, PH entries: %d\n", s[pi].sh_info);
+				printf(___spc "sh_info, PH entries: %d\n", s[pi].sh_info);
 			}
-			if (s[pi].sh_size)
+			if (___nonzero s[pi].sh_size)
 			{
 				printf("|--(%04ld) ", (void*)&s[pi].sh_size - (void*)e);
 				hex_pure(&s[pi].sh_size, sizeof (s[pi].sh_size));
-				printf(___spc64 "sh_size, SH entries: %ld\n", s[pi].sh_size);
+				printf(___spc "sh_size, SH entries: %ld\n", s[pi].sh_size);
 			}
-			if (s[pi].sh_link)
+			if (___nonzero s[pi].sh_link)
 			{
 				printf("|--(%04ld) ", (void*)&s[pi].sh_link - (void*)e);
 				hex_pure(&s[pi].sh_link, sizeof (s[pi].sh_link));
-				printf(___spc64 "sh_link, name_string table: SH[%d]\n", s[pi].sh_link);
+				printf(___spc "sh_link, name_string table: SH[%d]\n", s[pi].sh_link);
 			}
 			if (!s[pi].sh_info && !s[pi].sh_size && !s[pi].sh_link)
 			{
@@ -312,6 +314,255 @@ void	pretty_print64()
 			}
 		}
 
+		if (pi >= SHN_LORESERVE && pi <= SHN_HIRESERVE)
+			printf("|- reserved.\n");
+		if (pi == SHN_LORESERVE)
+			printf("|- lower bound of reserved.\n");
+		if (pi >= SHN_LOPROC && pi <= SHN_HIPROC)
+			printf("|- CPU-specific.\n");
+		if (pi == SHN_ABS)
+			printf("|- absolute corresponding reference.\n");
+		if (pi == SHN_COMMON)
+			printf("|- common-relatives reference.\n");
+		if (pi == SHN_HIRESERVE)
+			printf("|- upper bound of reserved.\n");
+
+		if (pi != 0
+			&& (pi < SHN_LORESERVE || pi > SHN_HIRESERVE)
+			&& pi != SHN_UNDEF
+			&& (pi < SHN_LORESERVE || pi > SHN_HIRESERVE)
+			&& pi != SHN_ABS
+			&& pi != SHN_COMMON
+			&& pi != SHN_HIRESERVE)
+		{
+			if (___nonzero s[pi].sh_name)
+			{
+				printf("|\\ name      (%03ld) ", (void*)&s[pi].sh_name - (void*)e);
+				hex_msg(&s[pi].sh_name, sizeof(s[pi].sh_name),
+					___spc "on str_table[");
+				printf("%d]", s[pi].sh_name);
+				___br;
+			}
+
+			if (___nonzero s[pi].sh_type)
+			{
+				printf("|\\ type      (%03ld) ", (void*)&s[pi].sh_type - (void*)e);
+				hex_pure(&s[pi].sh_type, sizeof(s[pi].sh_type));
+				true_is(s[pi].sh_type, SHT_NULL,     "Undefined/unused.");
+				true_is(s[pi].sh_type, SHT_PROGBITS, "Prog-defined sect.");
+				true_is(s[pi].sh_type, SHT_SYMTAB,   "Link symbol table.");
+				true_is(s[pi].sh_type, SHT_STRTAB,   "String table.");
+				true_is(s[pi].sh_type, SHT_RELA,     "Reloc w/ addends.");
+				true_is(s[pi].sh_type, SHT_HASH,     "Symbol hash table.");
+				true_is(s[pi].sh_type, SHT_DYNAMIC,  "Dyn-linking infos.");
+				true_is(s[pi].sh_type, SHT_NOTE,     "Notes.");
+				true_is(s[pi].sh_type, SHT_NOBITS,   "No-bits mem.");
+				true_is(s[pi].sh_type, SHT_REL,      "Reloc w/o addends.");
+				true_is(s[pi].sh_type, SHT_SHLIB,    "Unespecified.");
+				true_is(s[pi].sh_type, SHT_DYNSYM,   "Dynmic links.");
+				if (___nonzero (s[pi].sh_type >= SHT_LOPROC && s[pi].sh_type <= SHT_HIUSER))
+					printf("CPU-specific.");
+				true_is(s[pi].sh_type, SHT_LOUSER,   "Low i for app.");
+				true_is(s[pi].sh_type, SHT_HIUSER,   "High i for app.");
+				___br;
+			}
+
+			if (___nonzero s[pi].sh_flags)
+			{
+				printf("|\\ flags     (%03ld) ", (void*)&s[pi].sh_flags - (void*)e);
+				hex_pure(&s[pi].sh_flags, sizeof(s[pi].sh_flags));
+				condition_msg(s[pi].sh_flags & SHF_WRITE,     "\n|                 - Writable data.");
+				condition_msg(s[pi].sh_flags & SHF_ALLOC,     "\n|                 - Alloc'd on exec.");
+				condition_msg(s[pi].sh_flags & SHF_EXECINSTR, "\n|                 - Machine language.");
+				condition_msg(s[pi].sh_flags & SHF_MASKPROC,  "\n|                 - CPU-specific.");
+				___br;
+			}
+
+			if (___nonzero s[pi].sh_addr)
+			{
+				printf("|\\ addr      (%03ld) ", (void*)&s[pi].sh_addr - (void*)e);
+				hex_msg(&s[pi].sh_addr, sizeof(s[pi].sh_addr),
+					___spc "First byte addr.");
+				___br;
+			}
+
+			if (___nonzero s[pi].sh_offset)
+			{
+				printf("|\\ offset    (%03ld) ", (void*)&s[pi].sh_offset - (void*)e);
+				hex_msg(&s[pi].sh_offset, sizeof(s[pi].sh_offset),
+					___spc "Offset: ");
+				printf("%ld B", s[pi].sh_offset);
+				___br;
+			}
+
+			if (___nonzero s[pi].sh_size)
+			{
+				printf("|\\ size      (%03ld) ", (void*)&s[pi].sh_size - (void*)e);
+				hex_msg(&s[pi].sh_size, sizeof(s[pi].sh_size),
+					___spc "Size: ");
+				printf("%ld B", s[pi].sh_size);
+				___br;
+			}
+
+			if (___nonzero s[pi].sh_addralign)
+			{
+				printf("|\\ addralign (%03ld) ", (void*)&s[pi].sh_addralign - (void*)e);
+				hex_msg(&s[pi].sh_addralign, sizeof(s[pi].sh_addralign),
+					___spc "");
+				printf("%ld", s[pi].sh_addralign);
+				___br;
+			}
+
+			if (___nonzero s[pi].sh_entsize)
+			{
+				printf("|\\ entsize   (%03ld) ", (void*)&s[pi].sh_entsize - (void*)e);
+				hex_msg(&s[pi].sh_entsize, sizeof(s[pi].sh_entsize),
+					___spc "Fixed-size pad.: ");
+				printf("%ld", s[pi].sh_entsize);
+				___br;
+			}
+
+			// Sections:
+
+			char	*ss;
+
+			ss = (char*)((void*)e + s[pi].sh_offset);
+			printf("\\/¨¨¨¨¨¨¨¨¨¨¨(%04ld) ", s[pi].sh_offset);
+
+			if (s[pi].sh_type == SHT_NOBITS
+				&& (s[pi].sh_flags & SHF_ALLOC
+					|| s[pi].sh_flags & SHF_WRITE))
+			{
+				printf("SHT_NOBITS ");
+				if (s[pi].sh_flags & SHF_ALLOC)
+					printf("SHF_ALLOC ");
+				if (s[pi].sh_flags & SHF_WRITE)
+					printf("WRITE");
+				___br;
+				printf(".bss Uninit wiped data area.\n");
+				hex_byte(ss, s[pi].sh_size);
+			}
+
+			if (s[pi].sh_type == SHT_PROGBITS
+				&& !s[pi].sh_flags)
+			{
+				printf("SHT_PROGBITS, no flags\n");
+				printf(".comment Version control info.\n");
+				printf(".debug Symbolic info.\n");
+				lin_dump(ss, s[pi].sh_size, 51);
+			}
+
+			if (s[pi].sh_type == SHT_PROGBITS
+				&& (s[pi].sh_flags & SHF_ALLOC
+					|| s[pi].sh_flags & SHF_WRITE))
+			{
+				printf("SHT_PROGBITS ");
+				if (s[pi].sh_flags & SHF_ALLOC)
+					printf("SHF_ALLOC ");
+				if (s[pi].sh_flags & SHF_WRITE)
+					printf("WRITE");
+				___br;
+				printf(".ctor Pointers to constructors.\n");
+				printf(".data Initialized data.\n");
+				printf(".data1 Initialized data.\n");
+				printf(".dtors Pointers to descructors.\n");
+				hex_byte(ss, s[pi].sh_size);
+			}
+
+			if (s[pi].sh_type == SHT_DYNAMIC
+				&& s[pi].sh_flags & SHF_ALLOC)
+			{
+				printf("SHT_DYNAMIC SHF_ALLOC");
+				if (s[pi].sh_flags & SHF_WRITE)
+					printf("WRITE");
+				___br;
+				printf(".dynamic Dynamic linking info.\n");
+				hex_byte(ss, s[pi].sh_size);
+			}
+
+			if (s[pi].sh_type == SHT_STRTAB
+				&& s[pi].sh_flags & SHF_ALLOC)
+			{
+				printf("SHT_STRTAB SHF_ALLOC\n");
+				printf(".dynstr Strings for dynamic linking.\n");
+				hex_byte(ss, s[pi].sh_size);
+			}
+
+			if (s[pi].sh_type == SHT_DYNSYM
+				&& s[pi].sh_flags & SHF_ALLOC)
+			{
+				printf("SHT_DYNSYM SHF_ALLOC\n");
+				printf(".dynsym Dynamic symbol table.\n");
+				hex_byte(ss, s[pi].sh_size);
+			}
+
+			if (s[pi].sh_type == SHT_PROGBITS
+				&& (s[pi].sh_flags & SHF_ALLOC
+					|| s[pi].sh_flags & SHF_EXECINSTR))
+			{
+				printf("SHT_PROGBITS ");
+				if (s[pi].sh_flags & SHF_ALLOC)
+					printf("SHF_ALLOC ");
+				if (s[pi].sh_flags & SHF_EXECINSTR)
+					printf("EXECINSTR");
+				___br;
+				printf(".fini Finish exec code.\n");
+				hex_byte(ss, s[pi].sh_size);
+			}
+
+			if (s[pi].sh_type == SHT_GNU_versym
+				&& (s[pi].sh_flags & SHF_ALLOC))
+			{
+				printf("SHT_GNU_versym SHF_ALLOC\n");
+				printf(".gnu.version Version symbol table.\n");
+				printf("\\ Array of Elf64_Half elements.\n");
+				Elf64_Half *half = (Elf64_Half*)ss;
+				printf("[");
+				for (size_t i = 0; i < s[pi].sh_size; i += sizeof(Elf64_Half))
+				{
+					printf("%d", *(half + i));
+					if (i + sizeof(Elf64_Half) < s[pi].sh_size)
+						printf(", ");
+					else
+						printf("]\n");
+				}
+				printf(".gnu.version_r Needed elements\n");
+
+				Elf64_Verneed *v_need = (Elf64_Verneed*)ss;
+				printf("\\ Array of Elf64_Verneed elements.\n");
+				printf("[");
+				for (size_t i = 0; i < s[pi].sh_size; i += sizeof(Elf64_Verneed))
+				{
+					printf("%d", *((uint*)v_need + i)); // uint16 on man
+					if (i + sizeof(Elf64_Verneed) < s[pi].sh_size)
+						printf(", ");
+					else
+						printf("]\n");
+				}
+			}
+
+			if (s[pi].sh_type == SHT_GNU_verdef
+				&& (s[pi].sh_flags & SHF_ALLOC))
+			{
+				printf("SHT_GNU_verdef SHF_ALLOC\n");
+				printf(".gnu.version_d Version symbol definitions.\n");
+				Elf64_Verdef *v_def = (Elf64_Verdef*)ss;
+				printf("[");
+				for (size_t i = 0; i < s[pi].sh_size; i += sizeof(Elf64_Verdef))
+				{
+					printf("%d", *((uint*)v_def + i)); // uint16 on man
+					if (i + sizeof(Elf64_Verdef) < s[pi].sh_size)
+						printf(", ");
+					else
+						printf("]\n");
+				}
+			}
+
+
+
+
+		}
+			printf("___________/\\(%04ld)\n", s[pi].sh_offset + s[pi].sh_size);
 
 	}
 

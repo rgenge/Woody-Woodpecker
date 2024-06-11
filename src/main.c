@@ -1,6 +1,6 @@
 #include "woody.h"
 
-t_elf	elf; // Yes, global.
+dumpster	elf; // Yes, global.
 
 void	validate_file()
 {
@@ -14,10 +14,42 @@ void	validate_file()
 		"File is not suitable bit class.");
 }
 
+void	elf_init()
+{
+	elf.bit_class =
+		elf.data[EI_CLASS] == ELFCLASS64 ? 64
+		: elf.data[EI_CLASS] == ELFCLASS32 ? 32
+		: 0;
+	if (elf.bit_class == 32)
+	{
+		elf.ehdr._32 = (Elf32_Ehdr*)elf.data;
+		elf.phdr._32 = (Elf32_Phdr*)(elf.data + elf.ehdr._32->e_phoff);
+		elf.shdr._32 = (Elf32_Shdr*)(elf.data + elf.ehdr._32->e_phoff);
+		elf.phnum = elf.ehdr._32->e_phnum == PN_XNUM ?
+			elf.shdr._32->sh_info : elf.ehdr._32->e_phnum;
+		elf.shnum = elf.ehdr._32->e_shnum == 0 ?
+			elf.shdr._32[0].sh_size : elf.ehdr._32->e_shnum;
+		elf.shstrndx = elf.ehdr._32->e_shstrndx == SHN_XINDEX ?
+			elf.shdr._32[0].sh_link : elf.ehdr._32->e_shstrndx;
+	}
+	else if (elf.bit_class == 64)
+	{
+		elf.ehdr._64 = (Elf64_Ehdr*)elf.data;
+		elf.phdr._64 = (Elf64_Phdr*)(elf.data + elf.ehdr._64->e_phoff);
+		elf.shdr._64 = (Elf64_Shdr*)(elf.data + elf.ehdr._64->e_phoff);
+		elf.phnum = elf.ehdr._64->e_phnum == PN_XNUM ?
+			elf.shdr._64->sh_info : elf.ehdr._64->e_phnum;
+		elf.shnum = elf.ehdr._64->e_shnum == 0 ?
+			elf.shdr._64[0].sh_size : elf.ehdr._64->e_shnum;
+		elf.shstrndx = elf.ehdr._64->e_shstrndx == SHN_XINDEX ?
+			elf.shdr._64[0].sh_link : elf.ehdr._64->e_shstrndx;
+	}
+}
+
 void  read_file(char *filename)
 {
-	int			fd;
-	int			filesize;
+	int				fd;
+	int				filesize;
 	long int	bytes_read;
 
 	fd = open(filename, O_RDONLY);
@@ -27,61 +59,26 @@ void  read_file(char *filename)
 	elf.data = malloc(filesize + 1);
 	___die (!elf.data, "Could not allocate.");
 	bytes_read = read(fd, elf.data, filesize);
-	___die (!bytes_read, "Is file empty?");
+	___die (!bytes_read, "No bytes read. Is file empty?");
 	___die (bytes_read == -1, "Error reading file");
 	elf.data[bytes_read] = 0; // Null-terminate.
-//	___deb lin_dump(elf.data, bytes_read, 0);
-//	___deb hex_dump(elf.ehdr, sizeof(elf.ehdr));
 }
 
-void	set_data_32_64()
+void	write_file(const char *woody)
 {
-	elf.bit_class = elf.data[EI_CLASS] == ELFCLASS64 ? 64 : elf.data[EI_CLASS] == ELFCLASS32 ? 32 : 0;
-	if (elf.bit_class == 32)
-	{
-		elf.ehdr = (Elf32_Ehdr*)elf.data;
-		elf.phdr = (Elf32_Phdr*)(elf.ehdr + ((Elf32_Ehdr*)elf.ehdr)->e_phoff);
-	}
-	else if (elf.bit_class == 64)
-	{
-		elf.ehdr = (Elf64_Ehdr*)elf.data;
-		elf.phdr = (Elf64_Phdr*)(elf.ehdr + ((Elf64_Ehdr*)elf.ehdr)->e_phoff);
-	}
+//	The intent here is to write the same ELF file
+//	based on the read structure.
+//	int fd;
+	(void)woody;
 }
 
-void	decrypt()
+int		main(int argc, char **argv)
 {
-	//  t_dv        *dv;
-	//  void        *ptr; 
-
-//	char *h;
-//
-//	h = elf.phdr;
-//	while (h - elf.phdr < elf.e_shentsize)
-//	{
-//		h++;
-//	}
-
-//	while (++i < elf.ehdr->e_phnum)
-//	{
-//		if(elf.phdr[i].p_vaddr == elf.phdr[i].p_paddr && elf.phdr[i].p_memsz == elf.phdr[i].p_filesz)
-//		{
-//			elf.phdr = &elf.phdr[i];
-//		} 
-//	}
-//	printf("\n%ld", elf.phdr->p_memsz);
-}
-
-int		main(int ac, char **av)
-{
-	ft_memset(&elf, 0, sizeof(elf));
-	if (ac != 2)
-		die("Usage: `woody_woodpacker binary_file`");
-	read_file(av[1]);
+	___die(argc != 2, "Usage: `woody_woodpacker binary_file`");
+	read_file(argv[1]);
 	validate_file();
-	set_data_32_64();
-	pretty_print(&elf);
-	decrypt();
+	elf_init();
+	write_file("woody");
 	free(elf.data);
 	return (0);
 }
