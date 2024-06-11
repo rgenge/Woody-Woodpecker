@@ -4,6 +4,7 @@ error_exit() {
 	echo "$1" && exit 1 
 }
 
+rm -f woody
 make || error_exit "[ KO ] Failed to make. Execute this script from the project root."
 
 ./woody_woodpacker "$1" && \

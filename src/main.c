@@ -69,7 +69,11 @@ void	write_file(const char *woody)
 //	The intent here is to write the same ELF file
 //	based on the read structure.
 //	int fd;
-	(void)woody;
+	int	fd;
+	fd = open("woody", O_CREAT);
+	___die (fd == -1, "Failed to create `woody`. File exists?");
+
+
 }
 
 int		main(int argc, char **argv)
