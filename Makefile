@@ -2,8 +2,9 @@ ifndef OUTPUT
 .SILENT:
 endif
 
-NAME	= woody_woodpacker
-ARGS	=	"samples/sample"
+NAME		= woody_woodpacker
+ARGS32	=	"samples/return32"
+ARGS64	= "samples/return64"
 
 CFLAGS	= -Wall -Werror -Wextra -g -Wfatal-errors
 
@@ -41,13 +42,15 @@ fclean:	clean
 re: fclean all
 
 v:			all
-	$(VAL) ./$(NAME) $(ARGS)
+	$(VAL) ./$(NAME) $(ARGS32)
 vf:			all
-	$(VAL) $(VALFLAG) ./$(NAME) $(ARGS)
+	$(VAL) $(VALFLAG) ./$(NAME) $(ARGS32)
 g:			all
-	gdb -args ./$(NAME) $(ARGS)
+	gdb -args ./$(NAME) $(ARGS32)
 t:			all
-	-unit/pass.sh $(ARGS)
+	-unit/pass.sh "$(ARGS32)"
+tt:			all
+	-unit/pass.sh "$(ARGS64)"
 
 rv:			re v
 rvf:		re vf
