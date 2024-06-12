@@ -75,7 +75,7 @@ void	elf_init()
 	{
 		elf.ehdr._32 = (Elf32_Ehdr*)elf.data;
 		elf.phdr._32 = (Elf32_Phdr*)(elf.data + elf.ehdr._32->e_phoff);
-		elf.shdr._32 = (Elf32_Shdr*)(elf.data + elf.ehdr._32->e_phoff);
+		elf.shdr._32 = (Elf32_Shdr*)(elf.data + elf.ehdr._32->e_shoff);
 		elf.phnum = elf.ehdr._32->e_phnum == PN_XNUM ?
 			elf.shdr._32->sh_info : elf.ehdr._32->e_phnum;
 		elf.shnum = elf.ehdr._32->e_shnum == 0 ?
@@ -87,7 +87,7 @@ void	elf_init()
 	{
 		elf.ehdr._64 = (Elf64_Ehdr*)elf.data;
 		elf.phdr._64 = (Elf64_Phdr*)(elf.data + elf.ehdr._64->e_phoff);
-		elf.shdr._64 = (Elf64_Shdr*)(elf.data + elf.ehdr._64->e_phoff);
+		elf.shdr._64 = (Elf64_Shdr*)(elf.data + elf.ehdr._64->e_shoff);
 		elf.phnum = elf.ehdr._64->e_phnum == PN_XNUM ?
 			elf.shdr._64->sh_info : elf.ehdr._64->e_phnum;
 		elf.shnum = elf.ehdr._64->e_shnum == 0 ?

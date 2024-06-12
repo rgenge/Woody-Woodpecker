@@ -277,7 +277,7 @@ void	pretty_print32()
 	// Section Header	
 	pi = -1;
 
-	printf("[ Elf32_Shdr %p (size each: %d B)\n", s, e->e_shentsize);
+	printf("[ Elf32_Shdr %p (each: %d B)\n", s, e->e_shentsize);
 	printf("| -------------------------------------------------|\n");
 
 	while (++pi < elf.shnum)

@@ -3,8 +3,8 @@ ifndef OUTPUT
 endif
 
 NAME	=	elfsdump
-ARGS1	=	samples/return32
-ARGS2	=	samples/return64
+ARGS1	=	../samples/return32
+ARGS2	=	../samples/return64
 SRCS	=	main.c utils.c elf32.c elf64.c
 HEAD	=	Makefile elfsdump.h
 SHELL	=	/bin/sh
