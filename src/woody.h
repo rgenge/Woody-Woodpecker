@@ -14,10 +14,11 @@
 typedef struct	elf_is_such_a
 {
 	char					*data; // raw bin content
+	uint32_t			data_size;
 	unsigned char	bit_class; // 32 || 64 bit
-	uint32_t			phnum;
-	uint32_t			shnum;
-	uint32_t			shstrndx;
+	uint32_t			phnum; // variable loc
+	uint32_t			shnum; // variable loc
+	uint32_t			shstrndx; // variable loc
 	union {
 		Elf32_Ehdr	*_32;
 		Elf64_Ehdr	*_64;
@@ -54,5 +55,6 @@ void	hex_msg(void* h, size_t amount, const char* msg);
 # define ___deb if (__debug) 
 # define ___br printf("\n")
 # define ___debp(x, y) if (__debug) { printf(x "\n", y); };
+# define ___ok ___die (bytes_written == -1, "Error writing to `woody`.");
 
 #endif

@@ -4,3 +4,6 @@ bot
 playground/*
 !playground/*.c
 !playground/*.sh
+woody
+
+woody_error
