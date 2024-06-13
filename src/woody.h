@@ -35,7 +35,6 @@ typedef struct	elf_is_such_a
 
 off_t	get_filesize(int fd);
 void	read_file(char *filename);
-void	die(char* message);
 void	*ft_memset(void *s, unsigned char c, size_t size);
 void	hex_dump(void* address, size_t amount);
 void	hex_byte(void* address, size_t amount);
@@ -49,10 +48,12 @@ void	hex_pure(void* h, size_t amount);
 void	hex_msg(void* h, size_t amount, const char* msg);
 void	*ft_memcpy(void *dst, const void *src, size_t n);
 
-# define ___die(_bool, _msg) if (_bool) die(_msg)
 # define bool char
 # define false 0
 # define true !false
+# define ___die(_bool, _msg) if (_bool) die(_msg)
+void	die(char* message);
+
 # define ___deb if (__debug) 
 # define ___br printf("\n")
 # define ___debp(x, y) if (__debug) { printf(x "", y); };
