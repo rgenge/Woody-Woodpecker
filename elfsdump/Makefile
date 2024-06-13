@@ -41,3 +41,10 @@ rv:			re v
 rvf:		re vf
 rg:			re g
 rt:			re t
+
+lin:		lindump
+lindump:	lindump.o
+	$(CC) $(CCFLAGS) lindump.c -o lindump
+	rm lindump.o
+lindump.o:	lindump.c
+	$(CC) $(CFLAGS) -o lindump.o -c lindump.c
