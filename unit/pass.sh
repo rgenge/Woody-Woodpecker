@@ -23,6 +23,7 @@ make || error_exit "[ KO ] Failed to make. Execute this script from the project 
 
 	[[ -x woody ]] && (green && echo "[ OK ] \`woody\` is executable.") || error_exit "[ KO ] \`woody\` is not executable."
 
+rm -f woody_error;
 if readelf -h ./woody 1>/dev/null 2>woody_error; then
 	red
 	echo "[ KO ] \`woody\` is not a valid ELF."

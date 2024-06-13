@@ -1,6 +1,9 @@
 #include "woody.h"
 
 dumpster	elf; // Yes, global.
+void*			memo;
+void*			zero;
+size_t		size;
 
 void	validate_file()
 {
@@ -64,58 +67,51 @@ void  read_file(char *filename)
 	___die (bytes_read == -1, "Error reading file");
 }
 
-ssize_t write_offset(int fd, unsigned int offset, void* src, size_t c)
+void	M(size_t offset, size_t c)
 {
-	lseek(fd, offset, SEEK_SET);
-	return write(fd, src, c);
+	void *h;
+	h = ft_memcpy(memo + offset, zero + offset, c);
+	___die(!h, "Failed to copy memory chunk.");
 }
 
 void	write_file(const char *woody)
 {
-//	The intent here is to write the same ELF file
-//	based on the read structure.
-//	int fd;
-	int	fd;
-	ssize_t bytes_written = 0;
+	memo = calloc(elf.data_size, 1);
+	___die(!memo, "Failed to prepare alloc data.");
+	___debp("Alloc: %d\n", elf.data_size);
 
-#ifndef _W
-# define _W ___ok; bytes_written = write_offset
-# define _E32 elf.ehdr._32
-# define _P32 elf.phdr._32
-# define _S32 elf.shdr._32
-#endif
+	zero = elf.data;
+	size = elf.data_size;
 
-	fd = open(woody, O_WRONLY | O_CREAT, 00755);
-	___die (fd == -1, "Failed to create `woody`. File exists?");
-	_W(fd, 0, _E32, elf.data_size);
+	___debp("R High: %p\n", zero + size);
+	___debp("R Low : %p\n", zero);
+	___debp("W High: %p\n", memo + size); 
+	___debp("W Low : %p\n", memo);
+	___debp("> tot : %ld\n", size);
+
 	if (elf.bit_class == 32)
 	{
-		_W(fd, 0, _E32, sizeof(Elf32_Ehdr));
-//		_W(fd, _E32->e_phoff, _P32,
-//			_E32->e_phentsize * elf.phnum);
+		M (0, sizeof(*_E32));
+
 		for (size_t i = 0; i < elf.phnum; i++)
 		{
-			printf("fd %d, off %d, add %p, size %d\n",
-						fd,
-						_P32[i].p_offset,
-						&_E32 + _P32[i].p_paddr,
-						_P32[i].p_filesz		); 
-			_W(		fd,
-						_P32[i].p_offset,
-						&_E32 + _P32[i].p_paddr,
-						_P32[i].p_filesz		); 
-		}
 
-		_W(fd, _E32->e_shoff, _S32, \
-			_E32->e_shentsize * elf.shnum);
-		___ok
-	}
-	else
-	{
-		bytes_written = write_offset(fd, 0, elf.ehdr._64, sizeof(Elf64_Ehdr));
-		___ok
-	}
+			___deb printf( ">> %d : %d\n",
+						_P32[i].p_offset,
+						_P32[i].p_filesz		); 
+
+			M (		_P32[i].p_offset,
+						_P32[i].p_filesz		); 
+
+		}
+	} // add else (64)
+
+	int		fd;
+	fd = open(woody, O_WRONLY | O_CREAT, 00755);
+	___die (fd == -1, "Failed to create `woody`. File exists?");
+	___die (write(fd, memo, size) == -1, "Could not write to file.");
 	close(fd);
+
 }
 
 int		main(int argc, char **argv)

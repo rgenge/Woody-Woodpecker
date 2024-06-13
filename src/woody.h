@@ -47,6 +47,7 @@ void	condition_msg(long long, const char* msg);
 void	flag_is(long long a, long long b, const char* msg);
 void	hex_pure(void* h, size_t amount);
 void	hex_msg(void* h, size_t amount, const char* msg);
+void	*ft_memcpy(void *dst, const void *src, size_t n);
 
 # define ___die(_bool, _msg) if (_bool) die(_msg)
 # define bool char
@@ -54,7 +55,13 @@ void	hex_msg(void* h, size_t amount, const char* msg);
 # define true !false
 # define ___deb if (__debug) 
 # define ___br printf("\n")
-# define ___debp(x, y) if (__debug) { printf(x "\n", y); };
-# define ___ok ___die (bytes_written == -1, "Error writing to `woody`.");
+# define ___debp(x, y) if (__debug) { printf(x "", y); };
+
+# define _E32 elf.ehdr._32
+# define _P32 elf.phdr._32
+# define _S32 elf.shdr._32
+# define _E64 elf.ehdr._64
+# define _P64 elf.phdr._64
+# define _S64 elf.shdr._64
 
 #endif
