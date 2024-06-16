@@ -118,7 +118,7 @@ void	write_file(const char *woody)
 
 		M (_E32->e_shoff, _E32->e_shentsize * elf.shnum);
 
-		for (size_t i = 1; i < elf.shnum; i++) // unused 0
+		for (size_t i = 0; i < elf.shnum; i++) // unused 0
 		{
 
 //			___deb printf( ">> %d : %d\n",
@@ -130,8 +130,23 @@ void	write_file(const char *woody)
 
 		}
 
-	} // TODO elseif (elf.bit_class == 64) {...}
-	else { ___die(true, "Unknown or not implemented e_type.");}
+	}
+	else if (elf.bit_class == 64)
+	{
+		M (0, _E64->e_ehsize);
+		M (_E64->e_phoff, _E64->e_phentsize * elf.phnum);
+		for (size_t i = 0; i < elf.phnum; i++)
+		{
+			M (		_P64[i].p_offset,
+						_P64[i].p_filesz		); 
+		}
+		M (_E64->e_shoff, _E64->e_shentsize * elf.shnum);
+		for (size_t i = 0; i < elf.shnum; i++) // unused 0
+		{
+			M (		_S64[i].sh_addr,
+						_S64[i].sh_size			); 
+		}
+	}
 
 	int		fd;
 	fd = open(woody, O_WRONLY | O_CREAT, 00755);
