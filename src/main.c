@@ -23,6 +23,13 @@ void	elf_init()
 		elf.data[EI_CLASS] == ELFCLASS64 ? 64
 		: elf.data[EI_CLASS] == ELFCLASS32 ? 32
 		: 0;
+
+	/*
+	 * phnum, shnum and shstrndx must be further referenced
+	 * as elf.phnum, elf.shnum and elf.shstrndx, and
+	 * NOT elf.ehdr._32->phnum etc., because their address
+	 * will vary if they are higher than 2 bytes storage.
+	 */
 	if (elf.bit_class == 32)
 	{
 		elf.ehdr._32 = (Elf32_Ehdr*)elf.data;
@@ -84,7 +91,13 @@ void	write_file(const char *woody)
 
 	if (elf.bit_class == 32)
 	{
-		M (0, sizeof(*_E32));
+		M (0, _E32->e_ehsize);
+
+		/*
+		 * Mildly redundant, because usually Phdr[0] holds
+		 * the whole Phdr section, but -- who knows?
+		 */
+		M (_E32->e_phoff, _E32->e_phentsize * elf.phnum);
 
 		for (size_t i = 0; i < elf.phnum; i++)
 		{
@@ -98,19 +111,22 @@ void	write_file(const char *woody)
 
 		}
 
+
+		M (_E32->e_shoff, _E32->e_shentsize * elf.shnum);
+
 		for (size_t i = 1; i < elf.shnum; i++) // unused 0
 		{
 
 //			___deb printf( ">> %d : %d\n",
 //						_S32[i].sh_addr,
-//						_S32[i].sh_size		); 
+//						_S32[i].sh_size			); 
 
 			M (		_S32[i].sh_addr,
-						_S32[i].sh_size		); 
+						_S32[i].sh_size			); 
 
 		}
 
-	} // elseif (elf.bit_class == 64) {...}
+	} // TODO elseif (elf.bit_class == 64) {...}
 	else { ___die(true, "Unknown or not implemented e_type.");}
 
 	int		fd;
