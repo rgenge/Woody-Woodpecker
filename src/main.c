@@ -89,9 +89,9 @@ void	write_file(const char *woody)
 		for (size_t i = 0; i < elf.phnum; i++)
 		{
 
-			___deb printf( ">> %d : %d\n",
-						_P32[i].p_offset,
-						_P32[i].p_filesz		); 
+//			___deb printf( ">> %d : %d\n",
+//						_P32[i].p_offset,
+//						_P32[i].p_filesz		); 
 
 			M (		_P32[i].p_offset,
 						_P32[i].p_filesz		); 
@@ -101,12 +101,12 @@ void	write_file(const char *woody)
 		for (size_t i = 1; i < elf.shnum; i++) // unused 0
 		{
 
-			___deb printf( ">> %d : %d\n",
-						_S32[i].addr,
-						_S32[i].size		); 
+//			___deb printf( ">> %d : %d\n",
+//						_S32[i].sh_addr,
+//						_S32[i].sh_size		); 
 
-			M (		_S32[i].addr,
-						_S32[i].size		); 
+			M (		_S32[i].sh_addr,
+						_S32[i].sh_size		); 
 
 		}
 
