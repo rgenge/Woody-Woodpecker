@@ -346,7 +346,7 @@ void	pretty_print64()
 
 			if (___nonzero s[pi].sh_type)
 			{
-				printf("|\\ type      (%03ld) ", (void*)&s[pi].sh_type - (void*)e);
+				printf("|\\ sh_type   (%03ld) ", (void*)&s[pi].sh_type - (void*)e);
 				hex_pure(&s[pi].sh_type, sizeof(s[pi].sh_type));
 				true_is(s[pi].sh_type, SHT_NULL,     "Undefined/unused.");
 				true_is(s[pi].sh_type, SHT_PROGBITS, "Prog-defined sect.");
@@ -369,7 +369,7 @@ void	pretty_print64()
 
 			if (___nonzero s[pi].sh_flags)
 			{
-				printf("|\\ flags     (%03ld) ", (void*)&s[pi].sh_flags - (void*)e);
+				printf("|\\ sh_flags  (%03ld) ", (void*)&s[pi].sh_flags - (void*)e);
 				hex_pure(&s[pi].sh_flags, sizeof(s[pi].sh_flags));
 				condition_msg(s[pi].sh_flags & SHF_WRITE,     "\n|                 - Writable data.");
 				condition_msg(s[pi].sh_flags & SHF_ALLOC,     "\n|                 - Alloc'd on exec.");
@@ -380,7 +380,7 @@ void	pretty_print64()
 
 			if (___nonzero s[pi].sh_addr)
 			{
-				printf("|\\ addr      (%03ld) ", (void*)&s[pi].sh_addr - (void*)e);
+				printf("|\\ sh_addr   (%03ld) ", (void*)&s[pi].sh_addr - (void*)e);
 				hex_msg(&s[pi].sh_addr, sizeof(s[pi].sh_addr),
 					___spc "First byte addr.");
 				___br;
@@ -388,7 +388,7 @@ void	pretty_print64()
 
 			if (___nonzero s[pi].sh_offset)
 			{
-				printf("|\\ offset    (%03ld) ", (void*)&s[pi].sh_offset - (void*)e);
+				printf("|\\ sh_offset (%03ld) ", (void*)&s[pi].sh_offset - (void*)e);
 				hex_msg(&s[pi].sh_offset, sizeof(s[pi].sh_offset),
 					___spc "Offset: ");
 				printf("%ld B", s[pi].sh_offset);
@@ -397,7 +397,7 @@ void	pretty_print64()
 
 			if (___nonzero s[pi].sh_size)
 			{
-				printf("|\\ size      (%03ld) ", (void*)&s[pi].sh_size - (void*)e);
+				printf("|\\ sh_size   (%03ld) ", (void*)&s[pi].sh_size - (void*)e);
 				hex_msg(&s[pi].sh_size, sizeof(s[pi].sh_size),
 					___spc "Size: ");
 				printf("%ld B", s[pi].sh_size);
@@ -406,7 +406,7 @@ void	pretty_print64()
 
 			if (___nonzero s[pi].sh_addralign)
 			{
-				printf("|\\ addralign (%03ld) ", (void*)&s[pi].sh_addralign - (void*)e);
+				printf("|\\sh_addralign(%03ld) ", (void*)&s[pi].sh_addralign - (void*)e);
 				hex_msg(&s[pi].sh_addralign, sizeof(s[pi].sh_addralign),
 					___spc "");
 				printf("%ld", s[pi].sh_addralign);
@@ -415,7 +415,7 @@ void	pretty_print64()
 
 			if (___nonzero s[pi].sh_entsize)
 			{
-				printf("|\\ entsize   (%03ld) ", (void*)&s[pi].sh_entsize - (void*)e);
+				printf("|\\ sh_entsize(%03ld) ", (void*)&s[pi].sh_entsize - (void*)e);
 				hex_msg(&s[pi].sh_entsize, sizeof(s[pi].sh_entsize),
 					___spc "Fixed-size pad.: ");
 				printf("%ld", s[pi].sh_entsize);

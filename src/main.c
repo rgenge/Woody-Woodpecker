@@ -77,7 +77,7 @@ void	M(size_t offset, size_t c)
 void	write_file(const char *woody)
 {
 	memo = calloc(elf.data_size, 1);
-	___die(!memo, "Failed to prepare alloc data.");
+	___die(!memo, "Failed to prepare alloc block.");
 
 	zero = elf.data;
 	size = elf.data_size;
@@ -98,7 +98,20 @@ void	write_file(const char *woody)
 
 		}
 
-	} // add else (64)
+		for (size_t i = 1; i < elf.shnum; i++) // unused 0
+		{
+
+			___deb printf( ">> %d : %d\n",
+						_S32[i].addr,
+						_S32[i].size		); 
+
+			M (		_S32[i].addr,
+						_S32[i].size		); 
+
+		}
+
+	} // elseif (elf.bit_class == 64) {...}
+	else { ___die(true, "Unknown or not implemented e_type.");}
 
 	int		fd;
 	fd = open(woody, O_WRONLY | O_CREAT, 00755);
