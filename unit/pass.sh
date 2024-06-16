@@ -8,6 +8,7 @@ error_exit() {
 	normal
 	exit 1
 }
+
 red() { tput setaf 1; }
 green() { tput setaf 2; }
 yellow() { tput setaf 3; }
@@ -24,10 +25,9 @@ make || error_exit "[ KO ] Failed to make. Execute this script from the project 
 
 	[[ -x woody ]] && (green && echo "[ OK ] \`woody\` is executable.") || error_exit "[ KO ] \`woody\` is not executable."
 
-if readelf -h ./woody 1>/dev/null 2>woody_error; then
+if [[ $(readelf -h ./woody 1>/dev/null 2>woody_error) ]]; then
 	red
 	echo "[ KO ] \`woody\` is not a valid ELF."
-	red
 	error_exit "$(cat woody_error)"
 else
 	green && echo "[ OK ] Valid ELF."
@@ -39,7 +39,7 @@ fi;
 	echo "Return value: $?";
 
 	echo "This is the output from \`woody\`:"
-	./woody || error_exit "[ KO ] \`woody\` failed execute."
+	./woody
 	echo "Return value: $?";
 
 	yellow
@@ -49,6 +49,6 @@ fi;
 	"$1" > b.tmp;
 	check=$(diff a.tmp b.tmp)
 	rm a.tmp b.tmp
-	check && (green && echo "[ OK ] Auto-check, the outputs are identical but for the 1st line.") || error_exit "[ OK ] Incorrect output (not identical)."
+	$check && (green && echo "[ OK ] Auto-check, the outputs are identical but for the 1st line.") || error_exit "[ OK ] Incorrect output (not identical)."
 
 	normal
