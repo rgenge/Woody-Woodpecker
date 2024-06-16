@@ -1,6 +1,7 @@
 #!/bin/bash
 
 error_exit() {
+	rm -f woody_error;
 	rm -f a.tmp b.tmp
 	red
 	echo "$1"
@@ -23,14 +24,11 @@ make || error_exit "[ KO ] Failed to make. Execute this script from the project 
 
 	[[ -x woody ]] && (green && echo "[ OK ] \`woody\` is executable.") || error_exit "[ KO ] \`woody\` is not executable."
 
-rm -f woody_error;
 if readelf -h ./woody 1>/dev/null 2>woody_error; then
 	red
 	echo "[ KO ] \`woody\` is not a valid ELF."
-	yellow 
-	echo "See \`woody_error\`. First issue:"
 	red
-	error_exit "$(head -1 woody_error)"
+	error_exit "$(cat woody_error)"
 else
 	green && echo "[ OK ] Valid ELF."
 fi;
