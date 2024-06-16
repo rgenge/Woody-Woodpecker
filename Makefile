@@ -5,6 +5,7 @@ endif
 NAME		= woody_woodpacker
 ARGS32	=	"samples/return32"
 ARGS64	= "samples/return64"
+ARGSS		=	"samples/sample"
 
 CFLAGS	= -Wall -Werror -Wextra -g -Wfatal-errors
 
@@ -51,6 +52,8 @@ t:			all
 	-unit/pass.sh "$(ARGS32)"
 tt:			all
 	-unit/pass.sh "$(ARGS64)"
+ts:			all
+	-unit/pass.sh "($ARGSS)"
 
 rv:			re v
 rvf:		re vf
