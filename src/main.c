@@ -78,16 +78,9 @@ void	write_file(const char *woody)
 {
 	memo = calloc(elf.data_size, 1);
 	___die(!memo, "Failed to prepare alloc data.");
-	___debp("Alloc: %d\n", elf.data_size);
 
 	zero = elf.data;
 	size = elf.data_size;
-
-	___debp("R High: %p\n", zero + size);
-	___debp("R Low : %p\n", zero);
-	___debp("W High: %p\n", memo + size); 
-	___debp("W Low : %p\n", memo);
-	___debp("> tot : %ld\n", size);
 
 	if (elf.bit_class == 32)
 	{
@@ -104,6 +97,7 @@ void	write_file(const char *woody)
 						_P32[i].p_filesz		); 
 
 		}
+
 	} // add else (64)
 
 	int		fd;
