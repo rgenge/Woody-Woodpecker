@@ -1,5 +1,10 @@
 #include "woody.h"
 
+extern dumpster	elf; // Yes, global.
+extern void*		memo;
+extern void*		zero;
+extern size_t		size;
+
 off_t	get_filesize(int fd)
 {
 	off_t result = lseek(fd, 0, SEEK_END);
@@ -170,6 +175,9 @@ void	*ft_memcpy(void *dst, const void *src, size_t n)
 {
 	char				*d;
 	const char	*s;
+
+	___deb printf("%ld dst: %ld, src: %ld, size: %ld\n",
+		size, dst - memo, src - zero, n);
 
 	if ((!dst) && (!src))
 		return (NULL);

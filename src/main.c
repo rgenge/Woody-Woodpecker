@@ -122,10 +122,10 @@ void	write_file(const char *woody)
 		{
 
 //			___deb printf( ">> %d : %d\n",
-//						_S32[i].sh_addr,
+//						_S32[i].sh_offset,
 //						_S32[i].sh_size			); 
 
-			M (		_S32[i].sh_addr,
+			M (		_S32[i].sh_offset,
 						_S32[i].sh_size			); 
 
 		}
@@ -143,7 +143,7 @@ void	write_file(const char *woody)
 		M (_E64->e_shoff, _E64->e_shentsize * elf.shnum);
 		for (size_t i = 0; i < elf.shnum; i++) // unused 0
 		{
-			M (		_S64[i].sh_addr,
+			M (		_S64[i].sh_offset,
 						_S64[i].sh_size			); 
 		}
 	}
