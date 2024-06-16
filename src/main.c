@@ -110,7 +110,11 @@ void	write_file(const char *woody)
 						_P32[i].p_filesz		); 
 
 		}
-
+		/*
+		 * We could end here, since shdr, comments etc.,
+		 * are only relevant for meta-data.
+		 * But let's copy the rest of the structure.
+		 */
 
 		M (_E32->e_shoff, _E32->e_shentsize * elf.shnum);
 
