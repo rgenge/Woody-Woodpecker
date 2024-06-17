@@ -269,6 +269,8 @@ void	pretty_print64()
 			___spc "Seg mem align: ");
 		printf("%ld", p[pi].p_align);
 		___br;
+
+		hex_byte(&p[pi].p_offset, p[pi].p_filesz);
 	}
 	printf("] -------------------------------------------------/\n");
 
@@ -440,7 +442,6 @@ void	pretty_print64()
 					printf("WRITE");
 				___br;
 				printf(".bss Uninit wiped data area.\n");
-				hex_byte(ss, s[pi].sh_size);
 			}
 
 			if (s[pi].sh_type == SHT_PROGBITS
@@ -466,7 +467,6 @@ void	pretty_print64()
 				printf(".data Initialized data.\n");
 				printf(".data1 Initialized data.\n");
 				printf(".dtors Pointers to descructors.\n");
-				hex_byte(ss, s[pi].sh_size);
 			}
 
 			if (s[pi].sh_type == SHT_DYNAMIC
@@ -477,7 +477,6 @@ void	pretty_print64()
 					printf("WRITE");
 				___br;
 				printf(".dynamic Dynamic linking info.\n");
-				hex_byte(ss, s[pi].sh_size);
 			}
 
 			if (s[pi].sh_type == SHT_STRTAB
@@ -485,7 +484,6 @@ void	pretty_print64()
 			{
 				printf("SHT_STRTAB SHF_ALLOC\n");
 				printf(".dynstr Strings for dynamic linking.\n");
-				hex_byte(ss, s[pi].sh_size);
 			}
 
 			if (s[pi].sh_type == SHT_DYNSYM
@@ -493,7 +491,6 @@ void	pretty_print64()
 			{
 				printf("SHT_DYNSYM SHF_ALLOC\n");
 				printf(".dynsym Dynamic symbol table.\n");
-				hex_byte(ss, s[pi].sh_size);
 			}
 
 			if (s[pi].sh_type == SHT_PROGBITS
@@ -507,7 +504,6 @@ void	pretty_print64()
 					printf("EXECINSTR");
 				___br;
 				printf(".fini Finish exec code.\n");
-				hex_byte(ss, s[pi].sh_size);
 			}
 
 			if (s[pi].sh_type == SHT_GNU_versym
@@ -558,11 +554,10 @@ void	pretty_print64()
 				}
 			}
 
-
-
-
+			hex_byte(ss, s[pi].sh_size);
 		}
-			printf("___________/\\(%04ld)\n", s[pi].sh_offset + s[pi].sh_size);
+
+		printf("___________/\\(%04ld)\n", s[pi].sh_offset + s[pi].sh_size);
 
 	}
 
