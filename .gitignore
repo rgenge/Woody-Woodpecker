@@ -12,3 +12,5 @@ samples/B64
 samples/return64
 samples/A32
 samples/B32
+samples/sample32
+samples/sample64

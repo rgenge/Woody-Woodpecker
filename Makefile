@@ -12,7 +12,13 @@ NAME		= woody_woodpacker
 
 ARGS32	=	"samples/return32"
 ARGS64	= "samples/return64"
-ARGSS		=	"samples/sample64"
+ARGSS64	=	"samples/sample64"
+ARGSS32	=	"samples/sample32"
+ARGSA32 = "samples/A32"
+ARGSB64 = "samples/B64"
+ARGSB32 = "samples/B32"
+ARGSA64 = "samples/A64"
+
 ARGMAIN	=	"samples/sample"
 
 CFLAGS	= -Wall -Werror -Wextra -g -Wfatal-errors
@@ -47,9 +53,13 @@ clean:
 
 fclean:	clean
 	@rm -rf $(NAME)
-	@cd pass && ./clean.sh
+	@cd samples && ./clean.sh
 
 re: fclean all
+
+.PHONY: samples
+samples:
+	cd samples && ./tiny.sh
 
 v:			all
 	$(VAL) ./$(NAME) $(ARGS32)
@@ -57,14 +67,15 @@ vf:			all
 	$(VAL) $(VALFLAG) ./$(NAME) $(ARGS32)
 g:			all
 	gdb -args ./$(NAME) $(ARGS32)
+
 t:			all
 	-unit/pass.sh "$(ARGS32)"
 tt:			all
 	-unit/pass.sh "$(ARGS64)"
 s:			all
-	-unit/pass.sh "$(ARGSS)"
-samples:
-	cd samples && ./tiny.sh
+	-unit/pass.sh "$(ARGSS32)"
+ss:			all
+	-unit/pass.sh "$(ARGSS64)"
 
 rv:			re v
 rvf:		re vf

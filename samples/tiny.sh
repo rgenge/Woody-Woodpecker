@@ -28,8 +28,8 @@ gcc -m64 sample.c -o sample64
 echo -n "Test sample64: "
 ./sample64
 
-gcc -m32 sample.c -o sample62
-echo -n "Test sample 32: "
+gcc -m32 sample.c -o sample32
+echo -n "Test sample32: "
 ./sample32
 
 

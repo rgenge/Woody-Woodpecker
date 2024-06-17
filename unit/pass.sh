@@ -2,7 +2,7 @@
 
 error_exit() {
 	rm -f woody_error;
-	rm -f a.tmp b.tmp
+	rm -f a.tmp b.tmp out.tmp
 	red
 	echo "$1"
 	normal
@@ -49,12 +49,12 @@ fi;
 	cat out.tmp | tail -n +2 > a.tmp
 	"./$1" > b.tmp;
 	check=$(diff a.tmp b.tmp)
-	[[ -n "$(cat a.tmp)" ]] && \
-		(green && echo "[ OK ] There is some response.") \
-		|| red && error_exit "[ KO ] Empty output." 
-	[[ -z "$check" ]] && (green && echo "[ OK ] Auto-check, the outputs are identical but for the 1st line.") || error_exit "[ OK ] Incorrect output (not identical)."
+	[[ -n "$(cat out.tmp)" ]] && \
+		(green && echo "[ OK ] There was some ouput.") \
+		|| error_exit "[ KO ] Output must exist and be ...WOODY..."
+	[[ -z "$check" ]] && (green && echo "[ OK ] Auto-check, the outputs are identical but for the 1st line.") || error_exit "[ OK ] Unmatched output ignoring first line."
 
-	rm -f a.tmp b.tmp
+	rm -f a.tmp b.tmp out.tmp
 	rm -f woody_error
 
 	normal
