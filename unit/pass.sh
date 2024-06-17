@@ -14,9 +14,6 @@ green() { tput setaf 2; }
 yellow() { tput setaf 3; }
 normal() { tput sgr0; }
 
-#rm -f woody
-#make || error_exit "[ KO ] Failed to make. Execute this script from the project root."
-
 ./woody_woodpacker "$1" && \
 	(yellow && \
 	echo "[ OK? ] Output OK?") || error_exit "[ KO ] \`woody_woodpacker\` crashed or returned non-zero status."
@@ -36,7 +33,7 @@ fi;
 	yellow
 	echo "This is the output from \`$1\`:"
 	normal
-	"./$1" || error_exit "[ KO ] Execution failed."
+	"./$1"
 	echo "Return value: $?";
 
 	yellow
@@ -48,7 +45,8 @@ fi;
 	yellow
 	echo "[ OK? ] \`woody\` is run, must have the same behavior of \`$1\`, but with \'....WOODY.....\' on top."
 
-	./woody | tail -n +2 > a.tmp || error_exit "[ KO ] `woody` execution failed.";
+	./woody > out.tmp
+	cat out.tmp | tail -n +2 > a.tmp
 	"./$1" > b.tmp;
 	check=$(diff a.tmp b.tmp)
 	[[ -n "$(cat a.tmp)" ]] && \

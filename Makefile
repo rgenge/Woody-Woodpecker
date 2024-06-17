@@ -2,10 +2,18 @@ ifndef OUTPUT
 .SILENT:
 endif
 
+# Besides usual all, clean, fclean, re, use:
+# v  : valgrind
+# vf : valgrind full flags
+# g  : gdb
+
+
 NAME		= woody_woodpacker
+
 ARGS32	=	"samples/return32"
 ARGS64	= "samples/return64"
 ARGSS		=	"samples/sample"
+ARGMAIN	=	"samples/sample"
 
 CFLAGS	= -Wall -Werror -Wextra -g -Wfatal-errors
 
@@ -52,8 +60,8 @@ t:			all
 	-unit/pass.sh "$(ARGS32)"
 tt:			all
 	-unit/pass.sh "$(ARGS64)"
-ts:			all
-	-unit/pass.sh "($ARGSS)"
+s:			all
+	-unit/pass.sh "$(ARGSS)"
 
 rv:			re v
 rvf:		re vf
