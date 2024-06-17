@@ -14,8 +14,8 @@ green() { tput setaf 2; }
 yellow() { tput setaf 3; }
 normal() { tput sgr0; }
 
-rm -f woody
-make || error_exit "[ KO ] Failed to make. Execute this script from the project root."
+#rm -f woody
+#make || error_exit "[ KO ] Failed to make. Execute this script from the project root."
 
 ./woody_woodpacker "$1" && \
 	(yellow && \
@@ -33,12 +33,15 @@ else
 	green && echo "[ OK ] Valid ELF."
 fi;
 
-	normal
+	yellow
 	echo "This is the output from \`$1\`:"
-	"$1"
+	normal
+	"./$1" || error_exit "[ KO ] Execution failed."
 	echo "Return value: $?";
 
-	echo "This is the output from \`woody\`:"
+	yellow
+	echo "This is the output from \`./woody\`:"
+	normal
 	./woody
 	echo "Return value: $?";
 
@@ -46,9 +49,14 @@ fi;
 	echo "[ OK? ] \`woody\` is run, must have the same behavior of \`$1\`, but with \'....WOODY.....\' on top."
 
 	./woody | tail -n +2 > a.tmp || error_exit "[ KO ] `woody` execution failed.";
-	"$1" > b.tmp;
+	"./$1" > b.tmp;
 	check=$(diff a.tmp b.tmp)
-	rm a.tmp b.tmp
-	$check && (green && echo "[ OK ] Auto-check, the outputs are identical but for the 1st line.") || error_exit "[ OK ] Incorrect output (not identical)."
+	[[ -n "$(cat a.tmp)" ]] && \
+		(green && echo "[ OK ] There is some response.") \
+		|| red && error_exit "[ KO ] Empty output." 
+	[[ -z "$check" ]] && (green && echo "[ OK ] Auto-check, the outputs are identical but for the 1st line.") || error_exit "[ OK ] Incorrect output (not identical)."
+
+	rm -f a.tmp b.tmp
+	rm -f woody_error
 
 	normal
