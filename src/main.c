@@ -11,10 +11,10 @@ void	validate_file()
 		elf.data[EI_MAG1] != ELFMAG1 ||
 		elf.data[EI_MAG2] != ELFMAG2 ||
 		elf.data[EI_MAG3] != ELFMAG3,
-		"Invalid ELF file."); // Verify ELF header 
+		"Invalid ELF file.");
 	___die (elf.data[EI_CLASS] != ELFCLASS32 &&
 		elf.data[EI_CLASS] != ELFCLASS64,
-		"File is not suitable bit class.");
+		"File is not of suitable bit class.");
 }
 
 void	elf_init()
@@ -111,9 +111,9 @@ void	write_file(const char *woody)
 
 		}
 		/*
-		 * We could end here, since shdr, comments etc.,
-		 * are only relevant for meta-data.
-		 * But let's copy the rest of the structure.
+		 * We could end here, ant it would execute correctly,
+		 * since shdr, comments etc. are only relevant for meta-data.
+		 * But let's copy the rest of the structure anyway.
 		 */
 
 		M (_E32->e_shoff, _E32->e_shentsize * elf.shnum);
