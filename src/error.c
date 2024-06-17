@@ -9,6 +9,7 @@ void close_all_fds()
 void die(char* message)
 {
 	close_all_fds();
+	printf("Controlled error:\n");
 	perror(message);
 	exit(1);
 }

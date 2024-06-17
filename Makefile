@@ -40,7 +40,7 @@ VALFLAG	=	--tool=memcheck \
 			--track-origins=yes \
 			--show-reachable=yes
 
-all:	$(NAME)
+all:	samples $(NAME)
 
 $(NAME): $(OBJ) $(HEAD)
 	$(CC) $(CFLAGS) $(SRC) -o $(NAME)
