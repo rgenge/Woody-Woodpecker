@@ -5,5 +5,10 @@ playground/*
 !playground/*.c
 !playground/*.sh
 woody
-
 woody_error
+samples/return32
+samples/A64
+samples/B64
+samples/return64
+samples/A32
+samples/B32

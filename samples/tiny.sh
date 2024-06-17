@@ -23,3 +23,13 @@ gcc -m32 return.c -o return32
 echo -n "Test return 32 (42): "
 ./return32
 echo $?;
+
+gcc -m64 sample.c -o sample64
+echo -n "Test sample64: "
+./sample64
+
+gcc -m32 sample.c -o sample62
+echo -n "Test sample 32: "
+./sample32
+
+

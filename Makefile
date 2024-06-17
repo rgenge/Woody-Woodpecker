@@ -6,13 +6,13 @@ endif
 # v  : valgrind
 # vf : valgrind full flags
 # g  : gdb
-
+# samples : compiles samples
 
 NAME		= woody_woodpacker
 
 ARGS32	=	"samples/return32"
 ARGS64	= "samples/return64"
-ARGSS		=	"samples/sample"
+ARGSS		=	"samples/sample64"
 ARGMAIN	=	"samples/sample"
 
 CFLAGS	= -Wall -Werror -Wextra -g -Wfatal-errors
@@ -47,6 +47,7 @@ clean:
 
 fclean:	clean
 	@rm -rf $(NAME)
+	@cd pass && ./clean.sh
 
 re: fclean all
 
@@ -62,6 +63,8 @@ tt:			all
 	-unit/pass.sh "$(ARGS64)"
 s:			all
 	-unit/pass.sh "$(ARGSS)"
+samples:
+	cd samples && ./tiny.sh
 
 rv:			re v
 rvf:		re vf
