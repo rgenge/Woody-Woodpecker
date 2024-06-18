@@ -270,7 +270,7 @@ void	pretty_print64()
 		printf("%ld", p[pi].p_align);
 		___br;
 
-		hex_byte(&p[pi].p_offset, p[pi].p_filesz);
+		hex_byte((void*)e + p[pi].p_offset, p[pi].p_filesz);
 	}
 	printf("] -------------------------------------------------/\n");
 
