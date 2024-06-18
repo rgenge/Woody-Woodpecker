@@ -430,6 +430,7 @@ void	pretty_print64()
 
 			ss = (char*)((void*)e + s[pi].sh_offset);
 			printf("\\/¨¨¨¨¨¨¨¨¨¨¨(%04ld) ", s[pi].sh_offset);
+			___br;
 
 			if (s[pi].sh_type == SHT_NOBITS
 				&& (s[pi].sh_flags & SHF_ALLOC
