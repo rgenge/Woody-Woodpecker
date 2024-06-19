@@ -176,9 +176,6 @@ void	*ft_memcpy(void *dst, const void *src, size_t n)
 	char				*d;
 	const char	*s;
 
-	___deb printf("%ld dst: %ld, src: %ld, size: %ld\n",
-		size, dst - memo, src - zero, n);
-
 	if ((!dst) && (!src))
 		return (NULL);
 	d = dst;

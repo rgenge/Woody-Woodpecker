@@ -4,6 +4,7 @@ bot
 playground/*
 !playground/*.c
 !playground/*.sh
+!playground/*.s
 woody
 woody_error
 samples/return32

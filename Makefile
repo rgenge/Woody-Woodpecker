@@ -62,11 +62,11 @@ samples:
 	cd samples && ./tiny.sh
 
 v:			all
-	$(VAL) ./$(NAME) $(ARGS32)
+	$(VAL) ./$(NAME) $(ARGSS64)
 vf:			all
-	$(VAL) $(VALFLAG) ./$(NAME) $(ARGS32)
+	$(VAL) $(VALFLAG) ./$(NAME) $(ARGSS64)
 g:			all
-	gdb -args ./$(NAME) $(ARGS32)
+	gdb -args ./$(NAME) $(ARGSS64)
 
 t:			all
 	-unit/pass.sh "$(ARGS32)"

@@ -33,8 +33,21 @@ typedef struct	elf_is_such_a
 	}							shdr;
 }								dumpster;
 
+typedef struct	injection
+{
+	dumpster			troll;
+	char					*bin;
+	uint32_t			bin_size;
+	Elf64_Addr		prev_entry;
+//	union {
+//		Elf32_Phdr	*_32;
+//		Elf64_Phdr	*_64;
+//	}							ph;
+}								injector;
+
+
 off_t	get_filesize(int fd);
-void	read_file(char *filename);
+void	read_original_elf(char *filename);
 void	*ft_memset(void *s, unsigned char c, size_t size);
 void	hex_dump(void* address, size_t amount);
 void	hex_byte(void* address, size_t amount);
