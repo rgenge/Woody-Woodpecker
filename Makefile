@@ -75,7 +75,7 @@ tt:			all
 s:			all
 	-unit/pass.sh "$(ARGSS32)"
 ss:			all
-	-unit/pass.sh "$(ARGSS64)"
+	-unit/pass.sh "$(ARGS64)"
 
 rv:			re v
 rvf:		re vf

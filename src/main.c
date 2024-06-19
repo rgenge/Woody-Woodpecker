@@ -107,23 +107,7 @@ void	write_file(const char *woody)
 	zero = elf.data;
 	size = elf.data_size;
 
-	if (elf.bit_class == 32)
-	{
-		M (0, _E32->e_ehsize);
-		M (_E32->e_phoff, _E32->e_phentsize * elf.phnum);
-		for (size_t i = 0; i < elf.phnum; i++)
-		{
-			M (		_P32[i].p_offset,
-						_P32[i].p_filesz		); 
-		}
-		M (_E32->e_shoff, _E32->e_shentsize * elf.shnum);
-		for (size_t i = 0; i < elf.shnum; i++)
-		{
-			M (		_S32[i].sh_offset,
-						_S32[i].sh_size			); 
-		}
-	}
-	else if (elf.bit_class == 64)
+	if (elf.bit_class == 64)
 	{
 		_E64 = (Elf64_Ehdr*)elf.data;
 		_P64 = (Elf64_Phdr*)(elf.data + _E64->e_phoff);
@@ -142,6 +126,7 @@ void	write_file(const char *woody)
 						_S64[i].sh_size			); 
 		}
 	}
+
 	int		fd;
 	fd = open(woody, O_WRONLY | O_CREAT, 00755);
 	___die (fd == -1, "Failed to create `woody`. File exists?");
@@ -151,8 +136,7 @@ void	write_file(const char *woody)
 }
 
 /*
- * For now, will inject by append.
- * 1 new Phdr, 1 new Load session.
+ * For now, will inject by insertion.
  * Only for 64bit little endian.
  * Without criptography.
  */
@@ -167,23 +151,38 @@ void	inject()
 	ih = inj.troll.data;
 	eh = elf.data;
 
-	ft_memcpy(ih, eh, _E64->e_ehsize);
+	size_t txt_p_align;
 	for (size_t i = 0; i < elf.phnum; i++)
 	{
-		ft_memcpy(ih + _P64[i].p_offset,
-		eh + _P64[i].p_offset,
-		_P64[i].p_filesz); 
+		if (_P64[i].p_type == PT_LOAD)
+		{
+			txt_p_align = _P64[i].p_align;
+		}
+		if (_P64[i].p_paddr == _E64->e_entry)
+		{
+			_P64[i].p_filesz += inj.bin_size;
+			_P64[i].p_memsz += inj.bin_size;
+		}
 	}
-	ft_memcpy(
-		ih + _E64->e_shoff,
-		eh + _E64->e_shoff,
-		_E64->e_shentsize * elf.shnum);
+
 	for (size_t i = 0; i < elf.shnum; i++)
 	{
-		ft_memcpy(ih + _S64[i].sh_offset,
-		eh + _S64[i].sh_offset,
-		_S64[i].sh_size); 
+		if (_S64[i].sh_offset == _E64->e_entry)
+		{
+			_S64[i].sh_size += inj.bin_size;
+		}
 	}
+
+	ft_memcpy(ih, eh, elf.data_size);
+
+	ft_memcpy(
+		ih + _E64->e_entry + extra_size,
+		eh + _E64->e_entry,
+		txt_p_align - extra_size);
+	ft_memcpy(
+		ih + _E64->e_entry,
+		inj.bin,
+		inj.bin_size);
 
 	free(inj.bin);
 	free(elf.data);

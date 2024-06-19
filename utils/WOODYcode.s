@@ -1,4 +1,7 @@
 .text:
+	push rax
+	push rdi
+	push rsi
 	sub rsp, 16 ; allocate string size
 	mov dword [rsp], 0x2e2e2e2e			; ....
 	mov dword [rsp + 4], 0x444f4f57 ; WOOD
@@ -10,4 +13,7 @@
 	mov rdx, 16
 	syscall
 	add rsp, 16
+	pop rsi
+	pop rdi
+	pop rax
 ; no exit; will segfault
