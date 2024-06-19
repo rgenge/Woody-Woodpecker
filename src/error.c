@@ -1,6 +1,6 @@
 #include "woody.h"
 
-extern dumpster	elf; // Yes, global.
+extern dumpster	*elf; // Yes, global.
 extern injector inj;
 
 void close_all_fds()
@@ -12,8 +12,9 @@ void close_all_fds()
 void die(char* message)
 {
 	close_all_fds();
-	free(elf.data);
+	free(elf->data);
 	free(inj.bin);
+	free(elf);
 	printf("Controlled error:\n");
 	perror(message);
 	exit(1);

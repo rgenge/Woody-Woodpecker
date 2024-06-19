@@ -1,6 +1,6 @@
 #include "woody.h"
 
-extern dumpster	elf; // Yes, global.
+extern dumpster	*elf;
 extern void*		memo;
 extern void*		zero;
 extern size_t		size;

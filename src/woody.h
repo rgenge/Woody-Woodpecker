@@ -71,11 +71,11 @@ void	die(char* message);
 # define ___br printf("\n")
 # define ___debp(x, y) if (__debug) { printf(x "", y); };
 
-# define _E32 elf.ehdr._32
-# define _P32 elf.phdr._32
-# define _S32 elf.shdr._32
-# define _E64 elf.ehdr._64
-# define _P64 elf.phdr._64
-# define _S64 elf.shdr._64
+# define _E32 elf->ehdr._32
+# define _P32 elf->phdr._32
+# define _S32 elf->shdr._32
+# define _E64 elf->ehdr._64
+# define _P64 elf->phdr._64
+# define _S64 elf->shdr._64
 
 #endif
