@@ -20,4 +20,6 @@ off_t    		get_filesize(int fd);
 void            read_file(t_elf *elf, char *filename);
 void            print_error(char* message);
 void            *ft_memset(void *s, int c, size_t size);
+int				ft_strncmp(const char *s1, const char *s2, size_t size);
+void			*ft_memcpy(void *dest, const void *src, size_t size);
 #endif
