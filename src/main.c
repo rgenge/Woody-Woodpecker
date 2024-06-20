@@ -138,9 +138,7 @@ void	inject()
 	for (size_t i = 0; i < elf->phnum; i++)
 	{
 		if (_P64[i].p_type == PT_LOAD)
-		{
 			txt_p_align = _P64[i].p_align;
-		}
 		if (_P64[i].p_paddr == _E64->e_entry)
 		{
 			_P64[i].p_filesz += inj.bin_size;
@@ -149,12 +147,8 @@ void	inject()
 	}
 
 	for (size_t i = 0; i < elf->shnum; i++)
-	{
 		if (_S64[i].sh_offset == _E64->e_entry)
-		{
 			_S64[i].sh_size += inj.bin_size;
-		}
-	}
 
 	ft_memcpy(ih, eh, elf->data_size);
 
@@ -185,4 +179,3 @@ int		main(int argc, char **argv)
 	free(elf);
 	return (0);
 }
-
