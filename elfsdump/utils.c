@@ -42,6 +42,7 @@ void	lin_dump(void* address, size_t amount, size_t line_break)
 
 void	hex_byte(void* address, size_t amount)
 {
+	char *COLORMODE = getenv("COLORMODE");
 	char*	h; // head
 	size_t a = amount;
 	if (a > 80)
@@ -54,10 +55,10 @@ void	hex_byte(void* address, size_t amount)
 		for (size_t o = 0; o < 8 && o < a; o++) // offset
 		{
 			if (!(*((char*)h + o) & 0xFF))
-				printf("\033[38;5;240m");
+				if (COLORMODE) printf("\033[38;5;240m");
 			printf("%02x ", *(h + o) & 0xFF);
 			if (!(*((char*)h + o) & 0xFF))
-				printf("\033[0m");
+				if (COLORMODE) printf("\033[0m");
 		}
 		for (size_t o = 0; o < 8 && o < a; o += 1)
 		{
