@@ -10,16 +10,8 @@ endif
 
 NAME		= woody_woodpacker
 
-ARGS32	=	"samples/return32"
-ARGS64	= "samples/return64"
-ARGSS64	=	"samples/sample64"
-ARGSS32	=	"samples/sample32"
-ARGSA32 = "samples/A32"
-ARGSB64 = "samples/B64"
-ARGSB32 = "samples/B32"
-ARGSA64 = "samples/A64"
-
-ARGMAIN	=	"samples/sample"
+RETURN64= "samples/return64"
+HELLO64	=	"samples/sample64"
 
 CFLAGS	= -Wall -Werror -Wextra -g -Wfatal-errors
 
@@ -62,20 +54,16 @@ samples:
 	cd samples && ./tiny.sh
 
 v:			all
-	$(VAL) ./$(NAME) $(ARGSS64)
+	$(VAL) ./$(NAME) $(HELLO64)
 vf:			all
-	$(VAL) $(VALFLAG) ./$(NAME) $(ARGSS64)
+	$(VAL) $(VALFLAG) ./$(NAME) $(HELLO64)
 g:			all
-	gdb -args ./$(NAME) $(ARGSS64)
+	gdb -args ./$(NAME) $(HELLO64)
 
 t:			all
-	-unit/pass.sh "$(ARGS32)"
-tt:			all
-	-unit/pass.sh "$(ARGS64)"
+	-unit/pass.sh "$(RETURN64)"
 s:			all
-	-unit/pass.sh "$(ARGSS32)"
-ss:			all
-	-unit/pass.sh "$(ARGS64)"
+	-unit/pass.sh "$(HELLO64)"
 
 rv:			re v
 rvf:		re vf

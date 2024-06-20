@@ -42,17 +42,6 @@ typedef struct	injection
 
 off_t	get_filesize(int fd);
 void	read_original_elf(char *filename);
-void	*ft_memset(void *s, unsigned char c, size_t size);
-void	hex_dump(void* address, size_t amount);
-void	hex_byte(void* address, size_t amount);
-void	lin_dump(void* address, size_t offset, size_t line_break);
-void	say(char* msg, void* data, char type);
-void	byte_is(void* h, long long test, const char* msg);
-void	true_is(long long a, long long b, const char* msg);
-void	condition_msg(long long, const char* msg);
-void	flag_is(long long a, long long b, const char* msg);
-void	hex_pure(void* h, size_t amount);
-void	hex_msg(void* h, size_t amount, const char* msg);
 void	*ft_memcpy(void *dst, const void *src, size_t n);
 void	validate_file();
 int		free_all();
