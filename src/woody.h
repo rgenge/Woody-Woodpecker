@@ -35,16 +35,10 @@ typedef struct	elf_is_such_a
 
 typedef struct	injection
 {
-	dumpster			troll;
+	char					*data;
 	char					*bin;
 	uint32_t			bin_size;
-	Elf64_Addr		prev_entry;
-//	union {
-//		Elf32_Phdr	*_32;
-//		Elf64_Phdr	*_64;
-//	}							ph;
 }								injector;
-
 
 off_t	get_filesize(int fd);
 void	read_original_elf(char *filename);
@@ -60,6 +54,12 @@ void	flag_is(long long a, long long b, const char* msg);
 void	hex_pure(void* h, size_t amount);
 void	hex_msg(void* h, size_t amount, const char* msg);
 void	*ft_memcpy(void *dst, const void *src, size_t n);
+void	validate_file();
+int		free_all();
+void  read_original_elf(char *filename);
+void	read_blob(char *filename);
+void	M(size_t offset, size_t c);
+void	file_out_to_file(const char*);
 
 # define bool char
 # define false 0

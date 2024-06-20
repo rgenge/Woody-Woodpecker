@@ -1,14 +1,18 @@
 #include "woody.h"
 
-extern dumpster	*elf;
-extern void*		memo;
-extern void*		zero;
-extern size_t		size;
+extern dumpster		*elf;
+extern injector		*inj;
+extern void*			file_out;
+extern bool				elf_alloc;
+extern bool				elf_data_alloc;
+extern bool				inj_alloc;
+extern bool				inj_data_alloc;
+extern bool				inj_bin_alloc;
+extern bool				file_out_alloc;
 
 off_t	get_filesize(int fd)
 {
 	off_t result = lseek(fd, 0, SEEK_END);
-
 	if (result == -1 || lseek(fd, 0, SEEK_SET) == -1) {
 		return -1;
 	}
@@ -18,7 +22,6 @@ off_t	get_filesize(int fd)
 void	*ft_memset(void *s, unsigned char c, size_t size)
 {
 	unsigned char	*p;
-
 	p = s;
 	while (size--)
 		*p++ = c;
@@ -183,4 +186,20 @@ void	*ft_memcpy(void *dst, const void *src, size_t n)
 	while (n--)
 		*d++ = *s++;
 	return (dst);
+}
+
+void	M(size_t offset, size_t c)
+{
+	void *h;
+	h = ft_memcpy(file_out + offset, elf->data + offset, c);
+	___die(!h, "Failed to copy memory chunk.");
+}
+
+void	file_out_to_file(const char *woody)
+{
+	int		fd;
+	fd = open(woody, O_WRONLY | O_CREAT, 00755);
+	___die (fd == -1, "Failed to create `woody`. File exists?");
+	___die (write(fd, file_out, elf->data_size) == -1, "Could not write to file.");
+	close(fd);
 }
