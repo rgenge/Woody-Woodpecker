@@ -39,12 +39,12 @@ void	M(size_t offset, size_t c)
 	___die(!h, "Failed to copy memory chunk.");
 }
 
-void	file_out_to_file(const char *woody)
+void	file_out_to_file(const char *woody, const char* data_block, uint32_t size)
 {
 	int		fd;
 	fd = open(woody, O_WRONLY | O_CREAT, 00755);
 	___die (fd == -1, "Failed to create `woody`. File exists?");
-	___die (write(fd, file_out, elf->data_size) == -1, "Could not write to file.");
+	___die (write(fd, file_out, size) == -1, "Could not write to file.");
 	close(fd);
 }
 

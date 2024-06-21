@@ -37,6 +37,7 @@ typedef struct	injection
 {
 	char					*data;
 	char					*bin;
+	uint32_t			data_size;
 	uint32_t			bin_size;
 }								injector;
 
@@ -48,7 +49,7 @@ int		free_all();
 void  read_original_elf(char *filename);
 void	read_blob(char *filename);
 void	M(size_t offset, size_t c);
-void	file_out_to_file(const char*);
+void	file_out_to_file(const char*, const char*, uint32_t);
 
 # define bool char
 # define false 0

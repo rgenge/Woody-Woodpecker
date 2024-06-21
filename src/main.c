@@ -33,9 +33,10 @@ void	elf_init(char *vict)
 
 void	write_file(const char *woody)
 {
-	file_out = calloc(elf->data_size, 1);
-	___die(!file_out, "Failed to prepare alloc block.");
+	file_out = calloc(inj->data_size, 1);
+	___die(!file_out, "Failed to prepare injected alloc block.");
 	file_out_alloc = true;
+
 	_E64 = (Elf64_Ehdr*)elf->data;
 	_P64 = (Elf64_Phdr*)(elf->data + _E64->e_phoff);
 	_S64 = (Elf64_Shdr*)(elf->data + _E64->e_shoff);
@@ -52,7 +53,8 @@ void	write_file(const char *woody)
 		M (		_S64[i].sh_offset,
 					_S64[i].sh_size			); 
 	}
-	file_out_to_file(woody);
+
+	file_out_to_file(woody, inj->data);
 }
 
 void	inject()
@@ -64,6 +66,7 @@ void	inject()
 	inj->data = calloc(elf->data_size + inj->bin_size, 1);
 	___die(!inj->data, "Failed to alloc injection memory clone.");
 	inj_data_alloc = true;
+	inj->data_size = elf->data_size + inj->binsize;
 
 	for (size_t i = 0; i < elf->phnum; i++)
 	{
