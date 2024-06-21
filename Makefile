@@ -10,8 +10,8 @@ endif
 
 NAME		= woody_woodpacker
 
-RETURN64= "samples/return64"
-HELLO64	=	"samples/sample64"
+RETURN64= "samples/return42"
+HELLO64	=	"samples/sample"
 
 CFLAGS	= -Wall -Werror -Wextra -g -Wfatal-errors
 
@@ -47,7 +47,7 @@ clean:
 fclean:	clean
 	@rm -rf $(NAME)
 	@cd samples && ./clean.sh
-	@rm -rf WOODY_blob.bin src/WOODYcode.bin
+	@rm -rf WOODY_blob.bin
 
 re: fclean all
 
@@ -55,8 +55,8 @@ re: fclean all
 samples:
 	cd samples && ./tiny.sh
 
-blob:	WOODY_blob.bin
-	cd src && ./make_WOODY_blob.sh && cp WOODY_blob.bin ..
+blob:
+	cd src && ./make_WOODY_blob.sh && mv WOODY_blob.bin ..
 
 v:			all
 	$(VAL) ./$(NAME) $(HELLO64)

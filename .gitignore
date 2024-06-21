@@ -1,3 +1,6 @@
 woody_woodpacker
 *.o
 woody
+WOODY_blob.bin
+samples/sample
+samples/return42
