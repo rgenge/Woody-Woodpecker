@@ -1,17 +1,3 @@
 woody_woodpacker
 *.o
-bot
-playground/*
-!playground/*.c
-!playground/*.sh
-!playground/*.s
 woody
-woody_error
-samples/return32
-samples/A64
-samples/B64
-samples/return64
-samples/A32
-samples/B32
-samples/sample32
-samples/sample64

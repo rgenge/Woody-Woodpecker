@@ -60,7 +60,7 @@ void	inject()
 //	void*	ih;
 //	void* eh;
 	uint64_t old_offset = 0;
-	read_blob("WOODY_blob_64.bin");
+	read_blob("WOODY_blob.bin");
 	inj->data = calloc(elf->data_size + inj->bin_size, 1);
 	___die(!inj->data, "Failed to alloc injection memory clone.");
 	inj_data_alloc = true;

@@ -32,7 +32,7 @@ VALFLAG	=	--tool=memcheck \
 			--track-origins=yes \
 			--show-reachable=yes
 
-all:	samples $(NAME)
+all:	samples blob $(NAME)
 
 $(NAME): $(OBJ) $(HEAD)
 	$(CC) $(CFLAGS) $(SRC) -o $(NAME)
@@ -42,16 +42,21 @@ $(OBJS): %o : %.c
 
 clean:
 	@rm -rf $(OBJ)
+	@rm -rf src/WOODYcode.o
 
 fclean:	clean
 	@rm -rf $(NAME)
 	@cd samples && ./clean.sh
+	@rm -rf WOODY_blob.bin src/WOODYcode.bin
 
 re: fclean all
 
 .PHONY: samples
 samples:
 	cd samples && ./tiny.sh
+
+blob:	WOODY_blob.bin
+	cd src && ./make_WOODY_blob.sh && cp WOODY_blob.bin ..
 
 v:			all
 	$(VAL) ./$(NAME) $(HELLO64)
