@@ -2,13 +2,11 @@
 
 extern dumpster		*elf;
 extern injector		*inj;
-extern void*			file_out;
 extern bool				elf_alloc;
 extern bool				elf_data_alloc;
 extern bool				inj_alloc;
 extern bool				inj_data_alloc;
 extern bool				inj_bin_alloc;
-extern bool				file_out_alloc;
 
 off_t	get_filesize(int fd)
 {
@@ -34,8 +32,8 @@ void	*ft_memcpy(void *dst, const void *src, size_t n)
 
 void	M(size_t offset, size_t c)
 {
-	___die(!ft_memcpy(file_out + offset, elf->data + offset, c),
-		"Failed to copy memory chunk.");
+	___die(!ft_memcpy(inj->data + offset, elf->data + offset, c),
+									  "Failed to copy memory chunk.");
 }
 
 void	file_out_to_file(const char *woody, const char* data_block, uint32_t size)
@@ -43,11 +41,12 @@ void	file_out_to_file(const char *woody, const char* data_block, uint32_t size)
 	int		fd;
 	fd = open(woody, O_WRONLY | O_CREAT, 00755);
 	___die (fd == -1, "Failed to create `woody`. File exists?");
-	___die (write(fd, data_block, size) == -1, "Could not write to file.");
+	___die (write(fd, data_block, size) == -1,
+				  "Could not write to file.");
 	close(fd);
 }
 
-void	read_blob(char *filename)
+void	read_blob(const char *filename)
 {
 	int				fd;
 	off_t			filesize;
@@ -66,4 +65,8 @@ void	read_blob(char *filename)
 	bytes_read = read(fd, inj->bin, filesize);
 	___die (!bytes_read, "No bytes read. Is file empty?");
 	___die (bytes_read == -1, "Error reading file");
+	inj->data_size = elf->data_size + inj->bin_size;
+	inj->data = calloc(inj->data_size, 1);
+	___die(!inj->data, "Failed to prepare injected alloc block.");
+	inj_data_alloc = true;
 }

@@ -2,13 +2,11 @@
 
 extern dumpster		*elf;
 extern injector		*inj;
-extern void*			file_out;
 extern bool				elf_alloc;
 extern bool				elf_data_alloc;
 extern bool				inj_alloc;
 extern bool				inj_data_alloc;
 extern bool				inj_bin_alloc;
-extern bool				file_out_alloc;
 
 void close_all_fds()
 {
@@ -32,7 +30,6 @@ int	free_all()
 	if (inj_alloc) free(inj);
 	if (elf_data_alloc) free(elf->data);
 	if (elf_alloc) free(elf);
-	if (file_out_alloc) free(file_out);
 	return 0;
 }
 

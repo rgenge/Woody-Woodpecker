@@ -2,13 +2,11 @@
 
 dumpster		*elf;
 injector		*inj;
-void*				file_out;
 bool				elf_alloc = false;
 bool				elf_data_alloc = false;
 bool				inj_alloc = false;
 bool				inj_data_alloc = false;
 bool				inj_bin_alloc = false;
-bool				file_out_alloc = false;
 
 void	elf_init(char *vict)
 {
@@ -31,12 +29,9 @@ void	elf_init(char *vict)
 	}
 }
 
-void	write_file(const char *woody)
+void	inject(const char *woody, const char *buzz)
 {
-	file_out = calloc(inj->data_size, 1);
-	___die(!file_out, "Failed to prepare injected alloc block.");
-	file_out_alloc = true;
-
+	read_blob(buzz);
 	_E64 = (Elf64_Ehdr*)elf->data;
 	_P64 = (Elf64_Phdr*)(elf->data + _E64->e_phoff);
 	_S64 = (Elf64_Shdr*)(elf->data + _E64->e_shoff);
@@ -57,60 +52,10 @@ void	write_file(const char *woody)
 	file_out_to_file(woody, inj->data, inj->data_size);
 }
 
-void	inject()
-{
-//	void*	ih;
-//	void* eh;
-	uint64_t old_offset = 0;
-	read_blob("WOODY_blob.bin");
-	inj->data = calloc(elf->data_size + inj->bin_size, 1);
-	___die(!inj->data, "Failed to alloc injection memory clone.");
-	inj_data_alloc = true;
-	inj->data_size = elf->data_size + inj->bin_size;
-
-	for (size_t i = 0; i < elf->phnum; i++)
-	{
-		if (_P64[i].p_paddr == _E64->e_entry)
-		{
-//			_P64[i].p_filesz += inj->bin_size;
-//			_P64[i].p_memsz += inj->bin_size;
-//			old_offset = _P64[i].p_offset;
-		}
-		if (old_offset && _P64[i].p_offset > old_offset)
-		{
-//			_P64[i].p_offset += inj->bin_size;
-//			_P64[i].p_paddr += inj->bin_size;
-//			_P64[i].p_vaddr += inj->bin_size;
-		}
-	}
-
-//	for (size_t i = 0; i < elf->shnum; i++)
-//	{
-//		if (_S64[i].sh_addr == _E64->e_entry)
-//			_S64[i].sh_size += inj->bin_size;
-//		if (_S64[i].sh_offset > old_offset)
-//		{
-//			_S64[i].sh_offset += inj->bin_size;
-////			_S64[i].sh_addr += inj->bin_size;
-//		}
-//	}
-
-//	ih = inj->troll.data;
-//	eh = elf->data;
-//	ft_memcpy(ih, eh, old_offset);
-//	ih += old_offset;
-//	ft_memcpy(ih, inj->bin, inj->bin_size);
-//	ih += inj->bin_size;
-//	eh += old_offset;
-//	ft_memcpy(ih, eh, elf->data_size - old_offset);
-
-}
-
 int		main(int argc, char **argv)
 {
 	___die(argc != 2, "Usage: `woody_woodpacker binary_file`");
 	elf_init(argv[1]);
-	inject();
-	write_file("woody");
+	inject("woody", "WOODY_blob.bin");
 	return free_all();
 }
