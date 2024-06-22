@@ -34,9 +34,8 @@ void	*ft_memcpy(void *dst, const void *src, size_t n)
 
 void	M(size_t offset, size_t c)
 {
-	void *h;
-	h = ft_memcpy(file_out + offset, elf->data + offset, c);
-	___die(!h, "Failed to copy memory chunk.");
+	___die(!ft_memcpy(file_out + offset, elf->data + offset, c),
+		"Failed to copy memory chunk.");
 }
 
 void	file_out_to_file(const char *woody, const char* data_block, uint32_t size)
@@ -44,7 +43,7 @@ void	file_out_to_file(const char *woody, const char* data_block, uint32_t size)
 	int		fd;
 	fd = open(woody, O_WRONLY | O_CREAT, 00755);
 	___die (fd == -1, "Failed to create `woody`. File exists?");
-	___die (write(fd, file_out, size) == -1, "Could not write to file.");
+	___die (write(fd, data_block, size) == -1, "Could not write to file.");
 	close(fd);
 }
 

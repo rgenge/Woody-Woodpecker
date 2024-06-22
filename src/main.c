@@ -54,7 +54,7 @@ void	write_file(const char *woody)
 					_S64[i].sh_size			); 
 	}
 
-	file_out_to_file(woody, inj->data);
+	file_out_to_file(woody, inj->data, inj->data_size);
 }
 
 void	inject()
@@ -66,7 +66,7 @@ void	inject()
 	inj->data = calloc(elf->data_size + inj->bin_size, 1);
 	___die(!inj->data, "Failed to alloc injection memory clone.");
 	inj_data_alloc = true;
-	inj->data_size = elf->data_size + inj->binsize;
+	inj->data_size = elf->data_size + inj->bin_size;
 
 	for (size_t i = 0; i < elf->phnum; i++)
 	{
