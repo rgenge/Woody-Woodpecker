@@ -39,15 +39,34 @@ void	inject(const char *woody, const char *buzz)
 	M (_E64->e_phoff, _E64->e_phentsize * elf->phnum);
 	for (size_t i = 0; i < elf->phnum; i++)
 	{
-		M (		_P64[i].p_offset,
-					_P64[i].p_filesz		); 
+		if (_P64[i].p_offset > _E64->e_entry + inj->bin_size
+		|| _P64[i].p_offset + _P64[i].p_filesz < _E64->e_entry)
+		{
+			M (		_P64[i].p_offset,
+						_P64[i].p_filesz		); 
+		}
+		else
+		{
+			uint32_t asz = _E64->e_entry - _P64[i].p_offset;
+			uint32_t bsz = _P64[i].p_filesz - _E64->e_entry;
+			M (_P64[i].p_offset, asz);
+			___die(!ft_memcpy(inj->data + _E64->e_entry,
+												inj->bin, inj->bin_size),
+							"Unable to inject.");
+			___die(!ft_memcpy(inj->data + _E64->e_entry +
+												inj->bin_size, _E64 +
+												_P64[i].p_offset + inj->bin_size,
+												bsz),
+							"Could not copy right side.");
+		}
 	}
-	M (_E64->e_shoff, _E64->e_shentsize * elf->shnum);
-	for (size_t i = 0; i < elf->shnum; i++) // unused 0
-	{
-		M (		_S64[i].sh_offset,
-					_S64[i].sh_size			); 
-	}
+
+//	M (_E64->e_shoff, _E64->e_shentsize * elf->shnum);
+//	for (size_t i = 0; i < elf->shnum; i++)
+//	{
+//		M (		_S64[i].sh_offset,
+//					_S64[i].sh_size			); 
+//	}
 
 	file_out_to_file(woody, inj->data, inj->data_size);
 }
