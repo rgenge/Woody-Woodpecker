@@ -1,15 +1,25 @@
 #include "woody.h"
 #include <string.h>
 
+#define PRINT_WOODY_FUNC "\x48\xC7\xC0\x01\x00\x00\x00" /* mov rax, 1 (sys_write) */ \
+                         "\x48\xC7\xC7\x01\x00\x00\x00" /* mov rdi, 1 (stdout) */ \
+                         "\x48\x8D\x35\x0C\x00\x00\x00" /* lea rsi, [rip+0x0c] (address of 'woody\n') */ \
+                         "\x48\xC7\xC2\x06\x00\x00\x00" /* mov rdx, 6 (length of 'woody\n') */ \
+                         "\x0F\x05"                     /* syscall */ \
+                         "\xC3"                         /* ret */ \
+                         "woody\n"                      /* data: 'woody\n' */
+
+#define XOR_KEY 0xFF
+
+
 void read_file(t_elf *elf, char *filename)
 {
     int fd;
-    int filesize;
 
     fd = open(filename, O_RDONLY);
-    filesize = get_filesize(fd);
-    elf->data = malloc(filesize + 1);
-    read(fd, elf->data, filesize);
+    elf->filesize = get_filesize(fd);
+    elf->data = malloc(elf->filesize + 1);
+    read(fd, elf->data,  elf->filesize);
 
     // if ((fd == -1) || (filesize == -1))
     // {
@@ -17,8 +27,8 @@ void read_file(t_elf *elf, char *filename)
     //     print_error("Invalid file");
     //     free(elf);
     // }
-    char buffer[filesize + 1];
-    ssize_t bytes_read = read(fd, buffer, filesize);
+    char buffer[elf->filesize + 1];
+    ssize_t bytes_read = read(fd, buffer,  elf->filesize);
     if (bytes_read == -1) {
         perror("Error reading file");
     } else {
@@ -34,6 +44,7 @@ void read_file(t_elf *elf, char *filename)
 
     Elf64_Ehdr ehdr;
     fread(&ehdr, sizeof(Elf64_Ehdr), 1, input_elf);
+    elf->ehdr = ehdr;
 
     // Verify ELF header 
     if (ehdr.e_ident[EI_MAG0] != ELFMAG0 ||
@@ -43,7 +54,7 @@ void read_file(t_elf *elf, char *filename)
         printf("Invalid ELF file.\n");
         exit(1) ;
     }
-    printf("%d", filesize);
+    printf("%ld", elf->filesize);
 }
 
 void decrypt_file(t_elf *elf) {
@@ -101,7 +112,6 @@ void print_code_segment_info(const Elf64_Phdr *segment) {
     printf("Physical Address: 0x%lx\n", segment->p_paddr);
     printf("Size in Memory: %lu bytes\n", (unsigned long)segment->p_memsz);
     printf("Size in File: %lu bytes\n", (unsigned long)segment->p_filesz);
-    // Add more relevant fields as needed
 }
 
 
@@ -120,9 +130,66 @@ void get_code_load(t_elf *elf) {
 
             elf->code = &phdr[i];
             print_code_segment_info(elf->code);
+            insert_woody(elf, &phdr[i + 1]);
         }
     }
 }
+
+// void insert_woody(t_elf *elf) {
+//     if (elf->filesize + sizeof(WOODY) > elf->filesize) {
+//         elf->data = realloc(elf->data, elf->filesize + sizeof(WOODY));
+//         if (!elf->data) {
+//             print_error("Failed to reallocate memory");
+//         }
+//     }
+
+//     ft_memcpy(elf->data + elf->filesize, WOODY, sizeof(WOODY));
+//     elf->filesize += sizeof(WOODY);
+// }
+
+
+void insert_woody(t_elf *elf, Elf64_Phdr *phdr) {
+    size_t func_size = sizeof(PRINT_WOODY_FUNC) - 1; // Exclude the null terminator
+    size_t new_size = elf->filesize + func_size;
+
+    Elf64_Ehdr	*ehdr = elf->data;
+    uint64_t original_entrypoint = ehdr->e_entry;
+    // Allocate new memory for the modified ELF file
+
+    char *new_data = malloc(new_size);
+    if (!new_data) {
+        print_error("Failed to allocate memory");
+    }
+    printf("%d %d %ld", phdr->p_type, ehdr->e_type, original_entrypoint);
+    
+    // Copy original ELF file data to new memory
+    memcpy(new_data, elf->data, elf->filesize);
+
+    // Append the print function to the end of the new data
+    memcpy(new_data + elf->filesize, PRINT_WOODY_FUNC, func_size);
+
+    // Update ELF headers to reflect the new function
+    elf->ehdr.e_entry = elf->filesize + (Elf64_Addr)new_data;
+
+    // Update the original entry point to point after the print function
+    Elf64_Addr original_entry = elf->ehdr.e_entry + func_size;
+
+    // Patch the return address of the print function to jump to the original entry point
+    *(Elf64_Addr *)(new_data + elf->filesize + 24) = original_entry;
+
+    // Write the modified ELF file to a new file
+    FILE *output = fopen("modified_file", "wb");
+    if (!output) {
+        print_error("Failed to open output file");
+    }
+
+    fwrite(new_data, 1, new_size, output);
+    fclose(output);
+
+    free(new_data);
+}
+
+
 
 int			main(int ac, char **av)
 {
@@ -135,5 +202,6 @@ int			main(int ac, char **av)
     read_file(&elf, av[1]);
     get_text(&elf);
     get_code_load(&elf);
+  //  insert_woody(&elf);
  //   decrypt_file(&elf);
 }

@@ -12,7 +12,8 @@ typedef struct	s_elf
 	void		*data;
 	Elf64_Phdr	*code;
 	Elf64_Shdr	*text;
-	ssize_t		filesize;
+	Elf64_Ehdr	ehdr;
+	long unsigned int		filesize;
 	int			decrypt;
 }               t_elf;	  
 
@@ -22,4 +23,5 @@ void            print_error(char* message);
 void            *ft_memset(void *s, int c, size_t size);
 int				ft_strncmp(const char *s1, const char *s2, size_t size);
 void			*ft_memcpy(void *dest, const void *src, size_t size);
+void 			insert_woody(t_elf *elf, Elf64_Phdr *phdr) ;
 #endif
