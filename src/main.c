@@ -46,39 +46,39 @@ void	inject(const char *woody, const char *buzz)
 	size_t inj_offset = 0;
 	ft_memcpy((void*)IE + inj_offset, (void*)inj->bin, inj->bin_size);
 
+	// Find IPX, Phdr responible for .text.
+	size_t i = 0;
+	while (i < elf->phnum)
+	{
+		if (IP[i].p_flags & PF_X && 
+			(IE->e_entry >= IP[i].p_offset &&
+			 IE->e_entry < IP[i].p_offset + IP[i].p_filesz))
+		{
+			IPX = &IP[i];
+		}
+		i++;
+	}
+	___die(!IPX, "Did not fina a `.text` section.");
+
 	// Full clone.
 //	size_t data_offset = inj->bin_size;
 //	ft_memcpy(inj->data + data_offset, elf->data, elf->data_size);
 //	return;
-//
-//	// Find IPX, Phdr responible for .text.
-//	size_t i = 0;
-//	while (i < elf->phnum)
-//	{
-//		if (IP[i].p_flags & PF_X && 
-//			(IE->e_entry >= IP[i].p_offset &&
-//			 IE->e_entry < IP[i].p_offset + IP[i].p_filesz))
-//		{
-//			IPX = &IP[i];
-//		}
-//		i++;
-//	}
-//	___die(!IPX, "Original does not have a `.text` section.");
-//
+
 //	// Clean .text area (for clarity).
 //	char *h = (void*)IE + IPX->p_offset;
 //	for (size_t i = 0; i < IPX->p_filesz; i++)
 //		*h++ = 0;	
-//
+
 //	// Hard ajust last jump
 //	size_t org_offset = inj->bin_size;
-//
+
 //	int32_t* jump = (void*)inj->bin + (inj->bin_size - sizeof(int32_t));
 //	*jump = 0x10;
 //
 //	// Translate e_entry portion (assuming there is padding room).
 //	ft_memcpy((void*)IE + IPX->p_offset + org_offset, (void*)EE + IPX->p_offset, IPX->p_filesz);
-//
+
 //	// Adjust parameters.
 //	IPX->p_filesz += inj->bin_size;
 //	IPX->p_memsz += inj->bin_size;
