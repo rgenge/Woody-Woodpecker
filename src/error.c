@@ -45,23 +45,23 @@ void	validate_file()
 		"File is not of suitable bit class.");
 }
 
-void  read_original_elf(char *filename)
+void  read_original(char *filename, dumpster** xxx)
 {
 	int				fd;
 	int				filesize;
 	long int	bytes_read;
-	elf = calloc(sizeof(dumpster), 1);
-	___die (!elf, "Failed to alloc elf.");
+	*xxx = (dumpster*)calloc(sizeof(dumpster), 1);
+	___die (!xxx, "Failed to alloc xxx.");
 	elf_alloc = true;
 	fd = open(filename, O_RDONLY);
 	___die (fd == -1, "Failed to open file");
 	filesize = get_filesize(fd);
 	___die (filesize == -1, "Failed to get file size");
-	elf->data_size = (uint32_t)filesize;
-	elf->data = calloc(1, elf->data_size);
-	___die (!elf->data, "Could not allocate.");
+	(*xxx)->data_size = (uint32_t)filesize;
+	(*xxx)->data = calloc(1, (*xxx)->data_size);
+	___die (!(*xxx)->data, "Could not allocate.");
 	elf_data_alloc = true;
-	bytes_read = read(fd, elf->data, filesize);
+	bytes_read = read(fd, (*xxx)->data, filesize);
 	___die (!bytes_read, "No bytes read. Is file empty?");
 	___die (bytes_read == -1, "Error reading file");
 	validate_file();

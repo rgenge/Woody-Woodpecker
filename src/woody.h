@@ -42,7 +42,7 @@ typedef struct	injection
 }								injector;
 
 off_t	get_filesize(int fd);
-void	read_original_elf(char *filename);
+void	read_original(char *filename, dumpster**);
 void	*ft_memcpy(void *dst, const void *src, size_t n);
 void	validate_file();
 int		free_all();

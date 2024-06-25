@@ -10,7 +10,7 @@ bool				inj_bin_alloc = false;
 
 void	elf_init(char *vict)
 {
-	read_original_elf(vict);
+	read_original(vict, &elf);
 	elf->bit_class =
 		elf->data[EI_CLASS] == ELFCLASS64 ? 64
 		: elf->data[EI_CLASS] == ELFCLASS32 ? 32
