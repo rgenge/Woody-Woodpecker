@@ -34,16 +34,19 @@ fi;
 	echo "This is the output from \`$1\`:"
 	normal
 	"./$1"
-	echo "Return value: $?";
+	ret_out_a="$?"
+	echo "Return value: $ret_out_a";
 
 	yellow
 	echo "This is the output from \`./woody\`:"
 	normal
 	./woody
-	echo "Return value: $?";
+	ret_out_w="$?"
+	echo "Return value: $ret_out_w";
 
 	yellow
 	echo "[ OK? ] \`woody\` is run, must have the same behavior of \`$1\`, but with \'....WOODY.....\' on top."
+	[[ "$ret_out_a" -eq "$ret_out_w" ]] && (green && echo "[ OK ] Same return value.") || error_exit "[ KO ] Return values differ."
 
 	./woody > out.tmp
 	cat out.tmp | tail -n +2 > a.tmp
@@ -52,7 +55,7 @@ fi;
 	[[ -n "$(cat out.tmp)" ]] && \
 		(green && echo "[ OK ] There was some ouput.") \
 		|| error_exit "[ KO ] Output must exist and be ...WOODY..."
-	[[ -z "$check" ]] && (green && echo "[ OK ] Auto-check, the outputs are identical but for the 1st line.") || error_exit "[ OK ] Unmatched output ignoring first line."
+	[[ -z "$check" ]] && (green && echo "[ OK ] Auto-check, the outputs are identical but for the 1st line.") || error_exit "[ KO ] Unmatched output ignoring first line."
 
 	rm -f a.tmp b.tmp out.tmp
 	rm -f woody_error

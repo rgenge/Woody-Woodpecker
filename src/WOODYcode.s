@@ -13,7 +13,3 @@
 	mov rdx, 16
 	syscall
 	add rsp, 16
-	pop rsi
-	pop rdi
-	pop rax
-; no exit; will segfault

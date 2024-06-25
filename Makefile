@@ -12,6 +12,7 @@ NAME		= woody_woodpacker
 
 RETURN64= "samples/return42"
 HELLO64	=	"samples/sample"
+COMPLEX64 = "samples/sample_complex"
 
 CFLAGS	= -Wall -Werror -Wextra -g -Wfatal-errors
 
@@ -56,7 +57,7 @@ samples:
 	cd samples && ./tiny.sh
 
 blob:
-	cd src && ./make_WOODY_blob.sh && mv WOODY_blob.bin ..
+	cd src && ./make_WOODY_blob.sh
 
 v:			all
 	$(VAL) ./$(NAME) $(HELLO64)
@@ -69,6 +70,8 @@ t:			all
 	-unit/pass.sh "$(RETURN64)"
 s:			all
 	-unit/pass.sh "$(HELLO64)"
+c:			all
+	-unit/pass.sh "$(COMPLEX64)"
 
 rv:			re v
 rvf:		re vf

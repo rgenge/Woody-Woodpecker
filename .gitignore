@@ -4,3 +4,5 @@ woody
 WOODY_blob.bin
 samples/sample
 samples/return42
+samples/sample_complex
+src/buzz

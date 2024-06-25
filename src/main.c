@@ -32,42 +32,63 @@ void	elf_init(char *vict)
 void	inject(const char *woody, const char *buzz)
 {
 	read_blob(buzz);
-	_E64 = (Elf64_Ehdr*)elf->data;
-	_P64 = (Elf64_Phdr*)(elf->data + _E64->e_phoff);
-	_S64 = (Elf64_Shdr*)(elf->data + _E64->e_shoff);
-	M (0, _E64->e_ehsize);
-	M (_E64->e_phoff, _E64->e_phentsize * elf->phnum);
-	for (size_t i = 0; i < elf->phnum; i++)
+
+	// Full clone.
+	ft_memcpy(inj->data, elf->data, elf->data_size);
+	// Positions.
+	Elf64_Ehdr* EE = (Elf64_Ehdr*)elf->data;
+	Elf64_Ehdr* IE = (Elf64_Ehdr*)inj->data;
+//	Elf64_Phdr* EP = (Elf64_Phdr*)(elf->data + EE->e_phoff);
+	Elf64_Phdr* IP = (Elf64_Phdr*)(inj->data + EE->e_phoff);
+	Elf64_Phdr* IPX = 0;
+	Elf64_Shdr* IS = (Elf64_Shdr*)(inj->data + EE->e_shoff);
+	// Find IPX, Phdr responible for .text.
+	size_t i = 0;
+	while (i < elf->phnum)
 	{
-		if (_P64[i].p_offset > _E64->e_entry + inj->bin_size
-		|| _P64[i].p_offset + _P64[i].p_filesz < _E64->e_entry)
+		if (IP[i].p_flags & PF_X && 
+			(IE->e_entry >= IP[i].p_offset &&
+			 IE->e_entry < IP[i].p_offset + IP[i].p_filesz))
 		{
-			M (		_P64[i].p_offset,
-						_P64[i].p_filesz		); 
+			IPX = &IP[i];
 		}
-		else
+		else if (IPX)
 		{
-			uint32_t asz = _E64->e_entry - _P64[i].p_offset;
-			uint32_t bsz = _P64[i].p_filesz - _E64->e_entry;
-			M (_P64[i].p_offset, asz);
-			___die(!ft_memcpy(inj->data + _E64->e_entry,
-												inj->bin, inj->bin_size),
-							"Unable to inject.");
-			___die(!ft_memcpy(inj->data + _E64->e_entry +
-												inj->bin_size, _E64 +
-												_P64[i].p_offset + inj->bin_size,
-												bsz),
-							"Could not copy right side.");
+			IP->p_offset += inj->bin_size;
+			IP->p_vaddr += inj->bin_size;
+			IP->p_paddr += inj->bin_size;
 		}
+		i++;
 	}
-
-//	M (_E64->e_shoff, _E64->e_shentsize * elf->shnum);
-//	for (size_t i = 0; i < elf->shnum; i++)
-//	{
-//		M (		_S64[i].sh_offset,
-//					_S64[i].sh_size			); 
-//	}
-
+	___die(!IPX, "Original does not have a `.text` section.");
+	// Clean .text area (for clarity).
+	char *h = (void*)IE + IPX->p_offset;
+	for (size_t i = 0; i < IPX->p_filesz; i++)
+		*h++ = 0;	
+	// Translate e_entry portion (assuming there is padding room).
+	size_t org_offset = 0;
+	ft_memcpy((void*)IE + IPX->p_offset + org_offset, (void*)EE + IPX->p_offset, IPX->p_filesz);
+	IE->e_entry += org_offset;
+	// Inject blob.
+	size_t inj_offset = IPX->p_filesz;
+	ft_memcpy((void*)IE + IPX->p_offset + inj_offset, (void*)inj->bin, inj->bin_size);
+	// Adjust parameters.
+	IPX->p_filesz += inj->bin_size;
+	IPX->p_memsz += inj->bin_size;
+	i = 0;
+	while (i < elf->shnum)
+	{
+		if (IS[i].sh_offset == IE->e_entry)
+		{
+			IS[i].sh_size += inj->bin_size;
+		}
+		else if (IS[i].sh_offset > IE->e_entry)
+		{
+			IS[i].sh_offset += inj->bin_size;
+		}
+		i++;
+	}
+	IE->e_entry = elf->data_size;
 	file_out_to_file(woody, inj->data, inj->data_size);
 }
 
