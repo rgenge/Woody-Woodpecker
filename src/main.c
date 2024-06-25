@@ -35,13 +35,15 @@ void	inject(const char *woody, const char *buzz)
 
 	// Full clone.
 	ft_memcpy(inj->data, elf->data, elf->data_size);
+
 	// Positions.
 	Elf64_Ehdr* EE = (Elf64_Ehdr*)elf->data;
 	Elf64_Ehdr* IE = (Elf64_Ehdr*)inj->data;
-//	Elf64_Phdr* EP = (Elf64_Phdr*)(elf->data + EE->e_phoff);
+	Elf64_Phdr* EP = (Elf64_Phdr*)(elf->data + EE->e_phoff);
 	Elf64_Phdr* IP = (Elf64_Phdr*)(inj->data + EE->e_phoff);
 	Elf64_Phdr* IPX = 0;
 	Elf64_Shdr* IS = (Elf64_Shdr*)(inj->data + EE->e_shoff);
+
 	// Find IPX, Phdr responible for .text.
 	size_t i = 0;
 	while (i < elf->phnum)
@@ -52,43 +54,49 @@ void	inject(const char *woody, const char *buzz)
 		{
 			IPX = &IP[i];
 		}
-		else if (IPX)
-		{
-			IP->p_offset += inj->bin_size;
-			IP->p_vaddr += inj->bin_size;
-			IP->p_paddr += inj->bin_size;
-		}
 		i++;
 	}
 	___die(!IPX, "Original does not have a `.text` section.");
+
 	// Clean .text area (for clarity).
 	char *h = (void*)IE + IPX->p_offset;
 	for (size_t i = 0; i < IPX->p_filesz; i++)
 		*h++ = 0;	
+
+	// Hard ajust last jump
+	size_t inj_offset = IPX->p_filesz;
+	int32_t* jump = (void*)inj->bin + (inj->bin_size - sizeof(int32_t));
+	*jump = - inj->bin_size - IPX->p_filesz - 0;
+	*jump = -inj->bin_size - IPX->p_filesz + 1;
+
 	// Translate e_entry portion (assuming there is padding room).
 	size_t org_offset = 0;
 	ft_memcpy((void*)IE + IPX->p_offset + org_offset, (void*)EE + IPX->p_offset, IPX->p_filesz);
-	IE->e_entry += org_offset;
+
 	// Inject blob.
-	size_t inj_offset = IPX->p_filesz;
-	ft_memcpy((void*)IE + IPX->p_offset + inj_offset, (void*)inj->bin, inj->bin_size);
+	ft_memcpy((void*)IE + IE->e_entry + inj_offset, (void*)inj->bin, inj->bin_size);
+	IE->e_entry += inj_offset;
+
 	// Adjust parameters.
 	IPX->p_filesz += inj->bin_size;
 	IPX->p_memsz += inj->bin_size;
-	i = 0;
-	while (i < elf->shnum)
-	{
-		if (IS[i].sh_offset == IE->e_entry)
-		{
-			IS[i].sh_size += inj->bin_size;
-		}
-		else if (IS[i].sh_offset > IE->e_entry)
-		{
-			IS[i].sh_offset += inj->bin_size;
-		}
-		i++;
-	}
-	IE->e_entry = elf->data_size;
+
+//	i = 0;
+//	while (i < elf->shnum)
+//	{
+//		if (IS[i].sh_offset == IE->e_entry)
+//		{
+//			IS[i].sh_size += inj->bin_size;
+//		}
+//		else if (IS[i].sh_offset > IE->e_entry)
+//		{
+//			IS[i].sh_offset += inj->bin_size;
+//		}
+//		i++;
+//	}
+
+(void)IS; (void)EP;
+
 	file_out_to_file(woody, inj->data, inj->data_size);
 }
 
