@@ -8,23 +8,23 @@ bool				inj_alloc = false;
 bool				inj_data_alloc = false;
 bool				inj_bin_alloc = false;
 
-void	elf_init(char *vict)
+void	elf_init(char *vict, dumpster** xxx)
 {
-	read_original(vict, &elf);
-	elf->bit_class =
-		elf->data[EI_CLASS] == ELFCLASS64 ? 64
-		: elf->data[EI_CLASS] == ELFCLASS32 ? 32
+	read_original(vict, &(*xxx));
+	(*xxx)->bit_class =
+		(*xxx)->data[EI_CLASS] == ELFCLASS64 ? 64
+		: (*xxx)->data[EI_CLASS] == ELFCLASS32 ? 32
 		: 0;
-	if (elf->bit_class == 64)
+	if ((*xxx)->bit_class == 64)
 	{
-		_E64 = (Elf64_Ehdr*)elf->data;
-		_P64 = (Elf64_Phdr*)(elf->data + _E64->e_phoff);
-		_S64 = (Elf64_Shdr*)(elf->data + _E64->e_shoff);
-		elf->phnum = _E64->e_phnum == PN_XNUM ?
+		_E64 = (Elf64_Ehdr*)(*xxx)->data;
+		_P64 = (Elf64_Phdr*)((*xxx)->data + _E64->e_phoff);
+		_S64 = (Elf64_Shdr*)((*xxx)->data + _E64->e_shoff);
+		(*xxx)->phnum = _E64->e_phnum == PN_XNUM ?
 			_S64->sh_info : _E64->e_phnum;
-		elf->shnum = _E64->e_shnum == 0 ?
+		(*xxx)->shnum = _E64->e_shnum == 0 ?
 			_S64[0].sh_size : _E64->e_shnum;
-		elf->shstrndx = _E64->e_shstrndx == SHN_XINDEX ?
+		(*xxx)->shstrndx = _E64->e_shstrndx == SHN_XINDEX ?
 			_S64[0].sh_link : _E64->e_shstrndx;
 	}
 }
@@ -103,7 +103,7 @@ void	inject(const char *woody, const char *buzz)
 int		main(int argc, char **argv)
 {
 	___die(argc != 2, "Usage: `woody_woodpacker binary_file`");
-	elf_init(argv[1]);
+	elf_init(argv[1], &elf);
 	inject("woody", "WOODY_blob.bin");
 	return free_all();
 }
