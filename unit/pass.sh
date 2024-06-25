@@ -33,7 +33,7 @@ fi;
 	yellow
 	echo "This is the output from \`$1\`:"
 	normal
-	"./$1"
+	"$1"
 	ret_out_a="$?"
 	echo "Return value: $ret_out_a";
 
@@ -50,11 +50,13 @@ fi;
 
 	./woody > out.tmp
 	cat out.tmp | tail -n +2 > a.tmp
-	"./$1" > b.tmp;
+	"$1" > b.tmp;
 	check=$(diff a.tmp b.tmp)
+
 	[[ -n "$(cat out.tmp)" ]] && \
 		(green && echo "[ OK ] There was some ouput.") \
 		|| error_exit "[ KO ] Output must exist and be ...WOODY..."
+
 	[[ -z "$check" ]] && (green && echo "[ OK ] Auto-check, the outputs are identical but for the 1st line.") || error_exit "[ KO ] Unmatched output ignoring first line."
 
 	rm -f a.tmp b.tmp out.tmp
