@@ -2,9 +2,7 @@
 #include <string.h>
 
 #define DATALOAD_SIZE (_loadend - _dataload)
-#define CODE_SIZE (_loadend - _code)
 #define TOTAL_DATALOAD_SIZE (DATALOAD_SIZE + 5)
-#define MSG_SIZE 17
 
 void read_file(t_elf *elf, char *filename)
 {
@@ -115,7 +113,7 @@ void insert_woody(t_elf *elf) {
     uint64_t original_entrypoint = or_ehdr->e_entry; // Save the original entry point
 
     void *tmp_ptr = elf->data + elf->code->p_offset + elf->code->p_filesz; // Move to the pointer where the load section is 
-    or_ehdr->e_entry = elf->code->p_vaddr + elf->code->p_memsz + MSG_SIZE; // Change the entry point of the file based on the load
+    or_ehdr->e_entry = elf->code->p_vaddr + elf->code->p_memsz + 17; // Change the entry point of the file based on the load + size of message
    
     elf->code->p_flags = PF_R | PF_X ;
     ft_memcpy(tmp_ptr, _dataload, DATALOAD_SIZE);
