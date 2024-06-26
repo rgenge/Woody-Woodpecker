@@ -1,16 +1,10 @@
 #include "woody.h"
 #include <string.h>
 
-#define PRINT_WOODY_FUNC "\x48\xC7\xC0\x01\x00\x00\x00" /* mov rax, 1 (sys_write) */ \
-                         "\x48\xC7\xC7\x01\x00\x00\x00" /* mov rdi, 1 (stdout) */ \
-                         "\x48\x8D\x35\x0C\x00\x00\x00" /* lea rsi, [rip+0x0c] (address of 'woody\n') */ \
-                         "\x48\xC7\xC2\x06\x00\x00\x00" /* mov rdx, 6 (length of 'woody\n') */ \
-                         "\x0F\x05"                     /* syscall */ \
-                         "\xC3"                         /* ret */ \
-                         "woody\n"                      /* data: 'woody\n' */
-
-#define XOR_KEY 0xFF
-
+#define DATALOAD_SIZE (_loadend - _dataload)
+#define CODE_SIZE (_loadend - _code)
+#define TOTAL_DATALOAD_SIZE (DATALOAD_SIZE + 5)
+#define MSG_SIZE 17
 
 void read_file(t_elf *elf, char *filename)
 {
@@ -62,35 +56,24 @@ void get_text(t_elf *elf) {
     Elf64_Ehdr *ehdr = elf->data;
     Elf64_Shdr *shdr = elf->data + ehdr->e_shoff;
 
-    // Dynamic memory allocation for section name
     size_t name_length = shdr[ehdr->e_shstrndx].sh_offset;
-    char *name = malloc(name_length + 1);  // Allocate space for data and null terminator
+    char *name = malloc(name_length + 1);
     if (name == NULL) {
         fprintf(stderr, "Failed to allocate memory for section name\n");
         exit (-1);  // Or handle allocation failure appropriately
     }
     // Copy section header string table data
     ft_memcpy(name, elf->data + shdr[ehdr->e_shstrndx].sh_offset, name_length);
-    name[name_length] = '\0';  // Explicitly add null terminator
+    name[name_length] = '\0';  
 
-    // Process section names and program headers
     for (int i = 0; i < ehdr->e_shnum; i++) {
-        // Access section name using offset from shdr table
         char *section_name = name + shdr[i].sh_name;
 
-        // Search for ".text" section (adjust condition as needed)
+        // Search  ".text" section
         if (!ft_strncmp(section_name, ".text", 6)) {
-            // ... (process program header for .text section)
             printf("\nProgram Header %d for section '%s':\n", i, section_name);
             printf("Section Name: %s\n", section_name);
             printf("Section Offset: 0x%lx\n", shdr[i].sh_offset);
-            printf("Section Size: 0x%lx\n", shdr[i].sh_size);
-            // printf("Section Flags: 0x%lx\n", shdr[i].sh_flags);
-            // printf("Section Type: 0x%x\n", shdr[i].sh_type);
-            // printf("Section Link: 0x%x\n", shdr[i].sh_link);
-            // printf("Section Info: 0x%x\n", shdr[i].sh_info);
-            // printf("Section Alignment: 0x%lx\n", shdr[i].sh_addralign);
-            // printf("Section Entry Size: 0x%lx\n", shdr[i].sh_entsize);
             elf->text = &shdr[i];
         }
     }
@@ -103,9 +86,6 @@ void print_code_segment_info(const Elf64_Phdr *segment) {
     printf("Load Segment Information:\n");
     printf("Type: %d\n", segment->p_type);
     printf("Virtual Address: 0x%lx\n", segment->p_vaddr);
-    printf("Physical Address: 0x%lx\n", segment->p_paddr);
-    printf("Size in Memory: %lu bytes\n", (unsigned long)segment->p_memsz);
-    printf("Size in File: %lu bytes\n", (unsigned long)segment->p_filesz);
 }
 
 
@@ -115,68 +95,60 @@ void get_code_load(t_elf *elf) {
     Elf64_Phdr *phdr = elf->data + ehdr->e_phoff;
     // Iterate through headers looking for the PT_LOAD header where the code is
     for (int i = 0; i < ehdr->e_phnum; i++) {
-
         if (phdr[i].p_vaddr == phdr[i].p_paddr
 			&& phdr[i].p_memsz == phdr[i].p_filesz
 			&& phdr[i].p_type == 1
 			&& ehdr->e_entry >= phdr[i].p_vaddr
-			&& ehdr->e_entry < phdr[i].p_vaddr + phdr[i].p_memsz) {
-            
+			&& ehdr->e_entry < phdr[i].p_vaddr + phdr[i].p_memsz) {           
             elf->code = &phdr[i];
-        
             print_code_segment_info(elf->code);
-
-            insert_woody(elf, elf->code);
+            insert_woody(elf);
             break;
         }
     }
 }
 
-void insert_woody(t_elf *elf, Elf64_Phdr *current_phdr) {
-    size_t func_size = sizeof(PRINT_WOODY_FUNC) - 1;
-    size_t new_size = elf->filesize;
+void insert_woody(t_elf *elf) {
 
-    Elf64_Ehdr *ehdr = elf->data;
-    Elf64_Phdr *phdr = elf->data + ehdr->e_phoff;
-    printf("%d %d" , current_phdr->p_type, phdr->p_type);
-    uint64_t original_entrypoint = ehdr->e_entry;
+    Elf64_Ehdr *or_ehdr = elf->data;
+   // Elf64_Phdr *or_phdr = elf->data + or_ehdr->e_phoff;
+    uint64_t original_entrypoint = or_ehdr->e_entry; // Save the original entry point
 
-    char *new_data = malloc(new_size);
-    if (!new_data) {
-        print_error("Failed to allocate memory");
-    }
+    void *tmp_ptr = elf->data + elf->code->p_offset + elf->code->p_filesz; // Move to the pointer where the load section is 
+    or_ehdr->e_entry = elf->code->p_vaddr + elf->code->p_memsz + MSG_SIZE; // Change the entry point of the file based on the load
+   
+    elf->code->p_flags = PF_R | PF_X ;
+    ft_memcpy(tmp_ptr, _dataload, DATALOAD_SIZE);
+    tmp_ptr += DATALOAD_SIZE;
 
-    // Copy original ELF file data to new memory
-    memcpy(new_data, elf->data, elf->filesize);
+    // Calculate the offset to the original entry point
+    int offset = original_entrypoint - (elf->code->p_vaddr + elf->code->p_memsz + TOTAL_DATALOAD_SIZE);
 
-    // Find the insertion point (end of the first PT_LOAD segment)
-    size_t insertion_point = elf->code->p_offset + elf->code->p_filesz ;
+    // Overwrite the instruction at the end of _dataload to jump to the original entry point
+    *((char *)tmp_ptr) = 0xe9; // Jump instruction
+    *((int *)(tmp_ptr + 1)) = offset; // Offset to jump
 
-    // Insert the new code at the calculated position
-    memcpy(new_data + insertion_point, PRINT_WOODY_FUNC, func_size);
-    Elf64_Ehdr *eehdr = (Elf64_Ehdr *)new_data;
-    Elf64_Phdr *pphdr = (Elf64_Phdr *)new_data;
+  
+    elf->code->p_memsz += TOTAL_DATALOAD_SIZE;
+    elf->code->p_filesz += TOTAL_DATALOAD_SIZE;
 
-    // Update the entry point to the new function
-    eehdr->e_entry = elf->code->p_vaddr + elf->code->p_memsz + func_size;
+//uint16_t *target = (uint16_t *)elf->data + (0x00000010/2);
+//*(target + 4) = 0x118a;
+//     target = (uint16_t *)elf->data + (0x000000e0/2);
+// *(target +6 ) = 0x0005;
 
-    // Patch the return address of the print function to jump to the original entry point
-    *(Elf64_Addr *)(new_data + insertion_point + 24) = original_entrypoint;
 
-    // Update the code segment size in the ELF program header
-    pphdr->p_filesz += func_size;
-    pphdr->p_memsz += func_size;
 
-    // Write the modified ELF file to a new file
-    FILE *output = fopen("modified_file", "wb");
-    if (!output) {
-        print_error("Failed to open output file");
-    }
+//     target = (uint16_t *)elf->data + (0x000011a0/2);
+// *(target +2 ) = 0xb7e9;
+//     target = (uint16_t *)elf->data + (0x000011a0/2);
+// *(target +3 ) = 0xfffe;
+//     target = (uint16_t *)elf->data + (0x000011a0/2);
+// *(target +4 ) = 0x00ff;
 
-    fwrite(new_data, 1, new_size, output);
-    fclose(output);
-
-    free(new_data);
+    int fd = open("woody", O_TRUNC | O_CREAT | O_WRONLY, 0777);
+	write(fd, elf->data, elf->filesize);
+	close(fd);
 }
 
 
@@ -192,4 +164,5 @@ int			main(int ac, char **av)
     read_file(&elf, av[1]);
     get_text(&elf);
     get_code_load(&elf);
+    free(elf.data);
 }

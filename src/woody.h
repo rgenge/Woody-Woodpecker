@@ -17,11 +17,14 @@ typedef struct	s_elf
 	int			decrypt;
 }               t_elf;	  
 
+extern void		_dataload(void);
+extern void		_code(void);
+extern void		_loadend(void);
 off_t    		get_filesize(int fd);
 void            read_file(t_elf *elf, char *filename);
 void            print_error(char* message);
 void            *ft_memset(void *s, int c, size_t size);
 int				ft_strncmp(const char *s1, const char *s2, size_t size);
 void			*ft_memcpy(void *dest, const void *src, size_t size);
-void 			insert_woody(t_elf *elf, Elf64_Phdr *phdr) ;
+void 			insert_woody(t_elf *elf);
 #endif
