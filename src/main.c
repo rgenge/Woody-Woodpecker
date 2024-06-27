@@ -31,6 +31,8 @@ void	elf_init(char *vict, dumpster** xxx)
 
 void	inject(const char *woody, const char *buzz_filename)
 {
+	size_t i;
+
 	read_blob(buzz_filename);
 
 	// Full clone.
@@ -41,15 +43,17 @@ void	inject(const char *woody, const char *buzz_filename)
 	Elf64_Ehdr* IE = (Elf64_Ehdr*)inj->data;
 	Elf64_Phdr* EP = (Elf64_Phdr*)(elf->data + EE->e_phoff);
 	Elf64_Phdr* IP = (Elf64_Phdr*)(inj->data + EE->e_phoff);
-	Elf64_Phdr* IPX = 0;
 	Elf64_Shdr* IS = (Elf64_Shdr*)(inj->data + EE->e_shoff);
+	Elf64_Sym* ISYM = (Elf64_Sym*)IS;
+	Elf64_Phdr* IPX = 0;
+	Elf64_Shdr* ISX = 0;
 	Elf64_Addr original_entry;
 	int32_t original_filesz;
 	(void)EE; (void)IE; (void)EP; (void)IP; (void)IPX; (void)IS;
-	(void)original_entry; (void)original_filesz;
+	(void)original_entry; (void)original_filesz; (void)ISYM;
 
 	// Find IPX, the exec Load Phdr responsible for .text.
-	size_t i = 0;
+	i = 0;
 	while (i < elf->phnum)
 	{
 		if (IP[i].p_flags & PF_X && 
@@ -60,12 +64,31 @@ void	inject(const char *woody, const char *buzz_filename)
 	}
 	___die(!IPX, "Did not find a `.text` section.");
 
+	// Find string table.
+	Elf64_Shdr* SHST = &IS[EE->e_shstrndx];
+	Elf64_Off stoff = SHST->sh_offset;
+	char* ST = (char*)(inj->data + stoff);
+
+	// Find ISX, the exec Load Shdr responsible for .text.
+	char* name;
+	i = 0;
+	while (i < elf->shnum)
+	{
+		name = (char*)(ST + IS[i].sh_name);
+		if (ft_stridentical(name, ".text")
+		&& IS[i].sh_type & SHT_PROGBITS)
+			ISX = &IS[i];
+		i++;
+	}
+	___die(!ISX, "Did not find a `.text` section.");
+
 	// Adjust parameters.
 	original_entry = IE->e_entry;
 	original_filesz = IPX->p_filesz;
 	IE->e_entry += original_filesz;
 	IPX->p_filesz += inj->bin_size;
 	IPX->p_memsz += inj->bin_size;
+	ISX->sh_size += inj->bin_size;
 
 	// Offset from last position:
 	int32_t *last_jump;
@@ -87,35 +110,6 @@ void	inject(const char *woody, const char *buzz_filename)
 	// Lastly.
 	file_out_to_file(woody, inj->data, inj->data_size);
 
-
-	// Copy append original data block.
-//	size_t org_offset = inj->bin_size;
-//	ft_memcpy((void*)IE + org_offset, (void*)EE, elf->data_size);
-
-//	// Clean .text area (for clarity).
-//	char *h = (void*)IE + IPX->p_offset;
-//	for (size_t i = 0; i < IPX->p_filesz; i++)
-//		*h++ = 0;	
-
-//	// Hard ajust last jump
-//	int32_t* jump = (void*)inj->bin + (inj->bin_size - sizeof(int32_t));
-//	*jump = 0x10;
-
-//	i = 0;
-//	while (i < elf->shnum)
-//	{
-//		if (IS[i].sh_offset == IE->e_entry)
-//		{
-//			IS[i].sh_size += inj->bin_size;
-//		}
-//		else if (IS[i].sh_offset > IE->e_entry)
-//		{
-//			IS[i].sh_offset += inj->bin_size;
-//		}
-//		i++;
-//	}
-
-	file_out_to_file(woody, inj->data, inj->data_size);
 }
 
 int		main(int argc, char **argv)
