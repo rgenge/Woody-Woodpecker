@@ -56,13 +56,16 @@ void  read_original(char *filename, dumpster** xxx)
 	fd = open(filename, O_RDONLY);
 	___die (fd == -1, "Failed to open file");
 	filesize = get_filesize(fd);
-	___die (filesize == -1, "Failed to get file size");
+	___die (filesize == -1,
+					"Failed to get file size");
 	(*xxx)->data_size = (uint32_t)filesize;
 	(*xxx)->data = calloc(1, (*xxx)->data_size);
 	___die (!(*xxx)->data, "Could not allocate.");
 	elf_data_alloc = true;
 	bytes_read = read(fd, (*xxx)->data, filesize);
-	___die (!bytes_read, "No bytes read. Is file empty?");
-	___die (bytes_read == -1, "Error reading file");
+	___die (!bytes_read,
+					"No bytes read. Is file empty?");
+	___die (bytes_read == -1,
+					"Error reading file");
 	validate_file();
 }

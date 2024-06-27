@@ -10,4 +10,4 @@
 	mov rdx, 16
 	syscall
 	add rsp, 16
-	jmp 1
+	jmp -1

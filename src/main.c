@@ -29,9 +29,12 @@ void	elf_init(char *vict, dumpster** xxx)
 	}
 }
 
-void	inject(const char *woody, const char *buzz)
+void	inject(const char *woody, const char *buzz_filename)
 {
-	read_blob(buzz);
+	read_blob(buzz_filename);
+
+	// Full clone.
+	ft_memcpy(inj->data, elf->data, elf->data_size);
 
 	// Positions.
 	Elf64_Ehdr* EE = (Elf64_Ehdr*)elf->data;
@@ -40,30 +43,45 @@ void	inject(const char *woody, const char *buzz)
 	Elf64_Phdr* IP = (Elf64_Phdr*)(inj->data + EE->e_phoff);
 	Elf64_Phdr* IPX = 0;
 	Elf64_Shdr* IS = (Elf64_Shdr*)(inj->data + EE->e_shoff);
+	int32_t original_entry;
+	int32_t original_filesz;
 	(void)EE; (void)IE; (void)EP; (void)IP; (void)IPX; (void)IS;
+	(void)original_entry; (void)original_filesz;
 
-	// Inject blob.
-	size_t inj_offset = 0;
-	ft_memcpy((void*)IE + inj_offset, (void*)inj->bin, inj->bin_size);
-
-	// Find IPX, Phdr responible for .text.
+	// Find IPX, the exec Load Phdr responsible for .text.
 	size_t i = 0;
 	while (i < elf->phnum)
 	{
 		if (IP[i].p_flags & PF_X && 
 			(IE->e_entry >= IP[i].p_offset &&
 			 IE->e_entry < IP[i].p_offset + IP[i].p_filesz))
-		{
 			IPX = &IP[i];
-		}
 		i++;
 	}
-	___die(!IPX, "Did not fina a `.text` section.");
+	___die(!IPX, "Did not find a `.text` section.");
 
-	// Full clone.
-//	size_t data_offset = inj->bin_size;
-//	ft_memcpy(inj->data + data_offset, elf->data, elf->data_size);
-//	return;
+	// Adjust parameters: augment load area.
+
+	original_entry = EE->e_entry;
+	original_filesz = IPX->p_filesz;
+	IE->e_entry += original_filesz;
+	IPX->p_filesz += inj->bin_size;
+	IPX->p_memsz += inj->bin_size;
+	IE->e_shoff += inj->bin_size;
+
+	*(int32_t*)(inj->bin + inj->bin_size - sizeof(int32_t)) = 
+		-IPX->p_filesz; 
+//	- (int32_t)(inj->bin_size + original_filesz);
+//		IE->e_entry;
+//		((int)inj->bin_size * -1 - (int)original_filesz);
+//		(int)(IE->e_entry - original_entry) * -1;
+
+	// Inject.
+	ft_memcpy((void*)IE + IE->e_entry, (void*)inj->bin, inj->bin_size);
+
+	// Copy append original data block.
+//	size_t org_offset = inj->bin_size;
+//	ft_memcpy((void*)IE + org_offset, (void*)EE, elf->data_size);
 
 //	// Clean .text area (for clarity).
 //	char *h = (void*)IE + IPX->p_offset;
@@ -71,17 +89,8 @@ void	inject(const char *woody, const char *buzz)
 //		*h++ = 0;	
 
 //	// Hard ajust last jump
-//	size_t org_offset = inj->bin_size;
-
 //	int32_t* jump = (void*)inj->bin + (inj->bin_size - sizeof(int32_t));
 //	*jump = 0x10;
-//
-//	// Translate e_entry portion (assuming there is padding room).
-//	ft_memcpy((void*)IE + IPX->p_offset + org_offset, (void*)EE + IPX->p_offset, IPX->p_filesz);
-
-//	// Adjust parameters.
-//	IPX->p_filesz += inj->bin_size;
-//	IPX->p_memsz += inj->bin_size;
 
 //	i = 0;
 //	while (i < elf->shnum)
