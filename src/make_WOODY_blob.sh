@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Use only .text section:
-nasm -f elf64 WOODYcode.s -o WOODYcode.o
+nasm -g -f elf64 WOODYcode.s -o WOODYcode.o
 ld -s WOODYcode.o -o buzz
 objcopy -j.text -O binary WOODYcode.o WOODY_blob.bin
 cp ./WOODY_blob.bin ..

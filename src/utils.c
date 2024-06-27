@@ -64,3 +64,35 @@ void	read_blob(const char *filename)
 	___die(!inj->data, "Failed to prepare injected alloc block.");
 	inj_data_alloc = true;
 }
+
+void	hex_dump(void* address, size_t amount)
+{
+	char* COLORMODE = getenv("COLORMODE");
+	char*	h; // head
+	if (!address)
+		return (void)printf("Dumping address nil, no dump.");
+	printf("%p\n", address);
+	for (size_t i = 0; i < amount; i += 8)
+	{
+		h = (char*)(address + i);
+		printf("%05ld ", (void *)h - address);
+		for (size_t o = 0; o < 8 && o < amount; o++) // offset
+		{
+			if (!(*((char*)h + o) & 0xFF))
+				if (COLORMODE) printf("\033[38;5;240m");
+			printf("%02x ", *(h + o) & 0xFF);
+			if (!(*((char*)h + o) & 0xFF))
+				if (COLORMODE) printf("\033[0m");
+		}
+		for (size_t o = 0; o < 8 && o < amount; o += 1)
+		{
+			if (isprint(*(h + o)))
+				printf("%c", *(h + o));
+			else if (!*(h + o))
+				printf(" ");
+			else
+				printf(".");
+		}
+		printf("\n");
+	}
+};

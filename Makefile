@@ -41,7 +41,7 @@ $(NAME): $(OBJ) $(HEAD)
 $(OBJS): %o : %.c
 	$(CC) $(CFLAGS) -o $@ -c $<
 
-clean:
+clean: clean_woody_bin
 	@rm -rf $(OBJ)
 	@rm -rf src/WOODYcode.o
 
@@ -49,6 +49,9 @@ fclean:	clean
 	@rm -rf $(NAME)
 	@cd samples && ./clean.sh
 	@rm -rf WOODY_blob.bin
+
+clean_woody_bin:
+	@rm -rf woody
 
 re: fclean all
 
@@ -59,23 +62,18 @@ samples:
 blob:
 	cd src && ./make_WOODY_blob.sh
 
-v:			all
+v:			re
 	$(VAL) ./$(NAME) $(HELLO64)
-vf:			all
+vf:			re
 	$(VAL) $(VALFLAG) ./$(NAME) $(HELLO64)
-g:			all
+g:			re
 	gdb -args ./$(NAME) $(HELLO64)
 
-t:			all
+t:			re
 	-unit/pass.sh "$(RETURN42)"
-s:			all
+s:			re
 	-unit/pass.sh "$(HELLO64)"
-c:			all
+c:			re
 	-unit/pass.sh "$(COMPLEX64)"
-l:			all
+l:			re
 	-unit/pass.sh "/bin/ls"
-
-rv:			re v
-rvf:		re vf
-rg:			re g
-rt:			re t

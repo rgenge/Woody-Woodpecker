@@ -43,7 +43,7 @@ void	inject(const char *woody, const char *buzz_filename)
 	Elf64_Phdr* IP = (Elf64_Phdr*)(inj->data + EE->e_phoff);
 	Elf64_Phdr* IPX = 0;
 	Elf64_Shdr* IS = (Elf64_Shdr*)(inj->data + EE->e_shoff);
-	int32_t original_entry;
+	Elf64_Addr original_entry;
 	int32_t original_filesz;
 	(void)EE; (void)IE; (void)EP; (void)IP; (void)IPX; (void)IS;
 	(void)original_entry; (void)original_filesz;
@@ -60,24 +60,33 @@ void	inject(const char *woody, const char *buzz_filename)
 	}
 	___die(!IPX, "Did not find a `.text` section.");
 
-	// Adjust parameters: augment load area.
-
-	original_entry = EE->e_entry;
+	// Adjust parameters.
+	original_entry = IE->e_entry;
 	original_filesz = IPX->p_filesz;
 	IE->e_entry += original_filesz;
 	IPX->p_filesz += inj->bin_size;
 	IPX->p_memsz += inj->bin_size;
-	IE->e_shoff += inj->bin_size;
 
-	*(int32_t*)(inj->bin + inj->bin_size - sizeof(int32_t)) = 
-		-IPX->p_filesz; 
-//	- (int32_t)(inj->bin_size + original_filesz);
-//		IE->e_entry;
-//		((int)inj->bin_size * -1 - (int)original_filesz);
-//		(int)(IE->e_entry - original_entry) * -1;
+	// Offset from last position:
+	int32_t *last_jump;
+	last_jump = (int32_t*)(inj->bin + inj->bin_size - sizeof(int32_t));
+	*last_jump = (inj->bin_size + original_filesz) * -1;
 
 	// Inject.
 	ft_memcpy((void*)IE + IE->e_entry, (void*)inj->bin, inj->bin_size);
+	hex_dump((void*)IE + original_entry, IPX->p_filesz);
+
+	// Debug info.
+	printf("original_entry %ld\n", original_entry);
+	printf("new-entry %ld (%ld ahead)\n", IE->e_entry, IE->e_entry - original_entry);
+	printf("original_filesz %d\n", original_filesz);
+	printf("bin_size %d\n", inj->bin_size);
+	printf("      + ------\n         %d\n", original_filesz + inj->bin_size);
+	printf("jump %d\n", *last_jump);
+
+	// Lastly.
+	file_out_to_file(woody, inj->data, inj->data_size);
+
 
 	// Copy append original data block.
 //	size_t org_offset = inj->bin_size;
