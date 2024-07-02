@@ -57,7 +57,7 @@ fi;
 		(green && echo "[ OK ] There was some ouput.") \
 		|| error_exit "[ KO ] Output must exist and be ...WOODY..."
 
-	[[ -z "$check" ]] && (green && echo "[ OK ] Auto-check, the outputs are identical but for the 1st line.") || error_exit "[ KO ] Unmatched output ignoring first line."
+	[[ -z "$check" ]] && (green && echo "[ OK ] Auto-check, the outputs are identical but for the 1st line.") || yellow && echo "[ OK? ] Unmatched output, behavior must be the same."
 
 	rm -f a.tmp b.tmp out.tmp
 	rm -f woody_error

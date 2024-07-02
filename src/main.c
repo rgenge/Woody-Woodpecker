@@ -85,16 +85,15 @@ void	inject(const char *woody, const char *buzz_filename)
 	// Adjust parameters.
 	original_entry = IE->e_entry;
 	original_filesz = IPX->p_filesz;
-	IE->e_entry += original_filesz;
-	IPX->p_filesz += inj->bin_size;
-	IPX->p_memsz += inj->bin_size;
-	ISX->sh_size += inj->bin_size;
+	IE->e_entry = IPX->p_vaddr + IPX->p_memsz;
+//	IPX->p_filesz += inj->bin_size;
+//	IPX->p_memsz += inj->bin_size;
+//	ISX->sh_size += inj->bin_size;
 
 	// The jump:
 	int32_t *last_jump;
 	last_jump = (int32_t*)(inj->bin + inj->bin_size - sizeof(int32_t));
-	*last_jump = (inj->bin_size + original_filesz) * -1;
-//	*last_jump = original_entry - IE->e_entry;
+	*last_jump = original_entry - IE->e_entry - inj->bin_size;
 
 	// Inject. (Not checking available padding space.)
 	ft_memcpy((void*)IE + IE->e_entry, (void*)inj->bin, inj->bin_size);

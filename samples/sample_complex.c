@@ -5,6 +5,6 @@ int
 main() {
 	int *pointer = malloc(sizeof(int));
 	*pointer = 42;
-	printf("--> %p %d <--", pointer, *pointer);
+	printf("--> %d <--", *pointer);
 	return (*pointer);
 }

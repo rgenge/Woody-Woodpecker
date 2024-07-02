@@ -1,6 +1,7 @@
 .text:
 global _start
 _start:
+	pushfq
 	push rax
 	push rdi
 	push rsi
@@ -20,4 +21,5 @@ _start:
 	pop rsi
 	pop rdi
 	pop rax
+	popfq
 	jmp -1

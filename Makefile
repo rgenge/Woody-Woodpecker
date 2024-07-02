@@ -19,7 +19,7 @@ CFLAGS	= -Wall -Werror -Wextra -Wfatal-errors
 SRC		= src/error.c src/main.c src/utils.c
 HEAD	=	Makefile src/woody.h
 
-CC		= gcc -g -fsanitize=address
+CC		= gcc
 
 OBJ		= $(SRC:.c=.o)
 
@@ -77,3 +77,12 @@ c:			re
 	-unit/pass.sh "$(COMPLEX64)"
 l:			re
 	-unit/pass.sh "/bin/ls"
+
+dt:			t
+	-utils/a_b.sh "$(RETURN42)" ./woody
+ds:			s
+	-utils/a_b.sh "$(HELLO64)" ./woody
+dc:			c
+	-utils/a_b.sh "$(COMPLEX64)" ./woody
+dl:			l
+	-utils/a_b.sh "/bin/ls" ./woody
