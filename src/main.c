@@ -86,9 +86,16 @@ void	inject(const char *woody, const char *buzz_filename)
 	original_entry = IE->e_entry;
 	original_filesz = IPX->p_filesz;
 	IE->e_entry = IPX->p_vaddr + IPX->p_memsz;
-//	IPX->p_filesz += inj->bin_size;
-//	IPX->p_memsz += inj->bin_size;
-//	ISX->sh_size += inj->bin_size;
+//	IPX->p_filesz += inj->bin_size; // Disney
+//	IPX->p_memsz += inj->bin_size;  // cessário
+//	ISX->sh_size += inj->bin_size;  //
+
+	// Validate enough padding space.
+	char* s = (char*)IE + IE->e_entry;
+	char* h = s;
+	while (h - s < inj->bin_size)
+		h++;
+	___die(h - s != inj->bin_size, "Not enough padding space for injection.");
 
 	// The jump:
 	int32_t *last_jump;

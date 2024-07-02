@@ -30,17 +30,21 @@ else
 	green && echo "[ OK ] Valid ELF."
 fi;
 
+	./woody | tee out.tmp
+	"$1" | tee b.tmp;
+	cat out.tmp | tail -n +2 > a.tmp
+
 	yellow
 	echo "This is the output from \`$1\`:"
 	normal
-	"$1"
+	cat b.tmp
 	ret_out_a="$?"
 	echo "Return value: $ret_out_a";
 
 	yellow
 	echo "This is the output from \`./woody\`:"
 	normal
-	./woody
+	cat out.tmp
 	ret_out_w="$?"
 	echo "Return value: $ret_out_w";
 
@@ -48,15 +52,11 @@ fi;
 	echo "[ OK? ] \`woody\` is run, must have the same behavior of \`$1\`, but with \'....WOODY.....\' on top."
 	[[ "$ret_out_a" -eq "$ret_out_w" ]] && (green && echo "[ OK ] Same return value.") || error_exit "[ KO ] Return values differ."
 
-	./woody > out.tmp
-	cat out.tmp | tail -n +2 > a.tmp
-	"$1" > b.tmp;
-	check=$(diff a.tmp b.tmp)
-
 	[[ -n "$(cat out.tmp)" ]] && \
 		(green && echo "[ OK ] There was some ouput.") \
 		|| error_exit "[ KO ] Output must exist and be ...WOODY..."
 
+	check=$(diff a.tmp b.tmp)
 	[[ -z "$check" ]] && (green && echo "[ OK ] Auto-check, the outputs are identical but for the 1st line.") || yellow && echo "[ OK? ] Unmatched output, behavior must be the same."
 
 	rm -f a.tmp b.tmp out.tmp
