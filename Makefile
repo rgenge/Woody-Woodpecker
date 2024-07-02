@@ -14,12 +14,12 @@ RETURN42= "./samples/return42"
 HELLO64	=	"./samples/sample"
 COMPLEX64 = "./samples/sample_complex"
 
-CFLAGS	= -Wall -Werror -Wextra -g -Wfatal-errors
+CFLAGS	= -Wall -Werror -Wextra -Wfatal-errors
 
 SRC		= src/error.c src/main.c src/utils.c
 HEAD	=	Makefile src/woody.h
 
-CC		= gcc
+CC		= gcc -g -fsanitize=address
 
 OBJ		= $(SRC:.c=.o)
 

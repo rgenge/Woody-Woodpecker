@@ -1,6 +1,6 @@
 #!/bin/sh
 unset COLORMODE
-echo "sample64" > a
-elfsdump/elfsdump samples/return64 >> a
-echo "woody" > b
-elfsdump/elfsdump ./woody >> b
+echo "$1" > a
+objdump -d "$1" >> a
+echo "$2" > b
+objdump -d "$2" >> b
