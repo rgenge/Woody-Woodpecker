@@ -6,7 +6,20 @@ _start:
 	push rdi
 	push rsi
 	push rdx
-	sub rsp, 16 ; allocate string size
+
+	jmp decript_finish
+
+decript_begin:
+	jmp rax
+
+decript_finish:
+
+	lea rax, [rel print_woody]
+	jmp decript_begin
+
+print_woody:
+
+	sub rsp, 16
 	mov dword [rsp], 0x2e2e2e2e			; ....
 	mov dword [rsp + 4], 0x444f4f57 ; WOOD
 	mov dword [rsp + 8], 0x2e2e2e59 ; Y...

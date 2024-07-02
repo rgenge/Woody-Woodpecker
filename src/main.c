@@ -84,9 +84,10 @@ void	inject(const char *woody, const char *buzz_filename)
 	original_entry = IE->e_entry;
 	original_filesz = IPX->p_filesz;
 	IE->e_entry = IPX->p_vaddr + IPX->p_memsz;
+	IPX->p_flags |= PF_W;
 //	IPX->p_filesz += inj->bin_size; // Not necessary.
 //	IPX->p_memsz += inj->bin_size;  // Not necessary.
-//	ISX->sh_size += inj->bin_size;  // ISX is unused
+//	ISX->sh_size += inj->bin_size;  // ISX is unused, not necessary.
 
 	// Validate enough padding space.
 	char* s = (char*)IE + IE->e_entry;

@@ -3,7 +3,7 @@
 # Use only .text section:
 nasm -f elf64 WOODYcode.s -o WOODYcode.o
 ld WOODYcode.o -o buzz
-objcopy -j.text -O binary WOODYcode.o WOODY_blob.bin
+objcopy -j.text -j.data -O binary WOODYcode.o WOODY_blob.bin
 cp ./WOODY_blob.bin ..
 
 # Or use full ELF:

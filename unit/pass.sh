@@ -56,7 +56,7 @@ fi;
 		|| error_exit "[ KO ] Output must exist and be ...WOODY..."
 
 	check=$(diff a.tmp b.tmp)
-	[[ -z "$check" ]] && (green && echo "[ OK ] Auto-check, the outputs are identical but for the 1st line.") || yellow && echo "[ OK? ] Unmatched output, behavior must be the same."
+	[[ -z "$check" ]] && (green && echo "[ OK ] Auto-check, the outputs are identical but for the 1st line.") || (yellow && echo "[ OK? ] Unmatched output, behavior must be the same.")
 
 	rm -f a.tmp b.tmp out.tmp
 	rm -f woody_error
