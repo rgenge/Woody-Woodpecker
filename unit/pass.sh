@@ -30,23 +30,22 @@ else
 	green && echo "[ OK ] Valid ELF."
 fi;
 
-	./woody | tee out.tmp
-	"$1" | tee b.tmp;
-	cat out.tmp | tail -n +2 > a.tmp
 
 	yellow
 	echo "This is the output from \`$1\`:"
 	normal
-	cat b.tmp
+	"$1" | tee b.tmp;
 	ret_out_a="$?"
 	echo "Return value: $ret_out_a";
 
 	yellow
 	echo "This is the output from \`./woody\`:"
 	normal
-	cat out.tmp
+	./woody | tee out.tmp
 	ret_out_w="$?"
 	echo "Return value: $ret_out_w";
+
+	cat out.tmp | tail -n +2 > a.tmp
 
 	yellow
 	echo "[ OK? ] \`woody\` is run, must have the same behavior of \`$1\`, but with \'....WOODY.....\' on top."

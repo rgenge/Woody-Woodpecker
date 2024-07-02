@@ -41,16 +41,14 @@ void	inject(const char *woody, const char *buzz_filename)
 	// Positions.
 	Elf64_Ehdr* EE = (Elf64_Ehdr*)elf->data;
 	Elf64_Ehdr* IE = (Elf64_Ehdr*)inj->data;
-	Elf64_Phdr* EP = (Elf64_Phdr*)(elf->data + EE->e_phoff);
 	Elf64_Phdr* IP = (Elf64_Phdr*)(inj->data + EE->e_phoff);
 	Elf64_Shdr* IS = (Elf64_Shdr*)(inj->data + EE->e_shoff);
-	Elf64_Sym* ISYM = (Elf64_Sym*)IS;
 	Elf64_Phdr* IPX = 0;
 	Elf64_Shdr* ISX = 0;
 	Elf64_Addr original_entry;
 	int32_t original_filesz;
-	(void)EE; (void)IE; (void)EP; (void)IP; (void)IPX; (void)IS;
-	(void)original_entry; (void)original_filesz; (void)ISYM;
+	(void)EE; (void)IE; (void)IP; (void)IPX; (void)IS;
+	(void)original_entry; (void)original_filesz;
 
 	// Find IPX, the exec Load Phdr responsible for .text.
 	i = 0;
@@ -86,16 +84,15 @@ void	inject(const char *woody, const char *buzz_filename)
 	original_entry = IE->e_entry;
 	original_filesz = IPX->p_filesz;
 	IE->e_entry = IPX->p_vaddr + IPX->p_memsz;
-//	IPX->p_filesz += inj->bin_size; // Disney
-//	IPX->p_memsz += inj->bin_size;  // cessário
-//	ISX->sh_size += inj->bin_size;  //
+//	IPX->p_filesz += inj->bin_size; // Not necessary.
+//	IPX->p_memsz += inj->bin_size;  // Not necessary.
+//	ISX->sh_size += inj->bin_size;  // ISX is unused
 
 	// Validate enough padding space.
 	char* s = (char*)IE + IE->e_entry;
 	char* h = s;
-	while (h - s < inj->bin_size)
-		h++;
-	___die(h - s != inj->bin_size, "Not enough padding space for injection.");
+	while (h++ - s < inj->bin_size) ;
+	___die(h - s != inj->bin_size + 1, "Not enough padding space for injection.");
 
 	// The jump:
 	int32_t *last_jump;
@@ -104,15 +101,6 @@ void	inject(const char *woody, const char *buzz_filename)
 
 	// Inject. (Not checking available padding space.)
 	ft_memcpy((void*)IE + IE->e_entry, (void*)inj->bin, inj->bin_size);
-
-	// Debug info.
-//	hex_dump((void*)IE + original_entry, IPX->p_filesz);
-	printf("original_entry %ld\n", original_entry);
-	printf("original_filesz %d\n", original_filesz);
-	printf("new-entry %ld (%ld ahead)\n", IE->e_entry, IE->e_entry - original_entry);
-	printf("bin_size %d\n", inj->bin_size);
-	printf("      + ------\n         %d\n", original_filesz + inj->bin_size);
-	printf("jump %d\n", *last_jump);
 
 	// Lastly.
 	file_out_to_file(woody, inj->data, inj->data_size);
