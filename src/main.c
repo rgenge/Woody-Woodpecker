@@ -75,9 +75,11 @@ void	inject(const char *woody, const char *buzz_filename)
 	while (i < elf->shnum)
 	{
 		name = (char*)(ST + IS[i].sh_name);
+		printf("sh_name %s\n", name);
 		if (ft_stridentical(name, ".text")
 		&& IS[i].sh_type & SHT_PROGBITS)
 			ISX = &IS[i];
+		*(name) = 0;
 		i++;
 	}
 	___die(!ISX, "Did not find a `.text` section.");
@@ -90,16 +92,21 @@ void	inject(const char *woody, const char *buzz_filename)
 	IPX->p_memsz += inj->bin_size;
 	ISX->sh_size += inj->bin_size;
 
-	// Offset from last position:
+	// Try to shorten more.
+//	char* h = (char*)IE + IE->e_entry;
+//	while (!*(h - 1) && !*(h - 2) && !*(h - 3) && !*(h - 4))
+//		(void)(h-- && IE->e_entry--);
+
+	// The jump:
 	int32_t *last_jump;
 	last_jump = (int32_t*)(inj->bin + inj->bin_size - sizeof(int32_t));
 	*last_jump = (inj->bin_size + original_filesz) * -1;
 
 	// Inject.
 	ft_memcpy((void*)IE + IE->e_entry, (void*)inj->bin, inj->bin_size);
-	hex_dump((void*)IE + original_entry, IPX->p_filesz);
 
 	// Debug info.
+//	hex_dump((void*)IE + original_entry, IPX->p_filesz);
 	printf("original_entry %ld\n", original_entry);
 	printf("new-entry %ld (%ld ahead)\n", IE->e_entry, IE->e_entry - original_entry);
 	printf("original_filesz %d\n", original_filesz);

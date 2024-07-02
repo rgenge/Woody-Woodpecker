@@ -1,4 +1,6 @@
 .text:
+global _start
+_start:
 	sub rsp, 16 ; allocate string size
 	mov dword [rsp], 0x2e2e2e2e			; ....
 	mov dword [rsp + 4], 0x444f4f57 ; WOOD
