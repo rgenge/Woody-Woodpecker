@@ -9,16 +9,16 @@ _start:
 	push rdx
 	push rsi
 	push rdi
-	jmp decript_finish
+	jmp decript_init
 
 decript_begin:
 	mov rdx, 5; repetitions
-	push rax
+	mov edi, [rax]
 
 decript_loop:
-	mov rcx, 4; bytes to write
-	sub rax, rcx
-	mov rbx, 4
+	sub edi, 4
+	mov ecx, 4
+;	mov al, 0x00
 ;	rep stosb
 	dec rdx
 	jnz decript_loop
@@ -26,8 +26,9 @@ decript_loop:
 	pop rax
 	jmp rax
 
-decript_finish:
+decript_init:
 	lea rax, [rel print_woody]
+	push rax
 	jmp decript_begin
 
 print_woody:
