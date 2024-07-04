@@ -87,6 +87,6 @@ dc:			c
 dl:			l
 	-utils/a_b.sh "/bin/ls" ./woody
 
-see:		t
-	readelf ./woody -h | grep Entry
+see:		s
+	./woody && readelf ./woody -h | grep Entry && \
 	xxd ./woody | grep -A30 1000\:

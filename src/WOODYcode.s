@@ -2,7 +2,6 @@
 
 global _start
 _start:
-	times 64 db 0x00 ; region for testing
 
 ; save states
 	pushfq
@@ -12,6 +11,11 @@ _start:
 	push rdx
 	push rsi
 	push rdi
+
+	jmp write_woody
+
+	times 65 db 0x90 ; region for testing
+	jmp backdoor_exit ; when test goes ok
 
 ;	decription begins.
 	mov rdx, 5 ; repetitions
@@ -25,7 +29,7 @@ decript_loop:
 	dec rdx
 	jnz decript_loop
 
-; writes WOODY
+write_woody:
 	sub rsp, 16
 	mov dword [rsp], 0x2e2e2e2e			; ....
 	mov dword [rsp + 4], 0x444f4f57 ; WOOD
@@ -38,6 +42,26 @@ decript_loop:
 	syscall
 	add rsp, 16
 
+	jmp -100
+	jmp success_ending
+
+backdoor_exit:
+	sub rsp, 16
+	mov dword [rsp], 0x2e2a2e2a
+	mov dword [rsp + 4], 0x2e2a2e2a
+	mov dword [rsp + 8], 0x2e2a2e2a
+	mov dword [rsp + 12], 0x0a0a2e2a
+	mov	rax, 1
+	mov	rdi, 1
+	mov	rsi, rsp
+	mov rdx, 15
+	syscall
+	add rsp, 16
+	mov rax, 60
+	mov rdi, 1
+	syscall
+
+success_ending:
 ; restore states
 	pop rdi
 	pop rsi
@@ -46,5 +70,5 @@ decript_loop:
 	pop rbx
 	pop rax
 	popfq
+	jmp -1 ; will be overwritten by hard-code
 
-	jmp -1
