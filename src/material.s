@@ -2,6 +2,7 @@
 
 global _start
 _start:
+off_zero:
 
 ; save states
 	pushfq
@@ -42,11 +43,7 @@ write_woody:
 	syscall
 	add rsp, 16
 
-;	push rip
-;	pop rdi
-	
-;	add rdi, 10
-;	jmp rdi
+	jmp off_zero + 48
 	jmp success_ending
 
 backdoor_exit:
