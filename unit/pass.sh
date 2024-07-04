@@ -34,15 +34,17 @@ fi;
 	yellow
 	echo "This is the output from \`$1\`:"
 	normal
-	"$1" | tee b.tmp;
+	"$1" > b.tmp;
 	ret_out_a="$?"
+	cat b.tmp
 	echo "Return value: $ret_out_a";
 
 	yellow
 	echo "This is the output from \`./woody\`:"
 	normal
-	./woody | tee out.tmp
+	./woody > out.tmp
 	ret_out_w="$?"
+	cat out.tmp
 	echo "Return value: $ret_out_w";
 
 	cat out.tmp | tail -n +2 > a.tmp
