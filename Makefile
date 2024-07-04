@@ -89,4 +89,4 @@ dl:			l
 
 see:		s
 	./woody && readelf ./woody -h | grep Entry && \
-	xxd ./woody | grep -A30 1000\:
+	xxd ./woody | grep -A40 1000\:
