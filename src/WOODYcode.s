@@ -1,7 +1,74 @@
 .text:
-global _start
 
+global _start
 _start:
+
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop; area for testing
+
+; save states
 	pushfq
 	push rax
 	push rbx
@@ -9,29 +76,20 @@ _start:
 	push rdx
 	push rsi
 	push rdi
-	jmp decript_init
 
-decript_begin:
-	mov rdx, 5; repetitions
-	mov edi, [rax]
+;	decription begins.
+	mov rdx, 5 ; repetitions
+	lea rdi, [abs + 0] ; encripted starting point
 
 decript_loop:
-	sub edi, 4
-	mov ecx, 4
+	sub rdi, 4; bytes to write
+	mov rcx, 4
 ;	mov al, 0x00
 ;	rep stosb
 	dec rdx
 	jnz decript_loop
 
-	pop rax
-	jmp rax
-
-decript_init:
-	lea rax, [rel print_woody]
-	push rax
-	jmp decript_begin
-
-print_woody:
+; writes WOODY
 	sub rsp, 16
 	mov dword [rsp], 0x2e2e2e2e			; ....
 	mov dword [rsp + 4], 0x444f4f57 ; WOOD
@@ -44,6 +102,7 @@ print_woody:
 	syscall
 	add rsp, 16
 
+; restore states
 	pop rdi
 	pop rsi
 	pop rdx
@@ -51,4 +110,5 @@ print_woody:
 	pop rbx
 	pop rax
 	popfq
+
 	jmp -1

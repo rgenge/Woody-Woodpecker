@@ -1,9 +1,9 @@
 #!/bin/sh
 
 # Use only .text section:
-nasm -f elf64 WOODYcode.s -o WOODYcode.o
-ld WOODYcode.o -o buzz
-objcopy -j.text -j.data -O binary WOODYcode.o WOODY_blob.bin
+nasm -f elf64 WOODYcode.s -o WOODYcode.o || exit
+ld WOODYcode.o -o buzz || exit
+objcopy -j.text -j.data -O binary WOODYcode.o WOODY_blob.bin || exit
 cp ./WOODY_blob.bin ..
 
 # Or use full ELF:
