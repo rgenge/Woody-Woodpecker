@@ -86,3 +86,7 @@ dc:			c
 	-utils/a_b.sh "$(COMPLEX64)" ./woody
 dl:			l
 	-utils/a_b.sh "/bin/ls" ./woody
+
+see:		t
+	readelf ./woody -h | grep Entry
+	xxd ./woody | grep -A30 1000\:
