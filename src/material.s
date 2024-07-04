@@ -42,7 +42,11 @@ write_woody:
 	syscall
 	add rsp, 16
 
-	jmp -100
+;	push rip
+;	pop rdi
+	
+;	add rdi, 10
+;	jmp rdi
 	jmp success_ending
 
 backdoor_exit:

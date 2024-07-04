@@ -43,12 +43,12 @@ $(OBJS): %o : %.c
 
 clean: clean_woody_bin
 	@rm -rf $(OBJ)
-	@rm -rf src/WOODYcode.o
+	@rm -rf src/material.o
 
 fclean:	clean
 	@rm -rf $(NAME)
 	@cd samples && ./clean.sh
-	@rm -rf WOODY_blob.bin
+	@rm -rf material.bin
 
 clean_woody_bin:
 	@rm -rf woody
@@ -60,7 +60,7 @@ samples:
 	cd samples && ./tiny.sh
 
 blob:
-	cd src && ./make_WOODY_blob.sh
+	cd src && ./assemble_material.sh
 
 v:			re
 	$(VAL) ./$(NAME) $(HELLO64)

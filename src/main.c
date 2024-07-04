@@ -113,6 +113,6 @@ int		main(int argc, char **argv)
 {
 	___die(argc != 2, "Usage: `woody_woodpacker binary_file`");
 	elf_init(argv[1], &elf);
-	inject("woody", "WOODY_blob.bin");
+	inject("woody", "material.bin");
 	return free_all();
 }
