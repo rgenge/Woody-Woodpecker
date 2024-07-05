@@ -15,7 +15,7 @@ off_zero:
 
 	jmp write_woody
 
-	times 64 db 0x90 ; region for testing
+	times 64 db 0x90 ; region for testing nop opcode
 	jmp backdoor_exit ; when test goes ok
 
 ;	decription begins.
@@ -43,31 +43,22 @@ write_woody:
 	syscall
 	add rsp, 16
 
-	nop
-	nop
-	nop
-	nop
-
-	nop
-	nop
-	nop
-	nop
-
-	nop
-	nop
-	nop
-	nop
-
-	nop
-	nop
-	nop
-	nop
-
+;	times 16 db 0x90 ; region for testing nop opcode
+;	foo_zero:
 	; For test, will operate on off_zero + 48.
 ;	lea rdi, [off_zero + 0x170]
-	lea rdi, [abs - 8]
-	mov rax, 0xff
-	mov [rdi], rax
+;	lea rdi, [foo_zero - 4]
+;	mov rax, 0xff
+;	mov byte [foo_zero -4], 0xff
+
+foo_zero:
+	times 18 db 0x90 ; region for testing nop opcode
+	lea rsi, [abs foo_zero + 2]
+	mov byte [rsi], 0xff
+;	mov rax, 0xff
+;	mov byte [rsi], al
+;	mov rax, 0xff
+
 	jmp success_ending
 
 backdoor_exit:
