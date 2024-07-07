@@ -1,3 +1,4 @@
+BITS 64
 .text:
 
 global _start
@@ -52,14 +53,16 @@ write_woody:
 ;	mov byte [foo_zero -4], 0xff
 
 foo_zero:
-	times 18 db 0x90 ; region for testing nop opcode
-	lea rsi, [abs foo_zero + 2]
-	mov byte [rsi], 0xff
-;	mov rax, 0xff
-;	mov byte [rsi], al
-;	mov rax, 0xff
-
-	jmp success_ending
+	times 18 db 0x90
+	lea rax, [rel $-4] ; 4 below lea:
+	; ...90 (90) 90 90 90 lea...
+;	mov word [rax], 0x10eb ; jmp short to B (forward 10)
+	; ...90 (eb 10) 90 90 lea...
+	mov word [rax], 0x12eb ; jmp short to A (forward 12)
+	; ...90 (eb 12) 90 90 lea...
+	jmp short -17 ; jump back -17; = EBEE
+	jmp success_ending ; (B) eb49
+	jmp backdoor_exit ; (A) eb00
 
 backdoor_exit:
 	sub rsp, 16

@@ -54,7 +54,7 @@ void	inject(const char *woody, const char *buzz_filename)
 	i = 0;
 	while (i < elf->phnum)
 	{
-		IP[i].p_flags |= PF_W;
+		// IP[i].p_flags |= PF_W;
 		if (IP[i].p_flags & PF_X && 
 			(IE->e_entry >= IP[i].p_offset &&
 			 IE->e_entry < IP[i].p_offset + IP[i].p_filesz))
@@ -73,7 +73,7 @@ void	inject(const char *woody, const char *buzz_filename)
 	i = 0;
 	while (i < elf->shnum)
 	{
-		IS[i].sh_flags |= SHF_WRITE;
+		// IS[i].sh_flags |= SHF_WRITE;
 		name = (char*)(ST + IS[i].sh_name);
 		if (ft_stridentical(name, ".text")
 		&& IS[i].sh_type & SHT_PROGBITS)
