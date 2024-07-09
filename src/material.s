@@ -1,11 +1,9 @@
-BITS 64
-.text:
+bits 64
 
+.text:
 global _start
 _start:
-off_zero:
 
-; save states
 	pushfq
 	push rax
 	push rbx
@@ -14,22 +12,30 @@ off_zero:
 	push rsi
 	push rdi
 
-	jmp write_woody
+; s______ z ___a________b[-20]
+; s - b = -20
+; a - z = 7
+; s - a = x
+; x = -20 + (b - a)
 
-	times 64 db 0x90 ; region for testing nop opcode
-	jmp backdoor_exit ; when test goes ok
 
-;	decription begins.
-	mov rdx, 5 ; repetitions
-	lea rdi, [abs + 0] ; encripted starting point
+get_cript_entry:
+	lea rax, [rel last_four_bytes_minus_one + 1]
+	movsxd rbx, [rax] ; rbx -474
+	lea rax, [rel last_four_bytes_minus_one - $]
+	add rbx, rax; rax 194, rbx -291
+	lea rax, [rel $ - _start]
+	add rbx, rax; rax 28, rbx -263
+	jmp [rel _start + rbx]
 
-decript_loop:
-	sub rdi, 4; bytes to write
-	mov rcx, 4
-;	mov al, 0x00
-;	rep stosb
-	dec rdx
-	jnz decript_loop
+	add rbx, [0x00]
+
+; movsxd
+
+;decript_loop:
+;	inc rax
+;	cmp rax, [abs + 0]
+;	jnz decript_loop
 
 write_woody:
 	sub rsp, 16
@@ -43,15 +49,9 @@ write_woody:
 	mov rdx, 15
 	syscall
 	add rsp, 16
+	jmp success_ending
 
-;	times 16 db 0x90 ; region for testing nop opcode
-;	foo_zero:
-	; For test, will operate on off_zero + 48.
-;	lea rdi, [off_zero + 0x170]
-;	lea rdi, [foo_zero - 4]
-;	mov rax, 0xff
-;	mov byte [foo_zero -4], 0xff
-
+;;;;;;; demo section:
 foo_zero:
 	times 18 db 0x90
 	lea rax, [rel $-4] ; 4 below lea:
@@ -63,7 +63,6 @@ foo_zero:
 	jmp short -17 ; jump back -17; = EBEE
 	jmp success_ending ; (B) eb49
 	jmp backdoor_exit ; (A) eb00
-
 backdoor_exit:
 	sub rsp, 16
 	mov dword [rsp], 0x2e2a2e2a
@@ -79,9 +78,9 @@ backdoor_exit:
 	mov rax, 60
 	mov rdi, 1
 	syscall
+;;;;;;;
 
 success_ending:
-; restore states
 	pop rdi
 	pop rsi
 	pop rdx
@@ -89,5 +88,7 @@ success_ending:
 	pop rbx
 	pop rax
 	popfq
+	mov rax, [0x00]
+last_four_bytes_minus_one:
 	jmp -1 ; will be overwritten by hard-code
 
