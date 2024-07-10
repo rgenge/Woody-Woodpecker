@@ -2,7 +2,8 @@
 #include <string.h>
 
 #define DATALOAD_SIZE (_loadend - _dataload)
-#define TOTAL_DATALOAD_SIZE (DATALOAD_SIZE + 5)
+#define TOTAL_DATALOAD_SIZE (DATALOAD_SIZE +sizeof(t_encrypt))
+
 
 void read_file(t_elf *elf, char *filename)
 {
@@ -86,8 +87,27 @@ void print_code_segment_info(const Elf64_Phdr *segment) {
     printf("Virtual Address: 0x%lx\n", segment->p_vaddr);
 }
 
+void *ft_memmove(void *dst, const void *src, size_t len) {
+	if (!dst && !src)
+		return NULL;
+	unsigned char *dst_ptr = (unsigned char*)dst;
+	unsigned char *src_ptr = (unsigned char*)src;
+	size_t cntr = 0;
+	if (dst > src) {
+		while (cntr < len) {
+			dst_ptr[(len - 1) - cntr] = src_ptr[(len - 1) - cntr];
+			++cntr;
+		}
+	} else {
+		while (len--) {
+			dst_ptr[cntr] = src_ptr[cntr];
+			++cntr;
+		}
+	}
+	return dst;
+}
 
-void get_code_load(t_elf *elf) {
+void get_code_load(t_elf *elf, t_encrypt *encrypt) {
     
     Elf64_Ehdr *ehdr = elf->data;
     Elf64_Phdr *phdr = elf->data + ehdr->e_phoff;
@@ -100,24 +120,81 @@ void get_code_load(t_elf *elf) {
 			&& ehdr->e_entry < phdr[i].p_vaddr + phdr[i].p_memsz) {           
             elf->code = &phdr[i];
             print_code_segment_info(elf->code);
-            insert_woody(elf);
+            save_encrypt_data(elf, encrypt);
+            insert_woody(elf, encrypt);
             break;
         }
     }
 }
 
-void insert_woody(t_elf *elf) {
+void encrypt_text_section(uint64_t size, void *data, uint64_t key)
+{
+   // int64_t tmp_key = key;
+ //   uint64_t value;
+    printf("Original data:\n ");
+    for (size_t i = 0; i < size; ++i) {
+        printf("%c", *(unsigned char*)(data));
+        *(unsigned char*)(data) = *(unsigned char*)(data + 1);
+    }
+
+    // Print the encoded data for debugging purposes
+    printf("Encoded data: , %ld \n", key);
+    for (size_t i = 0; i < size; ++i) {
+        printf("%c", *(unsigned char*)(data));
+    }
+    printf("\n");
+
+    // Decoding: Decrement each character by 1
+    for (size_t i = 0; i < size; ++i) {
+        *(unsigned char*)(data) = *(unsigned char*)(data - 1);
+    }
+
+    // Print the decoded data for debugging purposes
+    printf("Decoded data: \n");
+    for (size_t i = 0; i < size; ++i) {
+        printf("%c", *(unsigned char*)(data));
+    }
+    printf("\n");
+}
+
+void save_encrypt_data(t_elf *elf, t_encrypt *encrypt)
+{
+    Elf64_Ehdr *ehdr = elf->data;
+
+    encrypt->key = 0;
+    encrypt->sh_addr = elf->text->sh_addr;
+    encrypt->sh_size = elf->text->sh_size;
+    encrypt->original_entry = ehdr->e_entry;
+
+    Elf64_Ehdr *tmp = (Elf64_Ehdr*)elf->data;
+  //  tmp->e_entry = elf->code->p_vaddr + elf->code->p_memsz + 17;
+
+   // encrypt->e_entry = tmp->e_entry;
+   printf("key_value: %ld %p\n\n",  tmp->e_entry, elf->data);
+
+   void *pos = elf->data + elf->text->sh_offset;
+   encrypt_text_section(elf->text->sh_size, pos, encrypt->key);
+}
+
+
+void insert_woody(t_elf *elf, t_encrypt *encrypt) {
+
+
+
 
     Elf64_Ehdr *or_ehdr = elf->data;
-   // Elf64_Phdr *or_phdr = elf->data + or_ehdr->e_phoff;
+
     uint64_t original_entrypoint = or_ehdr->e_entry; // Save the original entry point
 
-    void *tmp_ptr = elf->data + elf->code->p_offset + elf->code->p_filesz; // Move to the pointer where the load section is 
-    or_ehdr->e_entry = elf->code->p_vaddr + elf->code->p_memsz + 17; // Change the entry point of the file based on the load + size of message
+    void *tmp_ptr = elf->data + elf->code->p_offset + elf->code->p_memsz; // Move to the pointer where the load section is 
+    or_ehdr->e_entry = elf->code->p_vaddr + elf->code->p_memsz; // Change the entry point of the file based on the load + size of message
    
     elf->code->p_flags = PF_R | PF_X ;
-    ft_memcpy(tmp_ptr, _dataload, DATALOAD_SIZE);
-    tmp_ptr += DATALOAD_SIZE;
+    ft_memmove(tmp_ptr, g_decryptor,  DATALOAD_SIZE);
+    tmp_ptr +=  DATALOAD_SIZE;
+    printf("key_value: %ld %ld\n\n",  encrypt->key, encrypt->sh_size);
+    ft_memmove(tmp_ptr + DATALOAD_SIZE, &encrypt, sizeof(t_encrypt));
+    tmp_ptr += sizeof(t_encrypt);
 
     // Calculate the offset to the original entry point
     int offset = original_entrypoint - (elf->code->p_vaddr + elf->code->p_memsz + TOTAL_DATALOAD_SIZE);
@@ -130,19 +207,6 @@ void insert_woody(t_elf *elf) {
     elf->code->p_memsz += TOTAL_DATALOAD_SIZE;
     elf->code->p_filesz += TOTAL_DATALOAD_SIZE;
 
-//uint16_t *target = (uint16_t *)elf->data + (0x00000010/2);
-//*(target + 4) = 0x118a;
-//     target = (uint16_t *)elf->data + (0x000000e0/2);
-// *(target +6 ) = 0x0005;
-
-
-
-//     target = (uint16_t *)elf->data + (0x000011a0/2);
-// *(target +2 ) = 0xb7e9;
-//     target = (uint16_t *)elf->data + (0x000011a0/2);
-// *(target +3 ) = 0xfffe;
-//     target = (uint16_t *)elf->data + (0x000011a0/2);
-// *(target +4 ) = 0x00ff;
 
     int fd = open("woody", O_TRUNC | O_CREAT | O_WRONLY, 0777);
 	write(fd, elf->data, elf->filesize);
@@ -154,13 +218,15 @@ void insert_woody(t_elf *elf) {
 int			main(int ac, char **av)
 {
     t_elf   elf;
+    t_encrypt encrypt;
     ft_memset(&elf, 0, sizeof(elf));
+    ft_memset(&encrypt, 0, sizeof(encrypt));
     if (ac != 2){
         print_error("Type the program with one argument");
         printf("%s", av[1]);
     }
     read_file(&elf, av[1]);
     get_text(&elf);
-    get_code_load(&elf);
+    get_code_load(&elf, &encrypt);
     free(elf.data);
 }
