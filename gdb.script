@@ -1,2 +1,5 @@
 r
-info registers
+info registers rax
+info registers rbx
+info registers rcx
+exit

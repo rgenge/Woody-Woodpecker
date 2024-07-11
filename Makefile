@@ -4,7 +4,6 @@ endif
 
 # Besides usual all, clean, fclean, re, use:
 # v  : valgrind
-# vf : valgrind full flags
 # g  : gdb
 # samples : compiles samples
 
@@ -25,7 +24,7 @@ OBJ		= $(SRC:.c=.o)
 
 SHELL	= /bin/sh
 
-VAL		=	valgrind
+VAL		=	valgrind --quiet
 
 VALFLAG	=	--tool=memcheck \
 			--leak-check=full \
@@ -63,9 +62,10 @@ blob:
 	cd src && ./assemble_material.sh
 
 v:			re
-	$(VAL) ./$(NAME) $(HELLO64)
-vf:			re
+	echo "$(NAME) $(HELLO64)"
 	$(VAL) $(VALFLAG) ./$(NAME) $(HELLO64)
+	echo "./woody"
+	$(VAL) $(VALFLAG) ./woody
 g:			re
 	gdb -args ./$(NAME) $(HELLO64)
 
@@ -91,5 +91,5 @@ see:		s
 	-./woody
 	readelf ./woody -h | grep Entry
 	xxd ./woody | grep -A40 1000\:
-ss:			s
+gg:			s
 	gdb -x ./gdb.script ./woody

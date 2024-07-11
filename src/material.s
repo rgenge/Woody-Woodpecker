@@ -20,15 +20,21 @@ _start:
 
 
 get_cript_entry:
-	lea rax, [rel last_four_bytes_minus_one + 1]
-	movsxd rbx, [rax] ; rbx -474
-	lea rax, [rel last_four_bytes_minus_one - $]
-	add rbx, rax; rax 194, rbx -291
-	lea rax, [rel $ - _start]
-	add rbx, rax; rax 28, rbx -263
-	jmp [rel _start + rbx]
+	movsxd rax, [rel main_program_jump + 1]
+	movsxd rbx, [rel main_program_jump + 1]
+	movsxd rcx, [rel jump_test]
+	sub rcx, rax
+;	lea rax, [rax + rbx]
+jump_test:
+	jmp rcx
+;	movsxd rbx, [rax] ; rbx -474
+;	lea rax, [rel main_program_jump - $]
+;	add rbx, rax; rax 194, rbx -291
+;	lea rax, [rel $ - _start]
+;	add rbx, rax; rax 28, rbx -263
+;	jmp [rel _start + rbx]
 
-	add rbx, [0x00]
+;	add rbx, [0x00]
 
 ; movsxd
 
@@ -89,6 +95,6 @@ success_ending:
 	pop rax
 	popfq
 	mov rax, [0x00]
-last_four_bytes_minus_one:
-	jmp -1 ; will be overwritten by hard-code
 
+main_program_jump:
+	jmp -1 ; will be overwritten by hard-code
