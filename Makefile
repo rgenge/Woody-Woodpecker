@@ -88,5 +88,8 @@ dl:			l
 	-utils/a_b.sh "/bin/ls" ./woody
 
 see:		s
-	./woody && readelf ./woody -h | grep Entry && \
+	-./woody
+	readelf ./woody -h | grep Entry
 	xxd ./woody | grep -A40 1000\:
+ss:			s
+	gdb -x ./gdb.script ./woody
