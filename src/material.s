@@ -21,12 +21,17 @@ _start:
 
 get_cript_entry:
 	movsxd rax, [rel main_program_jump + 1]
-	movsxd rbx, [rel main_program_jump + 1]
-	movsxd rcx, [rel jump_test]
-	sub rcx, rax
+	movsxd rbx, [rel main_program_jump]
+	movsxd rcx, [rel jump_test + 1]
+	movsxd rdx, [rel _start]
+	movsxd r8, [rel $ - 1]
 ;	lea rax, [rax + rbx]
 jump_test:
 	jmp rcx
+	nop
+	nop
+	nop
+	nop
 ;	movsxd rbx, [rax] ; rbx -474
 ;	lea rax, [rel main_program_jump - $]
 ;	add rbx, rax; rax 194, rbx -291
