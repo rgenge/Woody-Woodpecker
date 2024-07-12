@@ -112,10 +112,10 @@ void	inject(const char *woody, const char *buzz_filename)
 //	int x = 0x12345678;
 	h = (char*)IE + original_entry;
 	s = (char*)IE + IE->e_entry;
-	while (h < s)
+	while (h < s - 8)
 	{
-		*(int*)h ^= 0x2;
-		h += 4;
+		*(int*)h ^= 0x5544332211009988;
+		h += 8;
 	}
 	h = (char*)IE + original_entry;
 	hex_dump(h, original_filesz);

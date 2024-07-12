@@ -24,12 +24,13 @@ get_cript_entry:
 	lea rbx, [rel main_program_jump]
 	add rbx, rax ; rbx holds start position
 	lea rdx, [rel _start] ; rdx holds end position
+	sub rdx, 8
 
 .cript_loop:
-	mov eax, [rbx]
-	xor eax, 0x2
-	mov [rbx], eax
-	add rbx, 4
+	mov rax, [rbx]
+	xor rax, 0x5544332211009988
+	mov [rbx], rax
+	add rbx, 8
 	cmp rbx, rdx
 	jb .cript_loop
 
