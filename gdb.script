@@ -1,11 +1,13 @@
 r
 
 info registers rax
-info registers eax
 info registers rbx
-info registers rcx
-info registers rdx
-info registers r8
-info registers r9
+
+#info registers rcx
+#info registers rdx
+#info registers r8
+#info registers r9
+#info registers eax
+#info registers rdi
 
 exit

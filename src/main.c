@@ -109,12 +109,14 @@ void	inject(const char *woody, const char *buzz_filename)
 	ft_memcpy((void*)IE + IE->e_entry, (void*)inj->bin, inj->bin_size);
 
 	// Encript.
-//	int x = 0x12345678;
+	long int x = 0x1234567890abcdef;
+	(void)x;
 	h = (char*)IE + original_entry;
 	s = (char*)IE + IE->e_entry;
-	while (h < s - 8)
+	s -= 8;
+	while (h < s)
 	{
-		*(int*)h ^= 0x5544332211009988;
+		*(long int*)h ^= x;
 		h += 8;
 	}
 	h = (char*)IE + original_entry;
@@ -129,6 +131,6 @@ int		main(int argc, char **argv)
 {
 	___die(argc != 2, "Usage: `woody_woodpacker binary_file`");
 	elf_init(argv[1], &elf);
-	inject("woody", "material.bin");
+	inject("woody", "buzz_buzzard.bin");
 	return free_all();
 }

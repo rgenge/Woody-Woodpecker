@@ -42,12 +42,11 @@ $(OBJS): %o : %.c
 
 clean: clean_woody_bin
 	@rm -rf $(OBJ)
-	@rm -rf src/material.o
+	@rm -rf src/buzz_buzzard.o
 
 fclean:	clean
 	@rm -rf $(NAME)
 	@cd samples && ./clean.sh
-	@rm -rf material.bin
 
 clean_woody_bin:
 	@rm -rf woody
@@ -59,8 +58,8 @@ samples:
 	cd samples && ./tiny.sh
 
 blob:
-	nasm -f elf64 src/material.s -o src/material.o
-	objcopy -j.text -O binary src/material.o ./material.bin
+	nasm -f elf64 src/buzz_buzzard.s -o src/buzz_buzzard.o
+	objcopy -j.text -O binary src/buzz_buzzard.o ./buzz_buzzard.bin
 
 v:			s
 	echo "$(NAME) $(HELLO64)"

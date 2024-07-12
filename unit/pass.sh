@@ -14,7 +14,7 @@ green() { tput setaf 2; }
 yellow() { tput setaf 3; }
 normal() { tput sgr0; }
 
-./woody_woodpacker "$@" && \
+./woody_woodpacker "$1" && \
 	(yellow && \
 	echo "[ OK? ] Output OK?") || error_exit "[ KO ] \`woody_woodpacker\` crashed or returned non-zero status."
 
