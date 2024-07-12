@@ -109,13 +109,13 @@ void	inject(const char *woody, const char *buzz_filename)
 	ft_memcpy((void*)IE + IE->e_entry, (void*)inj->bin, inj->bin_size);
 
 	// Encript.
+//	int x = 0x12345678;
 	h = (char*)IE + original_entry;
 	s = (char*)IE + IE->e_entry;
 	while (h < s)
 	{
-		(*h)--;
-		printf("%02x-", *h & 0xff);
-		h++;
+		*(int*)h ^= 0x2;
+		h += 4;
 	}
 	h = (char*)IE + original_entry;
 	hex_dump(h, original_filesz);

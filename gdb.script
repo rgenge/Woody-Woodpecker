@@ -1,6 +1,7 @@
 r
 
 info registers rax
+info registers eax
 info registers rbx
 info registers rcx
 info registers rdx

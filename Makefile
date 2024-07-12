@@ -92,4 +92,4 @@ see:		s
 	readelf ./woody -h | grep Entry
 	xxd ./woody | grep -A40 1000\:
 gg:			s
-	gdb -x ./gdb.script ./woody
+	gdb -q -x ./gdb.script ./woody

@@ -26,10 +26,10 @@ get_cript_entry:
 	lea rdx, [rel _start] ; rdx holds end position
 
 .cript_loop:
-	movzx rax, byte [rbx]
-	inc rax
-	mov [rbx], al
-	inc bx
+	mov eax, [rbx]
+	xor eax, 0x2
+	mov [rbx], eax
+	add rbx, 4
 	cmp rbx, rdx
 	jb .cript_loop
 
@@ -43,7 +43,7 @@ write_woody:
 	mov dword [rsp + 4], 0x444f4f57 ; WOOD
 	mov dword [rsp + 8], 0x2e2e2e59 ; Y...
 	mov dword [rsp + 12], 0x000a2e2e; ..00
-	mov	rax, 1
+	mov rax, 1
 	mov	rdi, 1
 	mov	rsi, rsp
 	mov rdx, 15
