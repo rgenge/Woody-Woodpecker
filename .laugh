@@ -1,0 +1,11 @@
+#!/usr/bin/lilypond
+\version "2.24.1"
+\relative c'' {
+	\key e \major
+	\time 2/4
+	\partial 8
+	\tuplet 3/2 {(b16 e gis} | b8) gis8 r8
+	\tuplet 3/2 {(b,16 e gis} | b8) gis8 r8
+	\tuplet 3/2 {(b,16 e gis} | b8) gis8 r8
+	\tuplet 3/2 {(e16 e e} | \tuplet 3/2 {e e e} \tuplet 3/2 {e e e} e8)
+}

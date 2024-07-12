@@ -8,23 +8,23 @@ bool				inj_alloc = false;
 bool				inj_data_alloc = false;
 bool				inj_bin_alloc = false;
 
-void	elf_init(char *vict, dumpster** xxx)
+void	elf_init(char *vict, dumpster** elf_ptr)
 {
-	read_original(vict, &(*xxx));
-	(*xxx)->bit_class =
-		(*xxx)->data[EI_CLASS] == ELFCLASS64 ? 64
-		: (*xxx)->data[EI_CLASS] == ELFCLASS32 ? 32
+	read_original(vict, &(*elf_ptr));
+	(*elf_ptr)->bit_class =
+		(*elf_ptr)->data[EI_CLASS] == ELFCLASS64 ? 64
+		: (*elf_ptr)->data[EI_CLASS] == ELFCLASS32 ? 32
 		: 0;
-	if ((*xxx)->bit_class == 64)
+	if ((*elf_ptr)->bit_class == 64)
 	{
-		_E64 = (Elf64_Ehdr*)(*xxx)->data;
-		_P64 = (Elf64_Phdr*)((*xxx)->data + _E64->e_phoff);
-		_S64 = (Elf64_Shdr*)((*xxx)->data + _E64->e_shoff);
-		(*xxx)->phnum = _E64->e_phnum == PN_XNUM ?
+		_E64 = (Elf64_Ehdr*)(*elf_ptr)->data;
+		_P64 = (Elf64_Phdr*)((*elf_ptr)->data + _E64->e_phoff);
+		_S64 = (Elf64_Shdr*)((*elf_ptr)->data + _E64->e_shoff);
+		(*elf_ptr)->phnum = _E64->e_phnum == PN_XNUM ?
 			_S64->sh_info : _E64->e_phnum;
-		(*xxx)->shnum = _E64->e_shnum == 0 ?
+		(*elf_ptr)->shnum = _E64->e_shnum == 0 ?
 			_S64[0].sh_size : _E64->e_shnum;
-		(*xxx)->shstrndx = _E64->e_shstrndx == SHN_XINDEX ?
+		(*elf_ptr)->shstrndx = _E64->e_shstrndx == SHN_XINDEX ?
 			_S64[0].sh_link : _E64->e_shstrndx;
 	}
 }
@@ -120,7 +120,8 @@ void	inject(const char *woody, const char *buzz_filename)
 		h += 8;
 	}
 	h = (char*)IE + original_entry;
-	hex_dump(h, original_filesz);
+	if (__debug || FUN)
+		hex_dump(h, original_filesz);
 
 	// Lastly.
 	file_out_to_file(woody, inj->data, inj->data_size);

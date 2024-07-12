@@ -68,7 +68,6 @@ void	read_blob(const char *filename)
 
 void	hex_dump(void* address, size_t amount)
 {
-	char* COLORMODE = getenv("COLORMODE");
 	char*	h; // head
 	if (!address)
 		return (void)printf("Dumping address nil, no dump.");
@@ -94,8 +93,12 @@ void	hex_dump(void* address, size_t amount)
 			else
 				printf(".");
 		}
-		printf("\n");
+		printf("\r");
+		fflush(stdout);
+		if (FUN)
+			usleep(200);
 	}
+	printf("\n");
 };
 
 int	ft_stridentical(const char *s1, const char *s2)

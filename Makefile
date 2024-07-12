@@ -46,6 +46,8 @@ clean: clean_woody_bin
 
 fclean:	clean
 	@rm -rf $(NAME)
+	@rm -rf ./buzz_buzzard.bin
+	@rm -rf ./src/buzz
 	@cd samples && ./clean.sh
 
 clean_woody_bin:
@@ -55,7 +57,7 @@ re: fclean all
 
 .PHONY: samples
 samples:
-	cd samples && ./tiny.sh
+	cd samples && ./make_samples.sh
 
 blob:
 	nasm -f elf64 src/buzz_buzzard.s -o src/buzz_buzzard.o
@@ -79,17 +81,17 @@ l:			re
 	-unit/pass.sh "/bin/ls" ".."
 
 dt:			t
-	-utils/a_b.sh "$(RETURN42)" ./woody
+	-unit/a_b.sh "$(RETURN42)" ./woody
 ds:			s
-	-utils/a_b.sh "$(HELLO64)" ./woody
+	-unit/a_b.sh "$(HELLO64)" ./woody
 dc:			c
-	-utils/a_b.sh "$(COMPLEX64)" ./woody
+	-unit/a_b.sh "$(COMPLEX64)" ./woody
 dl:			l
-	-utils/a_b.sh "/bin/ls" ./woody
+	-unit/a_b.sh "/bin/ls" ./woody
 
 see:		s
 	-./woody
 	readelf ./woody -h | grep Entry
-	xxd ./woody | grep -A40 1000\:
+	xxd ./woody | grep -A32 1000\:
 gg:			s
-	gdb -q -x ./gdb.script ./woody
+	gdb -q -x ./unit/gdb.script ./woody

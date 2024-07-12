@@ -1,9 +1,7 @@
 bits 64
-
 .text:
 global _start
 _start:
-_buzz:
 
 	pushfq
 	push rax
@@ -13,12 +11,11 @@ _buzz:
 	push rsi
 	push rdi
 
-;get_cript_entry:
 	movsxd rax, [rel main_program_jump + 1]
 	add rax, 5
 	lea rbx, [rel main_program_jump]
 	add rbx, rax ; rbx holds start position
-	lea rdx, [rel _buzz] ; rdx holds criptic end position
+	lea rdx, [rel _start] ; rdx holds criptic end position
 	sub rdx, 8
 
 	mov rcx, 0x1234567890abcdef

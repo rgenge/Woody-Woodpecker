@@ -9,7 +9,14 @@
 # include <ctype.h>
 # include <sys/mman.h>
 
-# define __debug true
+# define __debug false
+
+# ifndef FUN
+#  define FUN 1
+# endif
+# ifndef COLORMODE
+#  define COLORMODE 1
+# endif
 
 typedef struct	elf_is_such_a
 {
