@@ -21,10 +21,15 @@ _start:
 get_cript_entry:
 	movsxd rax, [rel main_program_jump + 6]
 	lea rbx, [rel main_program_jump]
-	add rbx, rax
-	mov rcx, rbx ; rcx start
-	jmp rcx
-
+	add rbx, rax ; rbx holds start position
+	mov rcx, rbx
+	lea rdx, [rel _start] ; rdx holds end position
+	sub rcx, rdx
+.cript_loop:
+	; decript code goes here
+	cmp rcx, rdx
+	add rcx, 1
+	jb .cript_loop
 	jmp write_woody
 
 write_woody:
