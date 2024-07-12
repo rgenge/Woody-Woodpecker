@@ -47,9 +47,10 @@ void	inject(const char *woody, const char *buzz_filename)
 	Elf64_Shdr* ISX = 0;
 	Elf64_Addr original_entry;
 	int32_t original_filesz;
-	char *h;
+	char *h; char *s;
 	(void)EE; (void)IE; (void)IP; (void)IPX; (void)IS;
 	(void)original_entry; (void)original_filesz; (void)h;
+	(void)s;
 
 	// Find IPX, the exec Load Phdr responsible for .text.
 	i = 0;
@@ -93,23 +94,10 @@ void	inject(const char *woody, const char *buzz_filename)
 	ISX->sh_size += inj->bin_size;
 	ISX->sh_flags |= SHF_WRITE;
 
-	// Encript.
-	h = (char*)IE + original_entry;
-	int c = original_filesz;
-	while (c-- > 0)
-	{
-		(*h)--;
-		printf("%02x-", *h & 0xff);
-		h++;
-	}
-	h = (char*)IE + original_entry;
-	c = original_filesz;
-	hex_dump(h, c);
-
 	// Validate enough padding space.
-	char* s = (char*)IE + IE->e_entry;
+	s = (char*)IE + IE->e_entry;
 	h = s;
-	while (h++ - s < inj->bin_size) ;
+	while (!*h && h++ - s < inj->bin_size) ;
 	___die(h - s != inj->bin_size + 1, "Not enough padding space for injection.");
 
 	// The jump:
@@ -119,6 +107,18 @@ void	inject(const char *woody, const char *buzz_filename)
 
 	// Inject. (Not checking available padding space.)
 	ft_memcpy((void*)IE + IE->e_entry, (void*)inj->bin, inj->bin_size);
+
+	// Encript.
+	h = (char*)IE + original_entry;
+	s = (char*)IE + IE->e_entry;
+	while (h < s)
+	{
+		(*h)--;
+		printf("%02x-", *h & 0xff);
+		h++;
+	}
+	h = (char*)IE + original_entry;
+	hex_dump(h, original_filesz);
 
 	// Lastly.
 	file_out_to_file(woody, inj->data, inj->data_size);
