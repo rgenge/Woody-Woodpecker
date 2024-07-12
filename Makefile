@@ -2,30 +2,21 @@ ifndef OUTPUT
 .SILENT:
 endif
 
-# Besides usual all, clean, fclean, re, use:
-# v  : valgrind
-# g  : gdb
-# samples : compiles samples
+NAME = woody_woodpacker
 
-NAME		= woody_woodpacker
-
-RETURN42= "./samples/return42"
-HELLO64	=	"./samples/sample"
-COMPLEX64 = "./samples/sample_complex"
-
-CFLAGS	= -Wall -Werror -Wextra -Wfatal-errors
+RETURN42	= "./samples/return42"
+HELLO64		=	"./samples/sample"
+COMPLEX64	= "./samples/sample_complex"
 
 SRC		= src/error.c src/main.c src/utils.c
 HEAD	=	Makefile src/woody.h
-
-CC		= gcc
-
 OBJ		= $(SRC:.c=.o)
 
+CC			= gcc
+CFLAGS	= -Wall -Werror -Wextra -Wfatal-errors
 SHELL	= /bin/sh
 
-VAL		=	valgrind --quiet
-
+VAL			=	valgrind --quiet
 VALFLAG	=	--tool=memcheck \
 			--leak-check=full \
 			--show-leak-kinds=all \
