@@ -1,5 +1,4 @@
 bits 64
-
 .text:
 global _start
 _start:
@@ -26,9 +25,10 @@ get_cript_entry:
 	lea rdx, [rel _start] ; rdx holds end position
 	sub rdx, 8
 
+	mov rdi, 0x5544332211009988
 .cript_loop:
 	mov rax, [rbx]
-	xor rax, 0x5544332211009988
+	xor rax, [rdi]
 	mov [rbx], rax
 	add rbx, 8
 	cmp rbx, rdx

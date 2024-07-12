@@ -59,7 +59,8 @@ samples:
 	cd samples && ./tiny.sh
 
 blob:
-	cd src && ./assemble_material.sh
+	nasm -f elf64 src/material.s -o src/material.o
+	objcopy -j.text -O binary src/material.o ./material.bin
 
 v:			s
 	echo "$(NAME) $(HELLO64)"
@@ -76,7 +77,7 @@ s:			re
 c:			re
 	-unit/pass.sh "$(COMPLEX64)"
 l:			re
-	-unit/pass.sh "/bin/ls"
+	-unit/pass.sh "/bin/ls" ".."
 
 dt:			t
 	-utils/a_b.sh "$(RETURN42)" ./woody
