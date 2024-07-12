@@ -5,23 +5,6 @@ info registers rbx
 info registers rcx
 info registers rdx
 info registers r8
-
-info registers eax
-info registers ebx
-info registers ecx
-info registers edx
-info registers r8d
-
-info registers ax
-info registers bx
-info registers cx
-info registers dx
-info registers r8w
-
-info registers al
-info registers bl
-info registers cl
-info registers dl
-info registers r8l
+info registers r9
 
 exit

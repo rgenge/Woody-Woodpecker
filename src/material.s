@@ -18,35 +18,15 @@ _start:
 ; s - a = x
 ; x = -20 + (b - a)
 
-
 get_cript_entry:
 	movsxd rax, [rel main_program_jump + 1]
-	movsxd rbx, [rel main_program_jump]
-	movsxd rcx, [rel jump_test + 1]
-	movsxd rdx, [rel _start]
-	movsxd r8, [rel $ - 1]
-;	lea rax, [rax + rbx]
-jump_test:
+	lea rbx, [rel main_program_jump]
+	add rbx, rax
+	add rbx, 5
+	mov rcx, rbx ; rcx start
 	jmp rcx
-	nop
-	nop
-	nop
-	nop
-;	movsxd rbx, [rax] ; rbx -474
-;	lea rax, [rel main_program_jump - $]
-;	add rbx, rax; rax 194, rbx -291
-;	lea rax, [rel $ - _start]
-;	add rbx, rax; rax 28, rbx -263
-;	jmp [rel _start + rbx]
 
-;	add rbx, [0x00]
-
-; movsxd
-
-;decript_loop:
-;	inc rax
-;	cmp rax, [abs + 0]
-;	jnz decript_loop
+	jmp write_woody
 
 write_woody:
 	sub rsp, 16
@@ -99,7 +79,6 @@ success_ending:
 	pop rbx
 	pop rax
 	popfq
-	mov rax, [0x00]
 
 main_program_jump:
 	jmp -1 ; will be overwritten by hard-code
