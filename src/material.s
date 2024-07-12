@@ -19,16 +19,16 @@ _start:
 ; x = -20 + (b - a)
 
 get_cript_entry:
-	movsxd rax, [rel main_program_jump + 6]
+	movsxd rax, [rel main_program_jump + 1]
+	add rax, 5
 	lea rbx, [rel main_program_jump]
 	add rbx, rax ; rbx holds start position
-	mov rcx, rbx
 	lea rdx, [rel _start] ; rdx holds end position
-	sub rcx, rdx
+
 .cript_loop:
-	; decript code goes here
-	cmp rcx, rdx
-	add rcx, 1
+	mov byte [rbx], 0x90
+	inc bx
+	cmp rbx, rdx
 	jb .cript_loop
 	jmp write_woody
 
