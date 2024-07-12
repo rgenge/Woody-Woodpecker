@@ -26,10 +26,15 @@ get_cript_entry:
 	lea rdx, [rel _start] ; rdx holds end position
 
 .cript_loop:
-	mov byte [rbx], 0x90
+	movzx rax, byte [rbx]
+	inc rax
+	mov [rbx], al
 	inc bx
 	cmp rbx, rdx
 	jb .cript_loop
+
+;	jmp 0
+;	jmp backdoor_exit
 	jmp write_woody
 
 write_woody:

@@ -61,12 +61,12 @@ samples:
 blob:
 	cd src && ./assemble_material.sh
 
-v:			re
+v:			s
 	echo "$(NAME) $(HELLO64)"
 	$(VAL) $(VALFLAG) ./$(NAME) $(HELLO64)
 	echo "./woody"
 	$(VAL) $(VALFLAG) ./woody
-g:			re
+g:			s
 	gdb -args ./$(NAME) $(HELLO64)
 
 t:			re

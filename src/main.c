@@ -47,8 +47,9 @@ void	inject(const char *woody, const char *buzz_filename)
 	Elf64_Shdr* ISX = 0;
 	Elf64_Addr original_entry;
 	int32_t original_filesz;
+	char *h;
 	(void)EE; (void)IE; (void)IP; (void)IPX; (void)IS;
-	(void)original_entry; (void)original_filesz;
+	(void)original_entry; (void)original_filesz; (void)h;
 
 	// Find IPX, the exec Load Phdr responsible for .text.
 	i = 0;
@@ -87,15 +88,27 @@ void	inject(const char *woody, const char *buzz_filename)
 	original_filesz = IPX->p_filesz;
 	IE->e_entry = IPX->p_vaddr + IPX->p_memsz;
 	IPX->p_flags |= PF_W;
-	IPX->p_filesz += inj->bin_size; // Not necessary.
-	IPX->p_memsz += inj->bin_size;  // Not necessary.
-	ISX->sh_size += inj->bin_size;  // ISX is unused, not necessary.
+	IPX->p_filesz += inj->bin_size;
+	IPX->p_memsz += inj->bin_size;
+	ISX->sh_size += inj->bin_size;
 	ISX->sh_flags |= SHF_WRITE;
-	// ^ not implementing these will hide the inject from objdump.
+
+	// Encript.
+	h = (char*)IE + original_entry;
+	int c = original_filesz;
+	while (c-- > 0)
+	{
+		(*h)--;
+		printf("%02x-", *h & 0xff);
+		h++;
+	}
+	h = (char*)IE + original_entry;
+	c = original_filesz;
+	hex_dump(h, c);
 
 	// Validate enough padding space.
 	char* s = (char*)IE + IE->e_entry;
-	char* h = s;
+	h = s;
 	while (h++ - s < inj->bin_size) ;
 	___die(h - s != inj->bin_size + 1, "Not enough padding space for injection.");
 
