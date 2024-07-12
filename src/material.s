@@ -19,10 +19,9 @@ _start:
 ; x = -20 + (b - a)
 
 get_cript_entry:
-	movsxd rax, [rel main_program_jump + 1]
+	movsxd rax, [rel main_program_jump + 6]
 	lea rbx, [rel main_program_jump]
 	add rbx, rax
-	add rbx, 5
 	mov rcx, rbx ; rcx start
 	jmp rcx
 
