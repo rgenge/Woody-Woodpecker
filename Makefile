@@ -82,7 +82,7 @@ dl:			l
 
 see:		s
 	-./woody
-	readelf ./woody -h | grep Entry
+	readelf ./woody -h
 	xxd ./woody | grep -A32 1000\:
 gg:			s
 	gdb -q -x ./unit/gdb.script ./woody
