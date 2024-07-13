@@ -1,6 +1,6 @@
 #include "woody.h"
 
-dumpster		*elf;
+elf_t				*elf;
 injector		*inj;
 bool				elf_alloc = false;
 bool				elf_data_alloc = false;
@@ -8,7 +8,7 @@ bool				inj_alloc = false;
 bool				inj_data_alloc = false;
 bool				inj_bin_alloc = false;
 
-void	elf_init(char *vict, dumpster** elf_ptr)
+void	elf_init(char *vict, elf_t** elf_ptr)
 {
 	read_original(vict, &(*elf_ptr));
 	(*elf_ptr)->bit_class =
@@ -31,7 +31,10 @@ void	elf_init(char *vict, dumpster** elf_ptr)
 
 void	inject(const char *woody, const char *buzz_filename)
 {
-	size_t i;
+	size_t	i;
+	int32_t	original_filesz;
+	char		*h;
+	char		*s;
 
 	read_blob(buzz_filename);
 
@@ -46,17 +49,11 @@ void	inject(const char *woody, const char *buzz_filename)
 	Elf64_Phdr* IPX = 0;
 	Elf64_Shdr* ISX = 0;
 	Elf64_Addr original_entry;
-	int32_t original_filesz;
-	char *h; char *s;
-	(void)EE; (void)IE; (void)IP; (void)IPX; (void)IS;
-	(void)original_entry; (void)original_filesz; (void)h;
-	(void)s;
 
 	// Find IPX, the exec Load Phdr responsible for .text.
 	i = 0;
 	while (i < elf->phnum)
 	{
-		// IP[i].p_flags |= PF_W;
 		if (IP[i].p_flags & PF_X && 
 			(IE->e_entry >= IP[i].p_offset &&
 			 IE->e_entry < IP[i].p_offset + IP[i].p_filesz))
@@ -75,7 +72,6 @@ void	inject(const char *woody, const char *buzz_filename)
 	i = 0;
 	while (i < elf->shnum)
 	{
-		// IS[i].sh_flags |= SHF_WRITE;
 		name = (char*)(ST + IS[i].sh_name);
 		if (ft_stridentical(name, ".text")
 		&& IS[i].sh_type & SHT_PROGBITS)
@@ -105,7 +101,7 @@ void	inject(const char *woody, const char *buzz_filename)
 	last_jump = (int32_t*)(inj->bin + inj->bin_size - sizeof(int32_t));
 	*last_jump = original_entry - IE->e_entry - inj->bin_size;
 
-	// Inject. (Not checking available padding space.)
+	// Inject.
 	ft_memcpy((void*)IE + IE->e_entry, (void*)inj->bin, inj->bin_size);
 
 	// Encript.
@@ -125,7 +121,6 @@ void	inject(const char *woody, const char *buzz_filename)
 
 	// Lastly.
 	file_out_to_file(woody, inj->data, inj->data_size);
-
 }
 
 int		main(int argc, char **argv)

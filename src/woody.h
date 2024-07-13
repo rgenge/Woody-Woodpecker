@@ -37,7 +37,7 @@ typedef struct	elf_is_such_a
 		Elf32_Shdr	*_32;
 		Elf64_Shdr	*_64;
 	}							shdr;
-}								dumpster;
+}								elf_t;
 
 typedef struct	injection
 {
@@ -48,7 +48,7 @@ typedef struct	injection
 }								injector;
 
 off_t	get_filesize(int fd);
-void	read_original(char *filename, dumpster**);
+void	read_original(char *filename, elf_t**);
 void	*ft_memcpy(void *dst, const void *src, size_t n);
 void	validate_file();
 int		free_all();

@@ -1,6 +1,6 @@
 #include "woody.h"
 
-extern dumpster		*elf;
+extern elf_t			*elf;
 extern injector		*inj;
 extern bool				elf_alloc;
 extern bool				elf_data_alloc;
@@ -59,7 +59,6 @@ void	read_blob(const char *filename)
 	bytes_read = read(fd, inj->bin, filesize);
 	___die (!bytes_read, "No bytes read. Is file empty?");
 	___die (bytes_read == -1, "Error reading file");
-//	inj->data_size = elf->data_size + inj->bin_size;
 	inj->data_size = elf->data_size; // Dont'd expand space, use padding.
 	inj->data = calloc(inj->data_size, 1);
 	___die(!inj->data, "Failed to prepare injected alloc block.");
@@ -96,7 +95,7 @@ void	hex_dump(void* address, size_t amount)
 		printf("\r");
 		fflush(stdout);
 		if (FUN)
-			usleep(200);
+			usleep(166);
 	}
 	printf("\n");
 };
