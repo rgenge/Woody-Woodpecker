@@ -39,6 +39,7 @@ fclean:	clean
 	@rm -rf $(NAME)
 	@rm -rf ./buzz_buzzard.bin
 	@rm -rf ./src/buzz
+	@rm -rf ./.pdf
 	@cd samples && ./clean.sh
 
 clean_woody_bin:
