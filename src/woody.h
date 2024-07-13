@@ -1,13 +1,12 @@
 #ifndef WOODY_H
 # define WOODY_H
 
-# include <elf.h>
-# include <unistd.h>
+# include <ctype.h>
+# include <fcntl.h>
 # include <stdlib.h>
 # include <stdio.h>
-# include <fcntl.h>
-# include <ctype.h>
-# include <sys/mman.h>
+# include <unistd.h>
+# include <elf.h>
 
 # define __debug false
 
@@ -65,10 +64,6 @@ int		ft_stridentical(const char *s1, const char *s2);
 # define true !false
 # define ___die(_bool, _msg) if (_bool) die(_msg)
 void	die(char* message);
-
-# define ___deb if (__debug) 
-# define ___br printf("\n")
-# define ___debp(x, y) if (__debug) { printf(x "", y); };
 
 # define _E32 elf->ehdr._32
 # define _P32 elf->phdr._32
