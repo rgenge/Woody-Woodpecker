@@ -1,4 +1,6 @@
 # Woody-Woodpacker
+
+```
 .
 ├── docs
 │   ├── en.subject.pdf
@@ -29,20 +31,21 @@
     ├── a_b.sh
     ├── gdb.script
     └── pass.sh
+```
 
 ## `make`
 
 ### Commons:
-- `make all`, `make re`, `make clean` and `make fclean`
+- `make all`, `make re`, `make clean` and `make fclean`.
 
 ### Accessories (included in `make all`):
-- `make samples`
-- `make blob`
+- `make samples`.
+- `make blob`.
 
 ### Development:
 - `make v`: runs Valgrind on `woody_woodpacker` then on the originated `woody`.
-- `make g`: `gdb` over `woody_woodpacker sample`
-- `make gg`: `gdb` over `woody` (grab crashes)
+- `make g`: `gdb` over `woody_woodpacker sample`.
+- `make gg`: `gdb` over `woody` (grab crashes).
 - `make see`: prints `woody` header and dumps 512 bytes from entry point.
 
 ### Tests:
