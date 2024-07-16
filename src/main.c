@@ -15,6 +15,7 @@ void	elf_init(char *vict, elf_t** elf_ptr)
 		(*elf_ptr)->data[EI_CLASS] == ELFCLASS64 ? 64
 		: (*elf_ptr)->data[EI_CLASS] == ELFCLASS32 ? 32
 		: 0;
+	___die((*elf_ptr)->bit_class == 32, "Not accepting 32bit files");
 	if ((*elf_ptr)->bit_class == 64)
 	{
 		_E64 = (Elf64_Ehdr*)(*elf_ptr)->data;
