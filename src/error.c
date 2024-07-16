@@ -51,7 +51,7 @@ void  read_original(char *filename, elf_t** elf_ptr)
 	int				filesize;
 	long int	bytes_read;
 
-	*elf_ptr = (elf_t*)calloc(sizeof(elf_t), 1);
+	*elf_ptr = (elf_t*)malloc(sizeof(elf_t));
 	___die (!elf_ptr, "Failed to alloc elf_ptr.");
 	elf_alloc = true;
 	fd = open(filename, O_RDONLY);
@@ -60,7 +60,7 @@ void  read_original(char *filename, elf_t** elf_ptr)
 	___die (filesize == -1,
 					"Failed to get file size");
 	(*elf_ptr)->data_size = (uint32_t)filesize;
-	(*elf_ptr)->data = calloc(1, (*elf_ptr)->data_size);
+	(*elf_ptr)->data = malloc((*elf_ptr)->data_size);
 	___die (!(*elf_ptr)->data, "Could not allocate.");
 	elf_data_alloc = true;
 	bytes_read = read(fd, (*elf_ptr)->data, filesize);
