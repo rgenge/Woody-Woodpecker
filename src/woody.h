@@ -17,7 +17,7 @@
 #  define COLORMODE 1
 # endif
 
-typedef struct	elf_is_such_a
+typedef struct	elf_type
 {
 	char					*data; // raw bin content
 	uint32_t			data_size;
