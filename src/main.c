@@ -101,23 +101,39 @@ void	inject(const char *woody, const char *buzz_filename)
 	last_jump = (int32_t*)(inj->bin + inj->bin_size - sizeof(int32_t));
 	*last_jump = original_entry - IE->e_entry - inj->bin_size;
 
-	// Inject.
-	ft_memcpy((void*)IE + IE->e_entry, (void*)inj->bin, inj->bin_size);
+	// Generate key
+	int n;
+	char k_buffer[8];
+	long int key;
+	int fd = open("/dev/random", O_RDONLY);
+	___die(fd == -1, "Could not access /dev/random.");
+	n = read(fd, k_buffer, sizeof(k_buffer));
+	___die(n != sizeof(k_buffer), "Key generation failed.");
+	close(fd);
+	key = *(long int*)k_buffer;
+	printf("64-bit key: ==== %8lx ====\n", (long int)key);
+
+	// Write key
+	h = (char*)(inj->bin + inj->bin_size - 15);
+	*(long int*)h = key;
 
 	// Encript.
-	long int x = 0x1234567890abcdef;
-	(void)x;
 	h = (char*)IE + original_entry;
 	s = (char*)IE + IE->e_entry;
 	s -= 8;
 	while (h < s)
 	{
-		*(long int*)h ^= x;
+		*(long int*)h ^= key;
 		h += 8;
 	}
-	h = (char*)IE + original_entry;
 	if (__debug || FUN)
+	{
+		h = (char*)IE + original_entry;
 		hex_dump(h, original_filesz);
+	}
+
+	// Inject.
+	ft_memcpy((void*)IE + IE->e_entry, (void*)inj->bin, inj->bin_size);
 
 	// Lastly.
 	file_out_to_file(woody, inj->data, inj->data_size);

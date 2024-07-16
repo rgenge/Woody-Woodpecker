@@ -18,7 +18,7 @@ _start:
 	lea rdx, [rel _start] ; rdx holds criptic end position
 	sub rdx, 8
 
-	mov rcx, 0x1234567890abcdef
+	jmp get_key
 cript_loop:
 	mov rax, [rbx]
 	xor rax, rcx
@@ -39,9 +39,8 @@ cript_loop:
 	mov rdx, 15
 	syscall
 	add rsp, 16
-	jmp success_ending
 
-success_ending:
+;success_ending:
 	pop rdi
 	pop rsi
 	pop rdx
@@ -49,6 +48,12 @@ success_ending:
 	pop rbx
 	pop rax
 	popfq
+
+	jmp main_program_jump
+
+get_key:
+	mov rcx, 0x1234567890abcdef ; position is -15
+jmp cript_loop
 
 main_program_jump:
 	jmp -1 ; will be overwritten by hard-code
