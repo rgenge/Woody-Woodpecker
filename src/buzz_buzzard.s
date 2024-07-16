@@ -15,17 +15,17 @@ _start:
 	add rax, 5
 	lea rbx, [rel main_program_jump]
 	add rbx, rax ; rbx holds start position
-	lea rdx, [rel _start] ; rdx holds criptic end position
+	lea rdx, [rel _start] ; rdx holds cryptic end position
 	sub rdx, 8
 
 	jmp get_key
-cript_loop:
+crypt_loop:
 	mov rax, [rbx]
 	xor rax, rcx
 	mov [rbx], rax
 	add rbx, 8
 	cmp rbx, rdx
-	jb cript_loop
+	jb crypt_loop
 
 ;write_woody:
 	sub rsp, 16
@@ -48,12 +48,11 @@ cript_loop:
 	pop rbx
 	pop rax
 	popfq
-
 	jmp main_program_jump
 
 get_key:
 	mov rcx, 0x1234567890abcdef ; position is -15
-jmp cript_loop
+jmp crypt_loop
 
 main_program_jump:
-	jmp -1 ; will be overwritten by hard-code
+	jmp -1 ; will be overwritten by hard-code, position -4
