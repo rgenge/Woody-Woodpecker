@@ -65,6 +65,11 @@ void	read_blob(const char *filename)
 	inj_data_alloc = true;
 }
 
+bool ft_isprint(const char c)
+{
+	return c >= 31 && c <= 126;
+}
+
 void	hex_dump(void* address, size_t amount)
 {
 	char*	h; // head
@@ -85,7 +90,7 @@ void	hex_dump(void* address, size_t amount)
 		}
 		for (size_t o = 0; o < 8 && o < amount; o += 1)
 		{
-			if (isprint(*(h + o)))
+			if (ft_isprint(*(h + o)))
 				printf("%c", *(h + o));
 			else if (!*(h + o))
 				printf(" ");
@@ -95,7 +100,7 @@ void	hex_dump(void* address, size_t amount)
 		printf("\r");
 		fflush(stdout);
 		if (FUN)
-			usleep(166);
+			usleep(168);
 	}
 	printf("\n");
 };
