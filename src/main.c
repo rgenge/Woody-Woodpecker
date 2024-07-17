@@ -2,7 +2,7 @@
 #include <string.h>
 
 #define DATALOAD_SIZE (_loadend - _dataload)
-#define TOTAL_DATALOAD_SIZE (DATALOAD_SIZE+1)
+#define TOTAL_DATALOAD_SIZE (DATALOAD_SIZE+5)
 
 
 void read_file(t_elf *elf, char *filename)
@@ -132,7 +132,7 @@ void encrypt_text_section(uint64_t size, void *data, uint64_t key)
 {
    // int64_t tmp_key = key;
 
-    unsigned char *char_data = (unsigned char *)data;
+    uint8_t *char_data = (uint8_t *)data;
     printf("Original data:\n");
     for (size_t i = 0; i < size; ++i) {
         printf("%c", char_data[i]);
@@ -146,17 +146,17 @@ void encrypt_text_section(uint64_t size, void *data, uint64_t key)
     }
     printf("\n");
 
-    // Decoding: Decrement each character by 1
-    for (size_t i = 0; i < size; ++i) {
-        char_data[i] = char_data[i] - 1;
-    }
+    // // Decoding: Decrement each character by 1
+    // for (size_t i = 0; i < size; ++i) {
+    //     char_data[i] = char_data[i] - 1;
+    // }
 
     // Print the decoded data for debugging purposes
-    printf("Decoded data:\n");
-    for (size_t i = 0; i < size; ++i) {
-        printf("%c", char_data[i]);
-    }
-    printf("\n");
+    // printf("Decoded data:\n");
+    // for (size_t i = 0; i < size; ++i) {
+    //     printf("%c", char_data[i]);
+    // }
+    // printf("\n");
 }
 
 void save_encrypt_data(t_elf *elf, t_encrypt *encrypt)
@@ -191,11 +191,17 @@ void insert_woody(t_elf *elf, t_encrypt *encrypt) {
         // Handle allocation error
         return;
     }
-
+    size_t size= elf->text->sh_size;
+    printf("encoded data 2:");
+    uint8_t *char_data = (uint8_t *)elf->data + elf->text->sh_offset;
+    for (size_t i = 0; i < size; ++i) {
+        printf("%c", char_data[i]);
+    }
+    printf("\n");
     memcpy(or_ehdr, elf->data, sizeof(Elf64_Ehdr));
 
     uint64_t original_entrypoint = or_ehdr->e_entry; // Save the original entry point
-
+    
     void *tmp_ptr = elf->data + elf->code->p_offset + elf->code->p_filesz; // Move to the pointer where the load section is 
     ehdr->e_entry = elf->code->p_vaddr + elf->code->p_memsz + 17; // Change the entry point of the file based on the load + size of message
 
