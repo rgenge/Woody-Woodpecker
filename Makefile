@@ -1,5 +1,5 @@
 ifndef OUTPUT
-#.SILENT:
+.SILENT:
 endif
 
 NAME = woody_woodpacker
