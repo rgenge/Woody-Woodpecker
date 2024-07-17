@@ -1,9 +1,10 @@
 woody_woodpacker
 *.o
 woody
-buzz_buzzard.bin
 samples/sample
 samples/return42
 samples/sample_complex
 src/buzz
 .pdf
+src/buzz_buzzard.bin
+src/buzz_buzzard.h

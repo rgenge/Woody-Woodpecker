@@ -1,4 +1,8 @@
 #include "woody.h"
+#include "buzz_buzzard.h"
+
+extern unsigned char src_buzz_buzzard_bin[];
+extern unsigned int src_buzz_buzzard_bin_len;
 
 elf_t				*elf;
 injector		*inj;
@@ -6,7 +10,6 @@ bool				elf_alloc = false;
 bool				elf_data_alloc = false;
 bool				inj_alloc = false;
 bool				inj_data_alloc = false;
-bool				inj_bin_alloc = false;
 
 void	elf_init(char *vict, elf_t** elf_ptr)
 {
@@ -30,19 +33,40 @@ void	elf_init(char *vict, elf_t** elf_ptr)
 	}
 }
 
-void	inject(const char *woody, const char *buzz_filename)
+void	read_blob2()
+{
+	off_t			filesize;
+	filesize = src_buzz_buzzard_bin_len;
+	___die ((int)filesize == 0, "Blob size not declared.");
+	inj = malloc(sizeof(injector));
+	___die (!inj, "Failed to create injector.");
+	inj_alloc = true;
+	inj->bin_size = (uint32_t)filesize;
+	inj->bin = (char*)src_buzz_buzzard_bin;
+	___die (!inj->bin, "Could not locate extern injection binary.");
+	inj->data_size = elf->data_size;
+	inj->data = malloc(inj->data_size);
+	___die(!inj->data, "Failed to prepare injected alloc block.");
+	inj_data_alloc = true;
+}
+
+void	inject(const char *woody)
 {
 	size_t	i;
 	int32_t	original_filesz;
 	char		*h;
 	char		*s;
 
-	read_blob(buzz_filename);
+	read_blob2();
 
-	// Full clone.
+	/*
+	 * Full clone.
+	 */
 	ft_memcpy(inj->data, elf->data, elf->data_size);
 
-	// Positions.
+	/*
+	 * Positions.
+	 */
 	Elf64_Ehdr* EE = (Elf64_Ehdr*)elf->data;
 	Elf64_Ehdr* IE = (Elf64_Ehdr*)inj->data;
 	Elf64_Phdr* IP = (Elf64_Phdr*)(inj->data + EE->e_phoff);
@@ -51,7 +75,9 @@ void	inject(const char *woody, const char *buzz_filename)
 	Elf64_Shdr* ISX = 0;
 	Elf64_Addr original_entry;
 
-	// Find IPX, the exec Load Phdr responsible for .text.
+	/*
+	 * Find IPX, the exec Load Phdr responsible for .text.
+	 */
 	i = 0;
 	while (i < elf->phnum)
 	{
@@ -63,12 +89,16 @@ void	inject(const char *woody, const char *buzz_filename)
 	}
 	___die(!IPX, "Did not find a `.text` section.");
 
-	// Find string table.
+	/*
+	 * Find string table.
+	 */
 	Elf64_Shdr* SHST = &IS[EE->e_shstrndx];
 	Elf64_Off stoff = SHST->sh_offset;
 	char* ST = (char*)(inj->data + stoff);
 
-	// Find ISX, the exec Load Shdr responsible for .text.
+	/*
+	 * Find ISX, the exec Load Shdr responsible for .text.
+	 */
 	char* name;
 	i = 0;
 	while (i < elf->shnum)
@@ -81,7 +111,9 @@ void	inject(const char *woody, const char *buzz_filename)
 	}
 	___die(!ISX, "Did not find a `.text` section.");
 
-	// Adjust parameters.
+	/*
+	 * Adjust parameters.
+	 */
 	original_entry = IE->e_entry;
 	original_filesz = IPX->p_filesz;
 	IE->e_entry = IPX->p_vaddr + IPX->p_memsz;
@@ -91,18 +123,24 @@ void	inject(const char *woody, const char *buzz_filename)
 	ISX->sh_size += inj->bin_size;
 	ISX->sh_flags |= SHF_WRITE;
 
-	// Validate enough padding space.
+	/*
+	 * Validate enough padding space.
+	 */
 	s = (char*)IE + IE->e_entry;
 	h = s;
 	while (!*h && h++ - s < inj->bin_size) ;
 	___die(h - s != inj->bin_size + 1, "Not enough padding space for injection.");
 
-	// The jump:
+	/*
+	 * The jump:
+	 */
 	int32_t *last_jump;
 	last_jump = (int32_t*)(inj->bin + inj->bin_size - sizeof(int32_t));
 	*last_jump = original_entry - IE->e_entry - inj->bin_size;
 
-	// Generate key
+	/*
+	 * Generate key
+	 */
 	int n;
 	char k_buffer[8];
 	long int key;
@@ -114,11 +152,15 @@ void	inject(const char *woody, const char *buzz_filename)
 	key = *(long int*)k_buffer;
 	printf("64-bit key: ==== %8lx ====\n", (long int)key);
 
-	// Write key
+	/*
+	 * Write key
+	 */
 	h = (char*)(inj->bin + inj->bin_size - 15);
 	*(long int*)h = key;
 
-	// Encript.
+	/*
+	 * Encript.
+	 */
 	h = (char*)IE + original_entry;
 	s = (char*)IE + IE->e_entry;
 	s -= 8;
@@ -133,10 +175,14 @@ void	inject(const char *woody, const char *buzz_filename)
 		hex_dump(h, original_filesz);
 	}
 
-	// Inject.
+	/*
+	 * Inject.
+	 */
 	ft_memcpy((void*)IE + IE->e_entry, (void*)inj->bin, inj->bin_size);
 
-	// Lastly.
+	/*
+	 * Lastly.
+	 */
 	file_out_to_file(woody, inj->data, inj->data_size);
 }
 
@@ -144,6 +190,6 @@ int		main(int argc, char **argv)
 {
 	___die(argc != 2, "Usage: `woody_woodpacker binary_file`");
 	elf_init(argv[1], &elf);
-	inject("woody", "buzz_buzzard.bin");
+	inject("woody");
 	return free_all();
 }

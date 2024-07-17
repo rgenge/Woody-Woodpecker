@@ -1,5 +1,5 @@
 ifndef OUTPUT
-.SILENT:
+#.SILENT:
 endif
 
 NAME = woody_woodpacker
@@ -9,7 +9,7 @@ HELLO64		=	"./samples/sample"
 COMPLEX64	= "./samples/sample_complex"
 
 SRC		= src/error.c src/main.c src/utils.c
-HEAD	=	Makefile src/woody.h
+HEAD	=	Makefile src/woody.h src/buzz_buzzard.h
 OBJ		= $(SRC:.c=.o)
 
 CC			= gcc
@@ -26,7 +26,7 @@ VALFLAG	=	--tool=memcheck \
 all:	samples blob $(NAME)
 
 $(NAME): $(OBJ) $(HEAD)
-	$(CC) $(CFLAGS) $(SRC) -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
 
 $(OBJS): %o : %.c
 	$(CC) $(CFLAGS) -o $@ -c $<
@@ -37,9 +37,11 @@ clean: clean_woody_bin
 
 fclean:	clean
 	@rm -rf $(NAME)
-	@rm -rf ./buzz_buzzard.bin
+	@rm -rf ./src/buzz_buzzard.bin
+	@rm -rf ./src/buzz_buzzard.h
 	@rm -rf ./src/buzz
 	@rm -rf ./.pdf
+	@rm -rf ./a ./b
 	@cd samples && ./clean.sh
 
 clean_woody_bin:
@@ -53,7 +55,8 @@ samples:
 
 blob:
 	nasm -f elf64 src/buzz_buzzard.s -o src/buzz_buzzard.o
-	objcopy -j.text -O binary src/buzz_buzzard.o ./buzz_buzzard.bin
+	objcopy -j.text -O binary src/buzz_buzzard.o src/buzz_buzzard.bin
+	xxd -i src/buzz_buzzard.bin > src/buzz_buzzard.h
 
 v:			s
 	echo "$(NAME) $(HELLO64)"

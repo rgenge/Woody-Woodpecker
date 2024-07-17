@@ -6,7 +6,6 @@ extern bool				elf_alloc;
 extern bool				elf_data_alloc;
 extern bool				inj_alloc;
 extern bool				inj_data_alloc;
-extern bool				inj_bin_alloc;
 
 off_t	get_filesize(int fd)
 {
@@ -38,31 +37,6 @@ void	file_out_to_file(const char *woody, const char* data_block, uint32_t size)
 	___die (write(fd, data_block, size) == -1,
 				  "Could not write to file.");
 	close(fd);
-}
-
-void	read_blob(const char *filename)
-{
-	int				fd;
-	off_t			filesize;
-	long int	bytes_read;
-	fd = open(filename, O_RDONLY);
-	___die (fd == -1, "Failed to open file");
-	filesize = get_filesize(fd);
-	___die ((int)filesize == -1, "Failed to get file size");
-	inj = malloc(sizeof(injector));
-	___die (!inj, "Failed to create injector.");
-	inj_alloc = true;
-	inj->bin_size = (uint32_t)filesize;
-	inj->bin = malloc(inj->bin_size);
-	___die (!inj->bin, "Could not allocate injection portion.");
-	inj_bin_alloc = true;
-	bytes_read = read(fd, inj->bin, filesize);
-	___die (!bytes_read, "No bytes read. Is file empty?");
-	___die (bytes_read == -1, "Error reading file");
-	inj->data_size = elf->data_size; // Dont'd expand space, use padding.
-	inj->data = malloc(inj->data_size);
-	___die(!inj->data, "Failed to prepare injected alloc block.");
-	inj_data_alloc = true;
 }
 
 bool ft_isprint(const char c)

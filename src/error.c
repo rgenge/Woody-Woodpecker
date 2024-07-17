@@ -6,7 +6,6 @@ extern bool				elf_alloc;
 extern bool				elf_data_alloc;
 extern bool				inj_alloc;
 extern bool				inj_data_alloc;
-extern bool				inj_bin_alloc;
 
 void	close_all_fds()
 {
@@ -25,7 +24,6 @@ void	die(char* message)
 
 int		free_all()
 {
-	if (inj_bin_alloc) free(inj->bin);
 	if (inj_data_alloc) free(inj->data);
 	if (inj_alloc) free(inj);
 	if (elf_data_alloc) free(elf->data);
