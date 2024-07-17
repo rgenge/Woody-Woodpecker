@@ -23,7 +23,6 @@ _code:
     mov rax, 1                 ; Syscall number for sys_write
     syscall
 
-    ; Increment each byte of the code section by one
     lea rsi, [rel _loadend + 2]       ; Start of the code section
     lea rdi, [rel _dataload]    ; End of the code section
 decrement_loop:
