@@ -18,9 +18,9 @@ all: $(NAME)
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(NAME): $(OBJ) 
-	$(CC) $(CFLAGS) $(OBJ) -o $(NAME) 
-	
+
+$(NAME): $(OBJ) src/g_decryptor.o
+	$(CC) $(CFLAGS) $(OBJ) src/g_decryptor.o -o $(NAME)
 
 clean:
 	@rm -rf $(OBJ)
