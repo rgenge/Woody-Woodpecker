@@ -8,7 +8,7 @@
 
 typedef struct	s_elf
 {
-	uint64_t	*key;
+	uint64_t	key;
 	void		*data;
 	Elf64_Phdr	*code;
 	Elf64_Shdr	*text;
@@ -27,7 +27,7 @@ typedef struct	s_encrypt
 }               t_encrypt;	
 
 extern unsigned char	g_decryptor[];
-
+extern unsigned int		g_decryptor_len;
 extern void		_dataload(void);
 extern void		_code(void);
 extern void		_loadend(void);

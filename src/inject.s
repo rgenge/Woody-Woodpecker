@@ -1,3 +1,5 @@
+bits 64
+
 SECTION .text
 	global _dataload
 	global _loadend
