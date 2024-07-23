@@ -2,7 +2,7 @@
 #include <string.h>
 
 #define DATALOAD_SIZE (_loadend - _dataload)
-#define TOTAL_DATALOAD_SIZE (DATALOAD_SIZE+5)
+#define TOTAL_DATALOAD_SIZE (DATALOAD_SIZE)
 
 
 void read_file(t_elf *elf, char *filename)
@@ -136,7 +136,7 @@ void encrypt_text_section(uint64_t size, void *data, uint64_t key)
     printf("Original data:\n");
     for (size_t i = 0; i < size; ++i) {
         printf("%c", char_data[i]);
-        char_data[i] = char_data[i] + 1;
+ //       char_data[i] = char_data[i] + 1;
     }
     printf("\n");
     // Print the encoded data for debugging purposes
@@ -181,9 +181,7 @@ void save_encrypt_data(t_elf *elf, t_encrypt *encrypt)
 
 void insert_woody(t_elf *elf, t_encrypt *encrypt) {
 
-
-
-
+    char jmp = 0xe9;
  //   Elf64_Ehdr *or_ehdr = elf->data;
     Elf64_Ehdr *ehdr = elf->data;
     Elf64_Ehdr *or_ehdr = malloc(sizeof(Elf64_Ehdr));
@@ -201,25 +199,22 @@ void insert_woody(t_elf *elf, t_encrypt *encrypt) {
     memcpy(or_ehdr, elf->data, sizeof(Elf64_Ehdr));
 
     uint64_t original_entrypoint = or_ehdr->e_entry; // Save the original entry point
-    
     void *tmp_ptr = elf->data + elf->code->p_offset + elf->code->p_filesz; // Move to the pointer where the load section is 
-    ehdr->e_entry = elf->code->p_vaddr + elf->code->p_memsz + 17; // Change the entry point of the file based on the load + size of message
+    ehdr->e_entry = elf->code->p_vaddr + elf->code->p_memsz+17; // Change the entry point of the file based on the load + size of message
 
     elf->code->p_flags |= PF_X | PF_W ;
- //   int x = DATALOAD_SIZE - sizeof(t_encrypt);
     ft_memcpy(tmp_ptr, g_decryptor,  DATALOAD_SIZE);
-//    tmp_ptr +=  x;
     printf("key_value: %ld %ld\n\n",  encrypt->key, encrypt->sh_size);
-  //  ft_memcpy(tmp_ptr+x, &encrypt, sizeof(t_encrypt));
- //   tmp_ptr += sizeof(t_encrypt);
     tmp_ptr += DATALOAD_SIZE;
     // Calculate the offset to the original entry point
-    int offset = original_entrypoint - (elf->code->p_vaddr + elf->code->p_filesz + TOTAL_DATALOAD_SIZE);
-    elf->code->p_memsz += DATALOAD_SIZE;
-    elf->code->p_filesz += DATALOAD_SIZE;
+    int offset = original_entrypoint - (elf->code->p_vaddr + elf->code->p_memsz + DATALOAD_SIZE + 5);
     // Overwrite the instruction at the end of _dataload to jump to the original entry point
-    *((char *)tmp_ptr) = 0xe9; // Jump instruction
+    *((char *)tmp_ptr) = jmp; // Jump instruction
+    printf("%d %p %d", offset, &offset, jmp);
     *((int *)(tmp_ptr + 1)) = offset; // Offset to jump
+
+    elf->code->p_memsz += DATALOAD_SIZE ;
+    elf->code->p_filesz += DATALOAD_SIZE;
 
   
 
@@ -228,8 +223,6 @@ void insert_woody(t_elf *elf, t_encrypt *encrypt) {
 	write(fd, elf->data, elf->filesize);
 	close(fd);
 }
-
-
 
 int			main(int ac, char **av)
 {
