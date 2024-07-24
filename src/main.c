@@ -200,7 +200,7 @@ void insert_woody(t_elf *elf, t_encrypt *encrypt) {
 
     uint64_t original_entrypoint = or_ehdr->e_entry; // Save the original entry point
     void *tmp_ptr = elf->data + elf->code->p_offset + elf->code->p_filesz; // Move to the pointer where the load section is 
-    ehdr->e_entry = elf->code->p_vaddr + elf->code->p_memsz+17; // Change the entry point of the file based on the load + size of message
+    ehdr->e_entry = elf->code->p_vaddr + elf->code->p_memsz + 17; // Change the entry point of the file based on the load + size of message
 
     elf->code->p_flags |= PF_X | PF_W ;
     ft_memcpy(tmp_ptr, g_decryptor,  DATALOAD_SIZE);
@@ -215,8 +215,6 @@ void insert_woody(t_elf *elf, t_encrypt *encrypt) {
 
     elf->code->p_memsz += DATALOAD_SIZE ;
     elf->code->p_filesz += DATALOAD_SIZE;
-
-  
 
 
     int fd = open("woody", O_TRUNC | O_CREAT | O_WRONLY, 0777);
