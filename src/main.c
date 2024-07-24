@@ -33,6 +33,10 @@ void read_file(t_elf *elf, char *filename)
     fread(&ehdr, sizeof(Elf64_Ehdr), 1, input_elf);
     elf->ehdr = ehdr;
 
+    //    Elf64_Ehdr ehdr;
+    //fread(&ehdr, sizeof(Elf64_Ehdr), 1, elf->data);
+   // elf->ehdr = ehdr;
+
     // Verify ELF header 
     if (ehdr.e_ident[EI_MAG0] != ELFMAG0 ||
         ehdr.e_ident[EI_MAG1] != ELFMAG1 ||
@@ -42,12 +46,6 @@ void read_file(t_elf *elf, char *filename)
         exit(1) ;
     }
     printf("%ld", elf->filesize);
-}
-
-void decrypt_file(t_elf *elf) {
-
-    
-    printf("%ld", elf->code->p_offset);
 }
 
 void get_text(t_elf *elf) {
@@ -135,16 +133,14 @@ void encrypt_text_section(uint64_t size, void *data, uint64_t key)
     uint8_t *char_data = (uint8_t *)data;
     printf("Original data:\n");
     for (size_t i = 0; i < size; ++i) {
-        printf("%c", char_data[i]);
- //       char_data[i] = char_data[i] + 1;
+       // printf("%c", char_data[i]);
+        ;char_data[i] = char_data[i] + 1;
     }
-    printf("\n");
     // Print the encoded data for debugging purposes
     printf("Encoded data, %ld::\n", key);
     for (size_t i = 0; i < size; ++i) {
-        printf("%c", char_data[i]);
+     //   printf("%c", char_data[i]);
     }
-    printf("\n");
 
     // // Decoding: Decrement each character by 1
     // for (size_t i = 0; i < size; ++i) {
@@ -161,18 +157,15 @@ void encrypt_text_section(uint64_t size, void *data, uint64_t key)
 
 void save_encrypt_data(t_elf *elf, t_encrypt *encrypt)
 {
-    Elf64_Ehdr *ehdr = elf->data;
+  //  Elf64_Ehdr *ehdr = elf->data;
 
     encrypt->key = 0;
-    encrypt->sh_addr = elf->text->sh_addr;
-    encrypt->sh_size = elf->text->sh_size;
-    encrypt->original_entry = ehdr->e_entry;
 
-    Elf64_Ehdr *tmp = (Elf64_Ehdr*)elf->data;
+  //  Elf64_Ehdr *tmp = (Elf64_Ehdr*)elf->data;
   //  tmp->e_entry = elf->code->p_vaddr + elf->code->p_memsz + 17;
 
    // encrypt->e_entry = tmp->e_entry;
-   printf("key_value: %ld %p\n\n",  tmp->e_entry, elf->data);
+ //  printf("key_value: %ld %p\n\n",  tmp->e_entry, elf->data);
 
    void *pos = elf->data + elf->text->sh_offset;
    encrypt_text_section(elf->text->sh_size, pos, encrypt->key);
@@ -189,13 +182,14 @@ void insert_woody(t_elf *elf, t_encrypt *encrypt) {
         // Handle allocation error
         return;
     }
-    size_t size= elf->text->sh_size;
-    printf("encoded data 2:");
-    uint8_t *char_data = (uint8_t *)elf->data + elf->text->sh_offset;
-    for (size_t i = 0; i < size; ++i) {
-        printf("%c", char_data[i]);
-    }
-    printf("\n");
+    // uint8_t *char_data = (uint8_t *)elf->data + elf->text->sh_offset;
+    // size_t size= elf->text->sh_size;
+    // printf("encoded data 2:");
+
+    // for (size_t i = 0; i < size; ++i) {
+    //     printf("%c", char_data[i]);
+    // }
+    // printf("\n");
     memcpy(or_ehdr, elf->data, sizeof(Elf64_Ehdr));
 
     uint64_t original_entrypoint = or_ehdr->e_entry; // Save the original entry point
