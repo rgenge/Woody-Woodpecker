@@ -2,7 +2,6 @@ bits 64
 .text:
 global _start
 _start:
-
 	pushfq
 	push rax
 	push rbx
@@ -11,34 +10,36 @@ _start:
 	push rsi
 	push rdi
 
+	;get start position of main program and saves to rbx register
 	movsxd rax, [rel main_program_jump + 1]
 	add rax, 5
 	lea rbx, [rel main_program_jump]
-	add rbx, rax ; rbx holds start position
+	add rbx, rax
+
 	lea rdx, [rel _start] ; rdx holds cryptic end position
 	sub rdx, 8
 
 	jmp get_key
 crypt_loop:
-	mov rax, [rbx]
-	xor rax, rcx
-	mov [rbx], rax
-	add rbx, 8
-	cmp rbx, rdx
-	jb crypt_loop
+	mov rax, [rbx] ; move rbx register which is start position to rax
+	xor rax, rcx   ; xor rax that now stores start with rcx register which has crypto key
+	mov [rbx], rax ; move rax back to rbx register
+	add rbx, 8     ; increments rbx register by 8
+	cmp rbx, rdx   ; compare both rbx and rdx
+	jb crypt_loop  ; if rbx is below rdx make the operation again
 
 ;write_woody:
-	sub rsp, 16
+	sub rsp, 16                         ;take 16 of rsp register size which is the size of .....WOOODY.....
 	mov dword [rsp], 0x2e2e2e2e			; ....
-	mov dword [rsp + 4], 0x444f4f57 ; WOOD
-	mov dword [rsp + 8], 0x2e2e2e59 ; Y...
-	mov dword [rsp + 12], 0x000a2e2e; ..00
-	mov rax, 1
-	mov	rdi, 1
-	mov	rsi, rsp
-	mov rdx, 15
-	syscall
-	add rsp, 16
+	mov dword [rsp + 4], 0x444f4f57     ; WOOD
+	mov dword [rsp + 8], 0x2e2e2e59     ; Y...
+	mov dword [rsp + 12], 0x000a2e2e    ; ..00
+	mov rax, 1                          ; sys_write
+	mov	rdi, 1                          ; file descriptor for stdout
+	mov	rsi, rsp                        ;load rsp message into rsi address
+	mov rdx, 15                         ;lenght of message
+	syscall                             ;execute the sys_write command to print the message
+	add rsp, 16                         ;add 16 that is the lenght to rsp
 
 ;success_ending:
 	pop rdi

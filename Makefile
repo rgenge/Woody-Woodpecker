@@ -1,42 +1,58 @@
 ifndef OUTPUT
-.SILENT:
+#.SILENT:
 endif
 
 NAME = woody_woodpacker
 
-RETURN42	= "./samples/return42"
-HELLO64		=	"./samples/sample"
-COMPLEX64	= "./samples/sample_complex"
+RETURN42 = "./samples/return42"
+HELLO64 = "./samples/sample"
+COMPLEX64 = "./samples/sample_complex"
 
-SRC		= src/error.c src/main.c src/utils.c
-HEAD	=	Makefile src/woody.h src/buzz_buzzard.h
-OBJ		= $(SRC:.c=.o)
+SRC = src/error.c src/main.c src/utils.c
+HEAD = src/woody.h src/buzz_buzzard.h
+OBJ = $(SRC:.c=.o)
 
-CC			= gcc
-CFLAGS	= -Wall -Werror -Wextra -Wfatal-errors
-SHELL	= /bin/sh
+ASM_SRC = src/buzz_buzzard.s
+ASM_OBJ = src/buzz_buzzard.o
+ASM_BIN = src/buzz_buzzard.bin
+ASM_HDR = src/buzz_buzzard.h
 
-VAL			=	valgrind --quiet
-VALFLAG	=	--tool=memcheck \
-			--leak-check=full \
-			--show-leak-kinds=all \
-			--track-origins=yes \
-			--show-reachable=yes
+CC = gcc
+CFLAGS = -Wall -Werror -Wextra -Wfatal-errors
+SHELL = /bin/sh
 
-all:	samples blob $(NAME)
+VAL = valgrind --quiet
+VALFLAG = --tool=memcheck \
+          --leak-check=full \
+          --show-leak-kinds=all \
+          --track-origins=yes \
+          --show-reachable=yes
 
-$(NAME): $(OBJ) $(HEAD)
+all: $(NAME)
+
+$(NAME): $(OBJ) $(ASM_HDR)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
 
-$(OBJS): %o : %.c
-	$(CC) $(CFLAGS) -o $@ -c $<
+%.o: %.c $(HEAD)
+	$(CC) $(CFLAGS) -c $< -o $@
 
-clean: clean_woody_bin
-	@rm -rf $(OBJ)
-	@rm -rf src/buzz_buzzard.o
+$(ASM_OBJ): $(ASM_SRC)
+	nasm -f elf64 $(ASM_SRC) -o $(ASM_OBJ)
 
-fclean:	clean
-	@rm -rf $(NAME)
+$(ASM_BIN): $(ASM_OBJ)
+	objcopy -j .text -O binary $(ASM_OBJ) $(ASM_BIN)
+
+$(ASM_HDR): $(ASM_BIN)
+	xxd -i $(ASM_BIN) > $(ASM_HDR)
+
+clean:
+	@rm -f $(OBJ)
+	@rm -f $(ASM_OBJ)
+	@rm -f $(ASM_BIN)
+	@rm -f $(ASM_HDR)
+
+fclean: clean
+	@rm -f $(NAME)
 	@rm -rf ./src/buzz_buzzard.bin
 	@rm -rf ./src/buzz_buzzard.h
 	@rm -rf ./src/buzz
@@ -44,19 +60,12 @@ fclean:	clean
 	@rm -rf ./a ./b
 	@cd samples && ./clean.sh
 
-clean_woody_bin:
-	@rm -rf woody
-
 re: fclean all
 
-.PHONY: samples
+.PHONY: all clean fclean re samples blob
+
 samples:
 	cd samples && ./make_samples.sh
-
-blob:
-	nasm -f elf64 src/buzz_buzzard.s -o src/buzz_buzzard.o
-	objcopy -j.text -O binary src/buzz_buzzard.o src/buzz_buzzard.bin
-	xxd -i src/buzz_buzzard.bin > src/buzz_buzzard.h
 
 v:			s
 	echo "$(NAME) $(HELLO64)"
