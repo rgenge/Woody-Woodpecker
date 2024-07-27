@@ -40,7 +40,6 @@
 
 ### Accessories (included in `make all`):
 - `make samples`.
-- `make blob`.
 
 ### Development:
 - `make v`: runs Valgrind on `woody_woodpacker` then on the originated `woody`.

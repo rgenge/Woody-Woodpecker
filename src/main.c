@@ -33,7 +33,7 @@ void	elf_init(char *vict, elf_t** elf_ptr)
 	}
 }
 
-void	read_blob2()
+void	read_blob()
 {
 	off_t			filesize;
 	filesize = src_buzz_buzzard_bin_len;
@@ -57,7 +57,7 @@ void	inject(const char *woody)
 	char		*h;
 	char		*s;
 
-	read_blob2();
+	read_blob();
 
 	/*
 	 * Full clone.
