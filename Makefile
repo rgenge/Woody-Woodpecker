@@ -61,10 +61,9 @@ fclean: clean
 	@cd samples && ./clean.sh
 	@rm -f woody
 
-
 re: fclean all
 
-.PHONY: all clean fclean re samples blob
+.PHONY: all clean fclean re samples
 
 samples:
 	cd samples && ./make_samples.sh
@@ -77,22 +76,22 @@ v:			s
 g:			s
 	gdb -args ./$(NAME) $(HELLO64)
 
-t:			re
+t:			re samples
 	-unit/pass.sh "$(RETURN42)"
-s:			re
+s:			re samples
 	-unit/pass.sh "$(HELLO64)"
-c:			re
+c:			re samples
 	-unit/pass.sh "$(COMPLEX64)"
-l:			re
+l:			re samples
 	-unit/pass.sh "/bin/ls" ".."
 
-dt:			t
+dt:			t samples
 	-unit/a_b.sh "$(RETURN42)" ./woody
-ds:			s
+ds:			s samples
 	-unit/a_b.sh "$(HELLO64)" ./woody
-dc:			c
+dc:			c samples
 	-unit/a_b.sh "$(COMPLEX64)" ./woody
-dl:			l
+dl:			l samples
 	-unit/a_b.sh "/bin/ls" ./woody
 
 see:		s
