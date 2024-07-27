@@ -59,6 +59,8 @@ fclean: clean
 	@rm -rf ./.pdf
 	@rm -rf ./a ./b
 	@cd samples && ./clean.sh
+	@rm -f woody
+
 
 re: fclean all
 
