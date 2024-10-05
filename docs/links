@@ -1,0 +1,23 @@
+git://sourceware.org/git/binutils-gdb.git
+http://ref.x86asm.net/geek64.html
+http://www4.inf.puc-rio.br/~inf1018//2017.2/docs/asm64-handout.pdf
+https://chromium.googlesource.com/chromiumos/docs/+/master/constants/syscalls.md <-- todas syscalls
+https://cs.brown.edu/courses/cs033/docs/guides/x64_cheatsheet.pdf
+https://cs.lmu.edu/~ray/notes/nasmtutorial/
+https://en.wikipedia.org/wiki/Elves_in_Middle-earth
+https://github.com/fde-capu
+https://github.com/mschwartz/assembly-tutorial <- bom panorama
+https://github.com/rgenge
+https://github.com/rgenge/Woody-Woodpacker
+https://github.com/tchajed/minimal-elf
+https://github.com/tmpout/elfs
+https://github.com/torvalds/linux/blob/master/include/uapi/linux/elf.h
+https://github.com/ttmo-O/x86-manpages
+https://projects.intra.42.fr/projects/42cursus-woody-woodpacker
+https://software.intel.com/en-us/download/intel-64-and-ia-32-architectures-sdm-combined-volumes-1-2a-2b-2c-2d-3a-3b-3c-3d-and-4 <-- versão da Intel
+https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/programmer-references/40332.pdf <- "A verdadeira" documentação do x86_64 (versão AMD).
+https://www.felixcloutier.com/x86/ <- todos comandos
+https://www.nasm.us/xdoc/2.16.03/html/nasmdoc0.html
+https://www.tutorialspoint.com/assembly_programming/assembly_quick_guide.htm
+https://www.youtube.com/watch?v=ErPAI7xacTw&list=PLdp__7qVAbPugV9fBOeWyzgVXQXSlK-3P&ab_channel=Yesterday%27smemories
+https://www.youtube.com/watch?v=ULkc5mUtvCw&ab_channel=KnickKnack07

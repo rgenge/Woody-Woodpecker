@@ -1,0 +1,13 @@
+#!/usr/bin/lilypond
+\version "2.24.1"
+\relative c'' {
+	\autoBeamOff
+	\key e \major
+	\time 2/4
+	\tempo 4 = 112
+	\partial 8
+	\tuplet 3/2 {(b16 e gis} | b8) gis8 r8
+	\tuplet 3/2 {(b,16 e gis} | b8) gis8 r8
+	\tuplet 3/2 {(b,16 e gis} | b8) gis8 r8
+	e32-. (e-. e-. e-. e-. e-. e-. e-. e-. e-. e-. e-. e8)
+}

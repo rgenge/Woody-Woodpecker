@@ -1,5 +1,18 @@
+<<<<<<< HEAD
 testando2/
 woody
 error.o
 main.o
 utils.o
+=======
+woody_woodpacker
+*.o
+woody
+samples/sample
+samples/return42
+samples/sample_complex
+src/buzz
+.pdf
+src/buzz_buzzard.bin
+src/buzz_buzzard.h
+>>>>>>> last-minute
